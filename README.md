@@ -31,7 +31,7 @@ Security: حماية كاملة للجداول باستخدام RLS (Row Level S
 تحميل المشروع:
 
 Bash
-git clone https://github.com/your-username/riwaq.git
+git clone https://github.com/riwaq/riwaq.git
 cd riwaq
 تثبيت المكتبات:
 
