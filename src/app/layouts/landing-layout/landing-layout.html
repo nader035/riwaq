@@ -1,0 +1,17 @@
+<div 
+  class="min-h-screen bg-[#050505] relative overflow-hidden"
+  [style.--x.px]="mouseX()" 
+  [style.--y.px]="mouseY()"
+>
+  <div class="bg-grid-interactive"></div>
+
+  <div class="mouse-glow"></div>
+
+  <div class="relative z-10 flex flex-col">
+    <app-landing-header></app-landing-header>
+    <main class="flex-1">
+      <router-outlet></router-outlet>
+    </main>
+    <app-footer></app-footer>
+  </div>
+</div>

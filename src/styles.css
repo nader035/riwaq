@@ -1,3 +1,199 @@
-/* You can add global styles to this file, and also import other style files */
+@import 'tailwindcss';
+@import 'aos/dist/aos.css';
 
-@import "tailwindcss";
+/* --- 1. الخطوط (Typography) --- */
+@font-face {
+  font-family: 'Myriad Pro';
+  src: url('./assets/fonts/English/MYRIADPRO-REGULAR.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Myriad Pro';
+  src: url('./assets/fonts/English/MYRIADPRO-BOLD.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Myriad Arabic';
+  src: url('./assets/fonts/Arabic/MMSFONTMyriadArabicPhone-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF;
+}
+
+/* --- 2. محرك الألوان (Theme Engine) --- */
+@theme {
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
+  /* الافتراضي: Deep Dark Mode */
+  --color-background: var(--bg, #050505); /* لون أسود أعمق لعزل الشبكة */
+  --color-foreground: var(--fg, #ffffff);
+  --color-card: var(--card, #0a0a0a);
+  --color-primary: var(--prim, #22d3ee);
+  --color-primary-dark: var(--prim-dark, #0891b2);
+  --color-muted: #737373;
+  --color-border: var(--brd, rgba(255, 255, 255, 0.08));
+
+  --font-sans: 'Myriad Pro', 'Myriad Arabic', sans-serif;
+}
+
+body.light-theme {
+  --bg: #fafafa;
+  --fg: #171717;
+  --card: #ffffff;
+  --prim: #0891b2;
+  --brd: rgba(0, 0, 0, 0.08);
+}
+
+/* --- 3. الإعدادات الأساسية (Base) --- */
+@layer base {
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    @apply antialiased overflow-x-hidden;
+    transition:
+      background-color 0.5s ease,
+      color 0.5s ease;
+  }
+
+  /* جعل كل السكاشن شفافة لتظهر الشبكة خلفها فقط */
+  section,
+  main {
+    background-color: transparent !important;
+  }
+
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary);
+  }
+}
+
+/* --- 4. الأدوات الاحترافية (Utilities) --- */
+
+/* 🛡️ حل مشكلة ظهور الشبكة: كارت زجاجي "كاتم" للخلفية */
+@utility glass-card {
+  /* نستخدم لون غامق جداً مع شفافية بسيطة جداً 95% لعزل خطوط الشبكة */
+  background-color: rgba(10, 10, 10, 0.95);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+@utility glass-card-hover {
+  @apply glass-card transition-all duration-500;
+  &:hover {
+    transform: translateY(-8px);
+    background-color: rgba(15, 15, 15, 0.98);
+    border-color: rgba(34, 211, 238, 0.3);
+    box-shadow: 0 20px 40px -10px rgba(34, 211, 238, 0.15);
+  }
+}
+
+/* 🕸️ الشبكة الهندسية (The Archive Grid) */
+@utility bg-grid-pattern {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-size: 60px 60px;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+
+  /* تلاشي الشبكة عند الأطراف لتركيز العين على المحتوى */
+  mask-image: radial-gradient(circle at 50% 40%, black 10%, transparent 80%);
+  -webkit-mask-image: radial-gradient(circle at 50% 40%, black 10%, transparent 80%);
+  opacity: 0.8;
+}
+
+@utility gradient-text {
+  background: linear-gradient(to right, #22d3ee, #06b6d4);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility text-glow {
+  text-shadow: 0 0 15px rgba(34, 211, 238, 0.4);
+}
+
+@utility shadow-glow {
+  box-shadow: 0 0 20px rgba(34, 211, 238, 0.3);
+}
+@utility sanctuary-container {
+  max-width: 64rem; /* 👈 ده مقاس الـ max-w-5xl بالظبط اللي مريح عينك */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+/* --- 5. حركات الأنيميشن --- */
+@layer utilities {
+  @keyframes pulse-slow {
+    0%,
+    100% {
+      opacity: 0.5;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+  }
+  .animate-pulse-slow {
+    animation: pulse-slow 6s infinite ease-in-out;
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  .animate-fade-in {
+    animation: slideUp 0.6s ease-out forwards;
+  }
+}
+
+/* --- 6. مكونات التنقل (Navigation) --- */
+.nav-link {
+  @apply flex items-center gap-2 px-4 py-2 font-black uppercase tracking-[0.2em] text-[10px] text-muted transition-all duration-300;
+}
+
+.nav-link:hover,
+.active-link {
+  color: var(--color-primary);
+  letter-spacing: 0.3em;
+  background-color: rgba(34, 211, 238, 0.05);
+  border-radius: 0.75rem;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 8rem;
+}

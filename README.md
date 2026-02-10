@@ -1,59 +1,63 @@
-# RiwaqV2
+🏛️ رُواق | Riwaq
+The Sanctuary for Focused Scholars & Social Productivity
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.1.
+رُواق هو منصة إنتاجية اجتماعية متكاملة مبنية باستخدام Angular و Supabase، تهدف لخلق بيئة تركيز جماعية لحظية (Real-time). النظام يجمع بين تتبع الإنتاجية الشخصية والتفاعل الاجتماعي لضمان أقصى درجات الالتزام.
 
-## Development server
+🚀 المميزات الأساسية (Core Features)
+بناءً على بنية قاعدة البيانات المتطورة للمشروع:
 
-To start a local development server, run:
+⏱️ Independent Focus Sessions: نظام توقيت ذكي يسجل جلسات التركيز بدقة في جدول focus_sessions.
 
-```bash
+📡 Real-time Room Presence: رؤية الطلاب المتواجدين معك في الغرفة لحظياً عبر room_presence_tracking.
+
+🏆 Social Leaderboard: نظام ترتيب تفاعلي يعرض المتصدرين بناءً على ساعات التركيز.
+
+✅ Task Management: تتبع المهام اليومية وربطها بجلسات التركيز لزيادة الإنتاجية.
+
+📊 Daily Summaries: ملخصات يومية ذكية تعرض مستوى الإنجاز والنشاط عبر جدول daily_focus_summary.
+
+🛠️ البناء التقني (Tech Stack)
+Frontend: Angular 17+ (Signals, Standalone Components, Deferrable Views).
+
+Backend: Supabase (Auth, Real-time Presence, PostgreSQL).
+
+State Management: Angular Signals لضمان استجابة فورية للواجهة (Fine-grained reactivity).
+
+Security: حماية كاملة للجداول باستخدام RLS (Row Level Security).
+
+⚙️ إعداد المشروع (Installation & Setup)
+المشروع يستخدم نظام الـ Environment Templates لضمان أقصى درجات الأمان للمفاتيح الخاصة بك.
+
+تحميل المشروع:
+
+Bash
+git clone https://github.com/your-username/riwaq.git
+cd riwaq
+تثبيت المكتبات:
+
+Bash
+npm install
+إعداد ملفات البيئة (Environments):
+
+قم بإنشاء ملف src/environments/environment.ts بناءً على ملف الـ template.
+
+أضف مفاتيح Supabase URL و Anon Key الخاصة بك.
+
+تشغيل المشروع:
+
+Bash
 ng serve
-```
+📈 حالة الأداء (Performance Roadmap)
+حالياً، يحقق المشروع سكور أداء 65 في Lighthouse. الخطوات القادمة في خريطة الطريق تشمل:
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+تحسين الـ LCP (Largest Contentful Paint) لتقليل وقت التحميل الأولي.
 
-## Code scaffolding
+ضبط الـ FCP و الـ Speed Index للوصول لسكور +90.
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+استخدام @defer في Angular لتحميل المكونات الثقيلة عند الحاجة فقط.
 
-```bash
-ng generate component component-name
-```
+🛡️ الأمان والخصوصية (Security)
+[!IMPORTANT] تم استثناء ملفات الـ environment.ts و environment.development.ts من الرفع على المستودع العام لحماية مفاتيح API الخاصة بـ Supabase. يرجى استخدام القالب المرفق environment.template.ts لإعداد النسخة المحلية الخاصة بك.
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+🤝 المساهمة (Contributing)
+نحن نرحب بكل المطورين المهتمين ببناء مستقبل الإنتاجية الاجتماعية. يمكنك فتح Issue أو إرسال Pull Request بتعديلاتك.

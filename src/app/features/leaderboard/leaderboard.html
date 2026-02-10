@@ -1,0 +1,134 @@
+<div class="max-w-5xl mx-auto py-6 px-4 md:px-6 space-y-16 animate-fade-in pb-12">
+  
+  <header class="text-center space-y-4">
+    <div class="inline-block px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-2">
+      <span class="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Daily League (Cairo Time)</span>
+    </div>
+    <h1 class="text-5xl md:text-7xl font-black tracking-tighter uppercase leading-none text-foreground">
+      Hall of <span class="text-primary text-glow">Fame</span>
+    </h1>
+    <p class="text-muted font-bold text-xs uppercase tracking-[0.4em] opacity-60">Who is leading the sanctuary today?</p>
+  </header>
+
+  @if (leaderboard.loading()) {
+    <div class="relative grid grid-cols-3 gap-2 md:gap-8 items-end pt-20 max-w-3xl mx-auto">
+      <div class="flex flex-col items-center space-y-6">
+        <app-skeleton width="80px" height="80px" customClass="rounded-[1.5rem] md:w-24 md:h-24"></app-skeleton>
+        <div class="glass-card w-full h-32 rounded-t-[2rem] border-white/5 bg-white/[0.02] animate-pulse"></div>
+      </div>
+      <div class="flex flex-col items-center space-y-6 transform scale-110 -translate-y-4">
+        <app-skeleton width="100px" height="100px" customClass="rounded-[2rem] md:w-28 md:h-28 shadow-glow"></app-skeleton>
+        <div class="glass-card w-full h-44 rounded-t-[2.5rem] border-primary/10 bg-primary/[0.05] animate-pulse"></div>
+      </div>
+      <div class="flex flex-col items-center space-y-6">
+        <app-skeleton width="70px" height="70px" customClass="rounded-[1.5rem] md:w-20 md:h-20"></app-skeleton>
+        <div class="glass-card w-full h-24 rounded-t-[2rem] border-white/5 bg-white/[0.02] animate-pulse"></div>
+      </div>
+    </div>
+
+    <div class="max-w-3xl mx-auto space-y-4 mt-10">
+      @for (i of [1, 2, 3, 4]; track i) {
+        <div class="glass-card p-5 rounded-[2.5rem] border-white/5 flex items-center justify-between">
+          <div class="flex items-center gap-6">
+             <app-skeleton width="30px" height="20px" customClass="rounded-md opacity-20"></app-skeleton>
+             <app-skeleton width="56px" height="56px" customClass="rounded-2xl"></app-skeleton>
+             <div class="space-y-2">
+               <app-skeleton width="120px" height="20px" customClass="rounded-md"></app-skeleton>
+               <app-skeleton width="80px" height="10px" customClass="rounded-md opacity-40"></app-skeleton>
+             </div>
+          </div>
+          <app-skeleton width="60px" height="30px" customClass="rounded-xl"></app-skeleton>
+        </div>
+      }
+    </div>
+
+  } @else if (leaderboard.topScholars().length > 0) {
+    <div class="relative grid grid-cols-3 gap-2 md:gap-8 items-end pt-20 max-w-3xl mx-auto">
+      
+      <div class="flex flex-col items-center space-y-6 z-20">
+        @if (leaderboard.topScholars()[1]) {
+          <div class="relative group">
+            <img [src]="leaderboard.topScholars()[1].avatar" class="w-16 h-16 md:w-24 md:h-24 rounded-[1.5rem] border-4 border-slate-400/30 object-cover relative z-10" />
+            <div class="absolute -top-3 -left-3 w-8 h-8 bg-slate-500 text-white rounded-lg flex items-center justify-center font-black text-xs shadow-lg z-20 border border-white/20">2</div>
+          </div>
+          <div class="glass-card w-full min-h-[140px] rounded-t-[2rem] flex flex-col items-center justify-center p-4 border-white/5 bg-white/[0.03] shadow-xl">
+            <p class="text-[10px] font-black truncate w-full text-center text-muted uppercase mb-1">{{ leaderboard.topScholars()[1].name }}</p>
+            <p class="text-foreground font-black text-base md:text-xl tabular-nums">{{ formatTime(leaderboard.topScholars()[1].daily_focus_seconds) }}</p>
+            <div class="flex items-center gap-1 mt-2 px-2 py-0.5 rounded-full bg-orange-500/10 border border-orange-500/20">
+              <i class="fas fa-fire text-orange-500 text-[10px]"></i>
+              <span class="text-[9px] font-black text-orange-500">{{ leaderboard.topScholars()[1].current_streak }} Days</span>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="flex flex-col items-center space-y-6 z-30 transform scale-110 md:scale-125 -translate-y-4">
+        @if (leaderboard.topScholars()[0]) {
+          <div class="relative group">
+            <div class="absolute -top-10 left-1/2 -translate-x-1/2 text-primary animate-bounce">
+              <i class="fas fa-crown text-4xl drop-shadow-glow"></i>
+            </div>
+            <img [src]="leaderboard.topScholars()[0].avatar" class="w-20 h-20 md:w-28 md:h-28 rounded-[2rem] border-4 border-primary shadow-glow object-cover relative z-10" />
+            <div class="absolute -top-3 -left-3 w-10 h-10 bg-primary text-primary-foreground rounded-xl flex items-center justify-center font-black shadow-glow z-20 border border-white/20">1</div>
+          </div>
+          <div class="glass-card w-full min-h-[180px] rounded-t-[2.5rem] flex flex-col items-center justify-center p-4 border-primary/20 bg-primary/[0.08] backdrop-blur-3xl shadow-2xl">
+            <p class="text-xs font-black truncate w-full text-center text-primary uppercase mb-1 tracking-widest">{{ leaderboard.topScholars()[0].name }}</p>
+            <p class="text-white font-black text-xl md:text-2xl tabular-nums text-glow-sm">{{ formatTime(leaderboard.topScholars()[0].daily_focus_seconds) }}</p>
+            <div class="flex items-center gap-1 mt-2 px-3 py-1 rounded-full bg-orange-500/20 border border-orange-500/30 animate-pulse">
+              <i class="fas fa-fire text-orange-500 text-xs"></i>
+              <span class="text-[10px] font-black text-orange-400 uppercase tracking-tighter">{{ leaderboard.topScholars()[0].current_streak }} Day Streak</span>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="flex flex-col items-center space-y-6 z-20">
+        @if (leaderboard.topScholars()[2]) {
+          <div class="relative group">
+            <img [src]="leaderboard.topScholars()[2].avatar" class="w-16 h-16 md:w-20 md:h-20 rounded-[1.5rem] border-4 border-orange-700/30 object-cover relative z-10" />
+            <div class="absolute -top-3 -left-3 w-8 h-8 bg-orange-800 text-white rounded-lg flex items-center justify-center font-black text-xs shadow-lg z-20 border border-white/20">3</div>
+          </div>
+          <div class="glass-card w-full min-h-[110px] rounded-t-[2rem] flex flex-col items-center justify-center p-4 border-white/5 bg-white/[0.03] shadow-xl">
+            <p class="text-[10px] font-black truncate w-full text-center text-muted uppercase mb-1">{{ leaderboard.topScholars()[2].name }}</p>
+            <p class="text-foreground font-black text-base md:text-lg tabular-nums">{{ formatTime(leaderboard.topScholars()[2].daily_focus_seconds) }}</p>
+            <div class="flex items-center gap-1 mt-2 px-2 py-0.5 rounded-full bg-orange-500/10 border border-orange-500/20">
+              <i class="fas fa-fire text-orange-500 text-[10px]"></i>
+              <span class="text-[9px] font-black text-orange-500">{{ leaderboard.topScholars()[2].current_streak }} Days</span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="max-w-3xl mx-auto space-y-4 mt-10">
+      @for (scholar of leaderboard.topScholars().slice(3); track scholar.id; let i = $index) {
+        <div class="glass-card p-5 rounded-[2.5rem] border-white/5 flex items-center justify-between hover:bg-white/[0.04] transition-all group">
+          <div class="flex items-center gap-6">
+            <span class="font-black text-muted/30 w-8 text-center text-sm">#{{ i + 4 }}</span>
+            <img [src]="scholar.avatar" class="w-14 h-14 rounded-2xl object-cover border border-white/10" />
+            <div>
+              <div class="flex items-center gap-3">
+                <p class="font-black text-base text-foreground group-hover:text-primary transition-colors">{{ scholar.name }}</p>
+                @if (scholar.current_streak > 0) {
+                  <div class="flex items-center gap-1 px-2 py-0.5 rounded-full bg-orange-500/10 border border-orange-500/20">
+                    <i class="fas fa-fire text-orange-500 text-[10px]"></i>
+                    <span class="text-orange-500 text-[10px] font-black">{{ scholar.current_streak }}</span>
+                  </div>
+                }
+              </div>
+              <p class="text-[9px] text-muted font-black uppercase tracking-[0.2em]">Scholar Rank</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <p class="font-black text-primary tabular-nums text-xl italic">{{ formatTime(scholar.daily_focus_seconds) }}</p>
+            <p class="text-[8px] text-muted uppercase font-black tracking-widest">Today's Focus</p>
+          </div>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="text-center py-20 opacity-40 uppercase font-black tracking-widest text-xs">
+      The Hall is empty. Be the first to claim your throne today!
+    </div>
+  }
+</div>

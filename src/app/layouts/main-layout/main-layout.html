@@ -1,0 +1,27 @@
+<app-notification></app-notification>
+
+@if (confirmService.isOpen()) {
+  <app-confirm></app-confirm>
+}
+
+<div class="flex h-screen overflow-hidden bg-background">
+  <app-sidebar></app-sidebar>
+
+  <main
+    [class.md:pl-72]="sidebarService.isOpen()"
+    class="flex-1 overflow-y-auto relative transition-all duration-300 ease-in-out"
+  >
+    @if (!sidebarService.isOpen()) {
+      <button
+        (click)="sidebarService.open()"
+        class="fixed top-6 left-6 z-40 w-12 h-12 rounded-2xl glass-card flex items-center justify-center text-primary shadow-xl animate-fade-in hover:scale-110 active:scale-95 transition-all"
+      >
+        <i class="fas fa-bars"></i>
+      </button>
+    }
+
+    <div class="p-6 md:p-10 max-w-[1600px] mx-auto">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div>

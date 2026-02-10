@@ -1,0 +1,100 @@
+@if (auth.isAdmin()) {
+  <div class="max-w-2xl mx-auto py-10 px-6 animate-fade-in">
+    <div class="glass-card p-10 rounded-[3rem] border-primary/20 shadow-2xl space-y-8">
+      <header class="space-y-2">
+        <h2 class="text-3xl font-black tracking-tighter uppercase text-foreground">
+          Broadcast <span class="text-primary text-glow">Center</span>
+        </h2>
+        <p class="text-xs font-bold text-muted uppercase tracking-widest opacity-60">
+          Push a real-time message to all active scholars
+        </p>
+      </header>
+
+      <div class="space-y-6">
+        <div class="space-y-2">
+          <label class="text-[10px] font-black uppercase tracking-widest text-primary px-1"
+            >Broadcast Title</label
+          >
+          <input
+            [(ngModel)]="title"
+            placeholder="e.g., Important Update"
+            class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl focus:border-primary outline-none transition-all font-bold"
+          />
+        </div>
+
+        <div class="space-y-2">
+          <label class="text-[10px] font-black uppercase tracking-widest text-primary px-1"
+            >Your Message</label
+          >
+          <textarea
+            [(ngModel)]="message"
+            placeholder="Write something inspiring..."
+            rows="3"
+            class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl focus:border-primary outline-none transition-all font-bold resize-none"
+          ></textarea>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <button
+            (click)="type.set('info')"
+            class="p-4 rounded-2xl border transition-all duration-300 text-[10px] font-black uppercase tracking-widest flex flex-col items-center gap-2"
+            [class.border-primary]="type() === 'info'"
+            [class.bg-primary/10]="type() === 'info'"
+            [class.text-primary]="type() === 'info'"
+            [class.border-white/5]="type() !== 'info'"
+            [class.bg-white/5]="type() !== 'info'"
+            [class.text-muted]="type() !== 'info'"
+          >
+            <i class="fas fa-info-circle text-lg"></i>
+            Info
+          </button>
+
+          <button
+            (click)="type.set('success')"
+            class="p-4 rounded-2xl border transition-all duration-300 text-[10px] font-black uppercase tracking-widest flex flex-col items-center gap-2"
+            [class.border-emerald-500]="type() === 'success'"
+            [class.bg-emerald-500/10]="type() === 'success'"
+            [class.text-emerald-500]="type() === 'success'"
+            [class.border-white/5]="type() !== 'success'"
+            [class.bg-white/5]="type() !== 'success'"
+            [class.text-muted]="type() !== 'success'"
+          >
+            <i class="fas fa-check-circle text-lg"></i>
+            Success
+          </button>
+
+          <button
+            (click)="type.set('rank')"
+            class="p-4 rounded-2xl border transition-all duration-300 text-[10px] font-black uppercase tracking-widest flex flex-col items-center gap-2"
+            [class.border-orange-500]="type() === 'rank'"
+            [class.bg-orange-500/10]="type() === 'rank'"
+            [class.text-orange-500]="type() === 'rank'"
+            [class.border-white/5]="type() !== 'rank'"
+            [class.bg-white/5]="type() !== 'rank'"
+            [class.text-muted]="type() !== 'rank'"
+          >
+            <i class="fas fa-crown text-lg"></i>
+            Rank
+          </button>
+        </div>
+
+        <button
+          (click)="sendBroadcast()"
+          [disabled]="isSending()"
+          class="w-full py-5 bg-primary text-primary-foreground rounded-2xl font-black uppercase tracking-[0.2em] shadow-glow hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50"
+        >
+          @if (isSending()) {
+            <i class="fas fa-spinner fa-spin mr-2"></i> Transmitting...
+          } @else {
+            <i class="fas fa-paper-plane mr-2"></i> Launch Broadcast
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+} @else {
+  <div class="h-[60vh] flex flex-col items-center justify-center space-y-4">
+    <i class="fas fa-lock text-4xl text-muted/20"></i>
+    <p class="font-black uppercase tracking-widest text-muted text-xs">Restricted Sanctuary Area</p>
+  </div>
+}

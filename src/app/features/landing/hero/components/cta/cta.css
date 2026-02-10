@@ -1,0 +1,23 @@
+/* */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse-slow {
+  0%, 100% { transform: scale(1) translate(-50%, -50%); opacity: 0.5; }
+  50% { transform: scale(1.2) translate(-50%, -50%); opacity: 0.8; }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 20s linear infinite;
+}
+
+.animate-pulse-slow {
+  /* نستخدم translate-x/y عشان نثبت مكانها في النص بالظبط */
+  animation: pulse-slow 8s ease-in-out infinite;
+}
+
+.shadow-glow {
+  box-shadow: 0 0 20px rgba(var(--primary-rgb), 0.4);
+}

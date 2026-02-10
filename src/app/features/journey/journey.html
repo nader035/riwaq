@@ -1,0 +1,66 @@
+<div class="max-w-6xl mx-auto space-y-12 animate-fade-in py-10">
+  <header class="text-center space-y-4">
+    <h1 class="text-5xl font-black tracking-tighter uppercase">
+      The <span class="text-primary text-glow">Journey</span>
+    </h1>
+    <p class="text-muted font-bold text-xs uppercase tracking-[0.4em] opacity-60">
+      Your intellectual legacy, day by day (Cairo Timezone)
+    </p>
+  </header>
+
+  <div class="glass-card p-10 rounded-[3rem] border-white/5 overflow-hidden shadow-2xl">
+    <div class="overflow-x-auto pb-4 custom-scrollbar">
+      <div
+        class="min-w-[700px] md:min-w-full" 
+        style="display: grid; grid-template-columns: repeat(53, 1fr); gap: 4px"
+      >
+        @for (day of days(); track day.date) {
+          <div
+            [title]="day.date + ': ' + day.hours + ' hrs'"
+            class="w-3 h-3 md:w-4 md:h-4 rounded-sm transition-all hover:scale-150 hover:z-10 cursor-pointer day-cell"
+            [class.bg-white/5]="day.intensity === 0"
+            [class.bg-primary/20]="day.intensity === 1"
+            [class.bg-primary/40]="day.intensity === 2"
+            [class.bg-primary/70]="day.intensity === 3"
+            [class.bg-primary]="day.intensity === 4"
+          ></div>
+        }
+      </div>
+    </div>
+
+    <div class="mt-8 flex items-center justify-end gap-2 text-[8px] font-black uppercase tracking-widest text-muted">
+      <span>Less</span>
+      <div class="flex gap-1">
+        <div class="w-3 h-3 bg-white/5 rounded-sm"></div>
+        <div class="w-3 h-3 bg-primary/20 rounded-sm"></div>
+        <div class="w-3 h-3 bg-primary/40 rounded-sm"></div>
+        <div class="w-3 h-3 bg-primary/70 rounded-sm"></div>
+        <div class="w-3 h-3 bg-primary rounded-sm"></div>
+      </div>
+      <span>More</span>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="glass-card p-8 rounded-[2.5rem] text-center space-y-2 border-white/5 bg-orange-500/5 group hover:bg-orange-500/10 transition-all">
+      <p class="text-[10px] font-black uppercase tracking-widest text-orange-400">
+        <i class="fas fa-fire mr-1 animate-pulse"></i> Current Streak
+      </p>
+      <h3 class="text-4xl font-black text-orange-400 italic">
+        {{ journeyService.currentStreak() }} Days
+      </h3>
+    </div>
+
+    <div class="glass-card p-8 rounded-[2.5rem] text-center space-y-2 border-white/5 group hover:bg-primary/5 transition-all">
+      <p class="text-[10px] font-black uppercase tracking-widest text-muted">Longest Quest</p>
+      <h3 class="text-4xl font-black text-primary italic">
+        {{ journeyService.longestStreak() }} Days
+      </h3>
+    </div>
+
+    <div class="glass-card p-8 rounded-[2.5rem] text-center space-y-2 border-white/5 group hover:bg-white/5 transition-all">
+      <p class="text-[10px] font-black uppercase tracking-widest text-muted">Total Knowledge</p>
+      <h3 class="text-4xl font-black text-foreground italic">{{ totalKnowledgeHours() }}h</h3>
+    </div>
+  </div>
+</div>

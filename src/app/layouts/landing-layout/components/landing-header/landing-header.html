@@ -1,0 +1,86 @@
+<nav
+  class="fixed top-0 left-0 right-0 z-[100] border-b border-white/[0.05] bg-background/60 backdrop-blur-xl h-16 md:h-20"
+>
+  <div class="max-w-7xl mx-auto px-4 md:px-8 flex items-center justify-between h-full">
+    <a
+      routerLink="/"
+      class="flex items-center gap-2 group transition-transform hover:scale-105 shrink-0"
+    >
+      <span class="font-bold text-xl md:text-2xl tracking-tighter text-foreground">Riwaq</span>
+      <span class="text-primary font-black text-xl md:text-2xl text-glow-sm">رِوَاقء</span>
+    </a>
+
+    <div class="hidden md:flex items-center gap-2">
+      @if (!auth.isAuthenticated()) {
+        <a href="#features" class="nav-link">Features</a>
+        <a href="#story" class="nav-link">Our Story</a>
+        <a href="#team" class="nav-link">Our Team</a>
+        <a href="#leaderboard" class="nav-link">Leaderboard</a>
+      } @else {
+        @for (item of navItems; track item.link) {
+          <a [routerLink]="item.link" routerLinkActive="active-link" class="nav-link">
+            <i [class]="item.icon + ' text-[10px] opacity-40'"></i>
+            <span>{{ item.label }}</span>
+          </a>
+        }
+      }
+    </div>
+
+    <div class="flex items-center gap-3">
+      @if (!auth.isAuthenticated()) {
+        <a routerLink="/auth/login" class="nav-link !px-4">Sign In</a>
+        <a
+          routerLink="/auth/signup"
+          class="bg-primary text-primary-foreground px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-glow-sm hover:scale-105 transition-all"
+        >
+          Join Now
+        </a>
+      } @else {
+        <div class="flex items-center gap-4 animate-fade-in">
+          <div class="hidden lg:flex flex-col items-end mr-2">
+            <span class="text-[8px] font-black uppercase tracking-widest text-muted-foreground"
+              >Focus</span
+            >
+            <span class="text-[10px] font-bold text-primary">
+              {{ (auth.currentUser()?.dailyFocusSeconds || 0) / 60 | number: '1.0-0' }}m
+            </span>
+          </div>
+
+          <div class="flex items-center gap-3 pl-4 border-l border-white/5">
+            <a routerLink="/app/profile" class="flex items-center gap-3 group">
+              <div class="flex flex-col items-end hidden sm:flex">
+                <span
+                  class="text-[10px] font-black uppercase tracking-widest text-foreground group-hover:text-primary transition-colors"
+                >
+                  {{ auth.currentUser()?.name }}
+                </span>
+                <span class="text-[8px] font-bold text-primary/60 uppercase tracking-tighter"
+                  >Scholar</span
+                >
+              </div>
+
+              <div
+                class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 p-0.5 group-hover:border-primary/50 transition-all overflow-hidden"
+              >
+                <img
+                  [src]="auth.currentUser()?.avatar || DEFAULT_AVATAR"
+                  (error)="handleImageError($event)"
+                  class="w-full h-full object-cover rounded-[10px]"
+                  alt="Avatar"
+                />
+              </div>
+            </a>
+
+            <button
+              (click)="logout()"
+              class="p-2 text-muted-foreground hover:text-red-500 transition-colors"
+              title="Sign Out"
+            >
+              <i class="fas fa-power-off text-sm"></i>
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</nav>

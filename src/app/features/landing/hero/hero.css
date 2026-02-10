@@ -1,0 +1,18 @@
+/* */
+
+/* تأثير عزل الشبكة في نص السكشن */
+.bg-radial-gradient-dark {
+  background: radial-gradient(
+    circle at center,
+    rgba(5, 5, 5, 0.0) 0%,   /* الشبكة باهتة جداً هنا */
+    #050505 100%             /* الشبكة مخفية تماماً عند الأطراف */
+  );
+}
+
+/* تحسين شكل الـ Stats لمنع تداخلها مع الشبكة */
+.grid-cols-3 > div {
+  background-color: rgba(5, 5, 5, 0.6);
+  backdrop-filter: blur(4px);
+  border-radius: 1rem;
+  padding: 1rem 0;
+}
