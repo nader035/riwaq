@@ -1,3 +1,4 @@
+/* - Riwaq Original AuthService */
 import { Injectable, inject, signal, computed, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { SupabaseService } from '../services/supabase';
@@ -25,14 +26,12 @@ export class AuthService {
   private ngZone = inject(NgZone);
   private notify = inject(NotificationService);
 
-  // إشارات الحالة (Signals)
   session = signal<any>(null);
   isAuthenticated = signal<boolean>(false);
   currentUser = signal<UserProfile | null>(null);
 
   private profileChannel?: RealtimeChannel;
 
-  // إشارات محسوبة (Computed)
   isAdmin = computed(() => this.currentUser()?.role?.toLowerCase() === 'admin');
   isBanned = computed(() => this.currentUser()?.isBanned === true);
 
@@ -75,7 +74,7 @@ export class AuthService {
   /**
    * 🔄 مزامنة البروفايل وعلاج مشكلة الصور (Avatar Fix)
    */
-  //
+  /* - Optimized for Challenges & Avatars */
   async refreshUserProfile(session: any) {
     if (!session?.user) return;
 
@@ -89,23 +88,29 @@ export class AuthService {
       if (error) throw error;
 
       if (data) {
-        // 🖼️ حل مشكلة الأفاتار: تحويل اسم الملف لرابط كامل فوراً
         let finalAvatarUrl = data.avatar;
+
+        // 1. حماية الأفاتار: لو مش رابط (اسم ملف) هاته من الـ Storage
         if (finalAvatarUrl && !finalAvatarUrl.startsWith('http')) {
           const { data: imgData } = this.supabase.storage
-            .from('avatars') // 👈 تأكد من اسم الـ Bucket عندك
+            .from('avatars')
             .getPublicUrl(finalAvatarUrl);
           finalAvatarUrl = imgData.publicUrl;
         }
+        // 2. لو مفيش صورة في الداتابيز، استلف صورة جوجل من الـ Session
+        else if (!finalAvatarUrl && session.user.user_metadata?.['avatar_url']) {
+          finalAvatarUrl = session.user.user_metadata['avatar_url'];
+        }
 
+        // 3. تحديث الـ Signal ببيانات التحديات الضرورية
         this.currentUser.set({
           ...data,
           id: data.id,
           name: data.name,
-          avatar: finalAvatarUrl, // 👈 الآن البروفايل يحتوي على رابط "شغال" دائماً
+          avatar: finalAvatarUrl,
           isBanned: data.is_banned || false,
           totalFocusSeconds: data.total_focus_seconds || 0,
-          dailyFocusSeconds: data.daily_focus_seconds || 0,
+          dailyFocusSeconds: data.daily_focus_seconds || 0, // 👈 دي اللي الـ ChallengeService محتاجها
           currentStreak: data.current_streak || 0,
           longestStreak: data.longest_streak || 0,
         });
@@ -148,15 +153,10 @@ export class AuthService {
     await this.logout();
   }
 
-  // --- 🔐 العمليات الأساسية (Authentication Operations) ---
-
   async signIn(email: string, password: string) {
     return await this.supabase.auth.signInWithPassword({ email, password });
   }
 
-  /**
-   * 📝 إنشاء حساب جديد (تمت استعادتها لفك الخطأ TS2339)
-   */
   async signUp(email: string, password: string, name: string) {
     return await this.supabase.auth.signUp({
       email,
@@ -187,20 +187,12 @@ export class AuthService {
     this.isAuthenticated.set(false);
   }
 
-  // --- 🛠️ إدارة الحساب والباسورد (تمت استعادتها) ---
-
-  /**
-   * 📧 إرسال رابط إعادة تعيين كلمة المرور
-   */
   async sendResetLink(email: string) {
     return await this.supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/auth/update-password`,
     });
   }
 
-  /**
-   * 🔑 تحديث كلمة المرور الجديدة
-   */
   async updatePassword(newPassword: string) {
     return await this.supabase.auth.updateUser({ password: newPassword });
   }

@@ -1,0 +1,304 @@
+<div class="min-h-screen pb-10 md:pb-20 relative z-10 overflow-x-hidden">
+  @if (challengeService.isLoading()) {
+    <div class="max-w-6xl mx-auto px-4 md:px-8 space-y-12 animate-fade-in pt-12">
+      <header class="text-center space-y-6">
+        <div class="flex justify-center">
+          <app-skeleton
+            width="140px"
+            height="10px"
+            customClass="rounded-full opacity-40"
+          ></app-skeleton>
+        </div>
+        <div class="flex flex-col items-center gap-4">
+          <app-skeleton
+            width="85%"
+            height="55px"
+            customClass="rounded-2xl opacity-50"
+          ></app-skeleton>
+          <app-skeleton
+            width="60%"
+            height="55px"
+            customClass="rounded-2xl opacity-30"
+          ></app-skeleton>
+        </div>
+        <div class="flex justify-center gap-12 pt-4">
+          <app-skeleton
+            width="60px"
+            height="40px"
+            customClass="rounded-lg opacity-40"
+          ></app-skeleton>
+          <app-skeleton
+            width="60px"
+            height="40px"
+            customClass="rounded-lg opacity-40"
+          ></app-skeleton>
+        </div>
+      </header>
+
+      <div
+        class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-4 md:gap-6 px-2"
+      >
+        @for (i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]; track i) {
+          <div
+            class="aspect-square rounded-2xl bg-white/[0.05] border border-white/20 animate-pulse"
+          ></div>
+        }
+      </div>
+    </div>
+  } @else {
+    <nav class="max-w-7xl mx-auto p-4 md:p-6 flex justify-between items-center animate-fade-in">
+      <button
+        routerLink="/app/challenges"
+        class="text-[9px] md:text-[10px] font-black tracking-widest text-muted-foreground hover:text-primary transition-colors flex items-center border border-white/20 px-4 py-2 rounded-xl bg-white/5 hover:border-primary/40"
+      >
+        <i class="fas fa-arrow-left mr-2"></i> <span class="hidden xs:inline">Return to</span> Hub
+      </button>
+      <div class="flex items-center gap-4">
+        <span
+          class="px-3 md:px-4 py-1.5 bg-primary/10 border border-primary/40 rounded-full text-[8px] md:text-[9px] font-black text-primary tracking-widest animate-pulse shadow-glow-sm"
+        >
+          Mission Active
+        </span>
+      </div>
+    </nav>
+
+    <div
+      class="max-w-6xl mx-auto px-4 md:px-6 mt-8 md:mt-12 space-y-10 md:space-y-16 animate-fade-in"
+    >
+      <header class="text-center space-y-4 md:space-y-6">
+        <p class="text-primary text-[8px] md:text-[10px] font-black tracking-[0.5em] opacity-60">
+          Objective Analysis
+        </p>
+
+        <h1
+          class="text-3xl sm:text-4xl md:text-6xl font-black tracking-tighter leading-tight max-w-4xl mx-auto text-foreground px-2"
+        >
+          @if (currentQuest()?.main_goal) {
+            "{{ currentQuest()?.main_goal }}"
+          } @else {
+            <span class="opacity-0">Loading Mission Data...</span>
+          }
+        </h1>
+
+        <div class="flex justify-center gap-6 md:gap-12 pt-2 md:pt-4 text-glow-sm">
+          <div class="text-center">
+            <p class="text-2xl md:text-3xl font-black tabular-nums text-primary">
+              {{
+                Math.min(
+                  currentQuest()?.current_day || 1,
+                  currentQuest()?.challenges_catalog?.total_days || 14
+                )
+              }}
+            </p>
+            <p
+              class="text-[7px] md:text-[8px] font-black text-muted-foreground tracking-widest opacity-80"
+            >
+              Active Station
+            </p>
+          </div>
+          <div class="w-px h-8 md:h-10 bg-white/30"></div>
+          <div class="text-center">
+            <p class="text-2xl md:text-3xl font-black tabular-nums text-foreground">
+              {{ currentQuest()?.challenges_catalog?.total_days || 14 }}
+            </p>
+            <p
+              class="text-[7px] md:text-[8px] font-black text-muted-foreground tracking-widest opacity-80"
+            >
+              Plan Duration
+            </p>
+          </div>
+        </div>
+      </header>
+
+      <div
+        class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-3 md:gap-6 pb-10 md:pb-20"
+      >
+        @for (dayNum of totalDaysArray(); track dayNum) {
+          @let actualLog = getLogByNumber(dayNum);
+          @let isLocked = dayNum > (currentQuest()?.current_day || 1);
+
+          <button
+            (click)="openDay(dayNum)"
+            [class.locked]="isLocked"
+            [class.current]="dayNum === (currentQuest()?.current_day || 1)"
+            [class.completed]="actualLog?.is_completed"
+            class="day-node group relative aspect-square rounded-xl md:rounded-2xl flex items-center justify-center transition-all border-2 border-white/20 bg-white/[0.04] hover:border-primary/60 hover:bg-primary/[0.05] shadow-xl"
+          >
+            <span
+              class="text-lg md:text-xl font-black tabular-nums group-hover:scale-110 transition-transform"
+              >{{ dayNum }}</span
+            >
+
+            @if (actualLog?.is_completed) {
+              <i
+                class="fas fa-check-circle absolute -top-2 -right-2 text-[14px] md:text-[16px] text-primary bg-[#080808] rounded-full border-2 border-primary/20 shadow-glow-sm"
+              ></i>
+            } @else if (isLocked) {
+              <i
+                class="fas fa-lock absolute text-[7px] md:text-[8px] bottom-1.5 md:bottom-2.5 opacity-40"
+              ></i>
+            }
+          </button>
+        }
+      </div>
+
+      @if (currentQuest() && isQuestFullyCompleted()) {
+        <div
+          class="max-w-xl mx-auto p-10 bg-red-500/10 border-2 border-red-500/30 rounded-[3rem] flex flex-col items-center gap-6 animate-fade-in shadow-glow-red mt-10"
+        >
+          <div
+            class="w-16 h-16 bg-red-500 text-white rounded-full flex items-center justify-center text-2xl shadow-glow"
+          >
+            <i class="fas fa-trash-alt"></i>
+          </div>
+          <div class="text-center space-y-2">
+            <h3 class="text-white font-black tracking-tighter text-2xl">Mission Concluded</h3>
+            <p class="text-[10px] text-muted-foreground tracking-[0.3em] leading-relaxed px-4">
+              All stations cleared. Terminating this journey will
+              <span class="text-red-500 font-black underline">permanently erase</span> all logs.
+            </p>
+          </div>
+          <button
+            (click)="terminateExpedition()"
+            class="px-12 py-5 bg-red-500 text-white rounded-2xl font-black text-xs tracking-widest hover:bg-red-600 hover:scale-[1.03] transition-all shadow-2xl"
+          >
+            Erase & Return to Hub <i class="fas fa-flag-checkered ml-2"></i>
+          </button>
+        </div>
+      }
+    </div>
+  }
+
+  @if (selectedDay()) {
+    <div
+      class="fixed inset-0 z-[100] bg-background/80 backdrop-blur-xl flex justify-end"
+      (click)="selectedDay.set(null)"
+    >
+      <div
+        class="w-full max-w-[90%] sm:max-w-md bg-[#0a0a0a] border-l-2 border-white/20 h-screen p-6 md:p-10 flex flex-col animate-slide-left shadow-2xl"
+        (click)="$event.stopPropagation()"
+      >
+        <header class="flex justify-between items-start mb-8 md:mb-12">
+          <div>
+            <h2 class="text-3xl font-black tracking-tighter text-primary">
+              Station {{ selectedDay().day_number }}
+            </h2>
+            <p class="text-[9px] font-black tracking-[0.4em] text-muted-foreground opacity-60">
+              Logbook Entry
+            </p>
+          </div>
+          <button
+            (click)="selectedDay.set(null)"
+            class="text-muted-foreground hover:text-white p-3 transition-transform hover:rotate-90 border-2 border-white/20 rounded-2xl bg-white/5 shadow-inner"
+          >
+            <i class="fas fa-times text-xl"></i>
+          </button>
+        </header>
+
+        <div class="flex-1 overflow-y-auto custom-scrollbar space-y-8 md:space-y-10 pr-2">
+          <div class="space-y-4">
+            <h3 class="text-[10px] font-black tracking-[0.4em] text-muted-foreground">
+              Today's Mission
+            </h3>
+            <textarea
+              [(ngModel)]="selectedDay().daily_objective"
+              (blur)="updateDailyObjective()"
+              placeholder="Describe achievement..."
+              rows="2"
+              class="w-full bg-white/[0.04] border-2 border-white/20 p-6 rounded-[2rem] outline-none focus:border-primary/60 text-base text-foreground resize-none transition-all placeholder:opacity-30 custom-scrollbar shadow-inner"
+            ></textarea>
+          </div>
+
+          <div
+            class="p-6 bg-primary/10 border-2 border-primary/40 rounded-[2.5rem] flex items-center gap-6 relative overflow-hidden shadow-glow-sm"
+          >
+            <div
+              class="w-14 h-14 rounded-2xl bg-primary/20 flex items-center justify-center text-primary text-2xl border border-primary/30"
+            >
+              <i class="fas fa-stopwatch"></i>
+            </div>
+            <div class="relative z-10">
+              <p class="text-3xl font-black tabular-nums leading-none tracking-tighter text-white">
+                {{ formatTime(selectedDay().total_focus_seconds) }}
+              </p>
+              <p class="text-[9px] font-black tracking-widest text-primary/70 mt-1">
+                Deep Work Logged
+              </p>
+            </div>
+          </div>
+
+          <div class="space-y-6 pb-12">
+            <h3 class="text-[10px] font-black tracking-[0.4em] text-muted-foreground">
+              Detailed Tasks
+            </h3>
+            @if (
+              !selectedDay().is_completed &&
+              selectedDay().day_number === currentQuest()?.current_day
+            ) {
+              <div class="flex gap-3">
+                <input
+                  #tInput
+                  type="text"
+                  (keyup.enter)="addTask(tInput.value); tInput.value = ''"
+                  class="flex-1 bg-white/[0.04] border-2 border-white/20 p-4 rounded-2xl outline-none focus:border-primary/50 text-sm transition-all text-foreground shadow-inner"
+                  placeholder="Define next move..."
+                />
+                <button
+                  (click)="addTask(tInput.value); tInput.value = ''"
+                  class="w-14 h-14 bg-primary text-black rounded-2xl shadow-glow flex items-center justify-center hover:scale-105 transition-all"
+                >
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            }
+            <div class="space-y-3 pb-20">
+              @for (task of selectedDay().tasks; track task.id) {
+                <div
+                  class="flex items-center gap-4 p-5 bg-white/[0.04] border-2 border-white/10 rounded-2xl group transition-all hover:border-primary/40 shadow-sm"
+                >
+                  <input
+                    type="checkbox"
+                    [checked]="task.completed"
+                    (change)="toggleTask(task)"
+                    [disabled]="selectedDay().is_completed"
+                    class="w-5 h-5 accent-primary rounded-md cursor-pointer border-2 border-white/20 bg-black/40"
+                  />
+                  <span
+                    class="text-sm font-bold transition-all line-clamp-2"
+                    [class.line-through]="task.completed"
+                    [class.opacity-40]="task.completed"
+                  >
+                    {{ task.title }}
+                  </span>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+
+        @if (
+          !selectedDay().is_completed && selectedDay().day_number === currentQuest()?.current_day
+        ) {
+          <div class="pt-6 mt-auto border-t-2 border-white/15 bg-[#0a0a0a]">
+            <button
+              (click)="sealAndShare()"
+              class="w-full py-5 bg-primary text-black rounded-3xl font-black text-xs tracking-[0.25em] shadow-glow active:scale-95 transition-all"
+            >
+              Seal Day & Share <i class="fas fa-rocket ml-2"></i>
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  @if (showShareModal()) {
+    <app-quest-share-card
+      [totalDays]="currentQuest()?.challenges_catalog?.total_days || 14"
+      [dayNumber]="selectedDay().day_number"
+      [goal]="selectedDay().daily_objective || currentQuest()?.main_goal || ''"
+      [focusTime]="formatTime(selectedDay().total_focus_seconds)"
+      (close)="showShareModal.set(false)"
+    ></app-quest-share-card>
+  }
+</div>

@@ -1,66 +1,86 @@
-<div class="max-w-6xl mx-auto space-y-12 animate-fade-in py-10">
-  <header class="text-center space-y-4">
-    <h1 class="text-5xl font-black tracking-tighter uppercase">
-      The <span class="text-primary text-glow">Journey</span>
+<div class="max-w-5xl mx-auto space-y-10 animate-fade-in px-4 md:px-8">
+  <header class="text-center space-y-2 border-b border-border/30 pb-10">
+    <h1 class="text-3xl md:text-5xl font-black tracking-tighter leading-none text-foreground">
+      The <span class="text-primary text-glow-sm">Journey</span>
     </h1>
-    <p class="text-muted font-bold text-xs uppercase tracking-[0.4em] opacity-60">
-      Your intellectual legacy, day by day (Cairo Timezone)
+    <p class="text-muted-foreground font-bold text-[10px] tracking-[0.3em] opacity-60">
+      Your intellectual legacy, day by day • Cairo Archive Time
     </p>
   </header>
 
-  <div class="glass-card p-10 rounded-[3rem] border-white/5 overflow-hidden shadow-2xl">
+  <div
+    class="glass-card p-6 md:p-8 rounded-[2rem] border-border/40 overflow-hidden shadow-2xl bg-card/20 backdrop-blur-xl"
+  >
     <div class="overflow-x-auto pb-4 custom-scrollbar">
       <div
-        class="min-w-[700px] md:min-w-full" 
+        class="min-w-[700px] md:min-w-full"
         style="display: grid; grid-template-columns: repeat(53, 1fr); gap: 4px"
       >
         @for (day of days(); track day.date) {
           <div
             [title]="day.date + ': ' + day.hours + ' hrs'"
-            class="w-3 h-3 md:w-4 md:h-4 rounded-sm transition-all hover:scale-150 hover:z-10 cursor-pointer day-cell"
-            [class.bg-white/5]="day.intensity === 0"
-            [class.bg-primary/20]="day.intensity === 1"
-            [class.bg-primary/40]="day.intensity === 2"
-            [class.bg-primary/70]="day.intensity === 3"
-            [class.bg-primary]="day.intensity === 4"
+            class="aspect-square rounded-[2px] transition-all hover:scale-125 hover:z-10 cursor-pointer border border-background/50"
+            [ngClass]="{
+              'bg-muted/10': day.intensity === 0,
+              'bg-primary/20': day.intensity === 1,
+              'bg-primary/40': day.intensity === 2,
+              'bg-primary/70': day.intensity === 3,
+              'bg-primary shadow-glow-sm': day.intensity === 4,
+            }"
           ></div>
         }
       </div>
     </div>
 
-    <div class="mt-8 flex items-center justify-end gap-2 text-[8px] font-black uppercase tracking-widest text-muted">
-      <span>Less</span>
+    <div
+      class="mt-6 flex items-center justify-end gap-3 text-[8px] font-black tracking-widest text-muted-foreground opacity-50"
+    >
+      <span>Minimal Focus</span>
       <div class="flex gap-1">
-        <div class="w-3 h-3 bg-white/5 rounded-sm"></div>
-        <div class="w-3 h-3 bg-primary/20 rounded-sm"></div>
-        <div class="w-3 h-3 bg-primary/40 rounded-sm"></div>
-        <div class="w-3 h-3 bg-primary/70 rounded-sm"></div>
-        <div class="w-3 h-3 bg-primary rounded-sm"></div>
+        <div class="w-3 h-3 bg-muted/10 rounded-[1px]"></div>
+        <div class="w-3 h-3 bg-primary/20 rounded-[1px]"></div>
+        <div class="w-3 h-3 bg-primary/40 rounded-[1px]"></div>
+        <div class="w-3 h-3 bg-primary/70 rounded-[1px]"></div>
+        <div class="w-3 h-3 bg-primary rounded-[1px]"></div>
       </div>
-      <span>More</span>
+      <span>Mastery</span>
     </div>
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-    <div class="glass-card p-8 rounded-[2.5rem] text-center space-y-2 border-white/5 bg-orange-500/5 group hover:bg-orange-500/10 transition-all">
-      <p class="text-[10px] font-black uppercase tracking-widest text-orange-400">
-        <i class="fas fa-fire mr-1 animate-pulse"></i> Current Streak
+    <div
+      class="glass-card p-6 rounded-[1.8rem] text-center space-y-2 border-orange-500/20 bg-orange-500/[0.02] group hover:bg-orange-500/[0.05] transition-all"
+    >
+      <p class="text-[9px] font-black tracking-[0.2em] text-orange-400">
+        <i class="fas fa-fire mr-1.5 animate-pulse"></i> Current Streak
       </p>
-      <h3 class="text-4xl font-black text-orange-400 italic">
-        {{ journeyService.currentStreak() }} Days
+      <h3 class="text-4xl font-black text-orange-400 tabular-nums leading-none">
+        {{ journeyService.currentStreak() }} <span class="text-xs">Days</span>
       </h3>
     </div>
 
-    <div class="glass-card p-8 rounded-[2.5rem] text-center space-y-2 border-white/5 group hover:bg-primary/5 transition-all">
-      <p class="text-[10px] font-black uppercase tracking-widest text-muted">Longest Quest</p>
-      <h3 class="text-4xl font-black text-primary italic">
-        {{ journeyService.longestStreak() }} Days
+    <div
+      class="glass-card p-6 rounded-[1.8rem] text-center space-y-2 border-border/40 group hover:border-primary/30 transition-all bg-card/20"
+    >
+      <p class="text-[9px] font-black tracking-[0.2em] text-muted-foreground">Archive Peak</p>
+      <h3 class="text-4xl font-black text-primary tabular-nums leading-none">
+        {{ journeyService.longestStreak() }} <span class="text-xs text-muted-foreground">Days</span>
       </h3>
     </div>
 
-    <div class="glass-card p-8 rounded-[2.5rem] text-center space-y-2 border-white/5 group hover:bg-white/5 transition-all">
-      <p class="text-[10px] font-black uppercase tracking-widest text-muted">Total Knowledge</p>
-      <h3 class="text-4xl font-black text-foreground italic">{{ totalKnowledgeHours() }}h</h3>
+    <div
+      class="glass-card p-6 rounded-[1.8rem] text-center space-y-2 border-border/40 group hover:border-foreground/20 transition-all bg-muted/5"
+    >
+      <p class="text-[9px] font-black tracking-[0.2em] text-muted-foreground">Total Mastery</p>
+      <h3 class="text-4xl font-black text-foreground tabular-nums leading-none">
+        {{ totalKnowledgeHours() }}<span class="text-xs">h</span>
+      </h3>
     </div>
   </div>
+
+  <footer class="pt-10 text-center">
+    <p class="text-[8px] font-black tracking-[0.5em] text-muted-foreground opacity-20">
+      Riwaq Journey Algorithm &copy; 2026
+    </p>
+  </footer>
 </div>

@@ -3,7 +3,7 @@
     class="fixed top-10 left-1/2 -translate-x-1/2 z-[500] w-full max-w-md px-6 animate-bounce-in"
   >
     <div
-      class="glass-card p-6 rounded-[2rem] border-primary/20 bg-primary/10 backdrop-blur-3xl shadow-glow-lg flex items-center gap-5"
+      class="glass-card p-6 rounded-[2rem] border-primary/20 bg-primary/5 backdrop-blur-3xl shadow-glow-lg flex items-center gap-5"
     >
       <div
         class="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center text-primary text-xl shadow-inner"
@@ -14,16 +14,20 @@
           [class.fa-bullhorn]="data.type !== 'rank'"
         ></i>
       </div>
-
       <div>
-        <h4 class="font-black uppercase text-[10px] tracking-widest text-primary">
+        <h4 class="font-black text-[10px] tracking-widest text-primary">
           {{ data.title || 'Broadcast' }}
         </h4>
-        <p class="text-sm font-bold text-foreground leading-tight">
+        <p class="text-[var(--fg)] text-sm font-bold leading-tight">
           {{ data.message }}
         </p>
       </div>
     </div>
   </div>
 }
-<router-outlet></router-outlet>
+
+<div class="relative z-10 transition-all duration-500">
+  <main class="relative max-w-[1600px] mx-auto min-h-screen bg-transparent">
+    <router-outlet></router-outlet>
+  </main>
+</div>

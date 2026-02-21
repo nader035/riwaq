@@ -9,7 +9,10 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./layouts/landing-layout/landing-layout').then((m) => m.LandingLayout),
     children: [
-      { path: '', loadComponent: () => import('./features/landing/hero/hero').then((m) => m.Hero) },
+      {
+        path: '',
+        loadComponent: () => import('./features/landing/landing').then((m) => m.Landing),
+      },
     ],
   },
 
@@ -52,11 +55,23 @@ export const routes: Routes = [
           import('./features/leaderboard/leaderboard').then((m) => m.LeaderboardComponent),
       },
       {
+        path: 'challenges',
+        loadComponent: () =>
+          import('./features/challenges-hub/challenges-hub').then((m) => m.ChallengesHub),
+      },
+      {
+        path: 'challenges/quest/:id',
+        loadComponent: () =>
+          import('./features/challenges-hub/components/active-quests/active-quests').then(
+            (m) => m.ActiveQuests,
+          ),
+      },
+      {
         path: 'admin',
         canActivate: [adminGuard],
 
         loadChildren: () => import('./features/admin/admin.routes').then((m) => m.ADMIN_ROUTES),
-      }
+      },
     ],
   },
 

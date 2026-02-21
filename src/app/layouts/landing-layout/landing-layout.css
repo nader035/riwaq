@@ -1,65 +1,18 @@
 /* */
+
+/* 1. الشبكة الهندسية الثابتة (للاستخدام العام) */
 .bg-grid-pattern {
-  background-size: 60px 60px;
-  background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-  /* تلاشي الشبكة كل ما ابتعدنا عن المركز لإعطاء شكل سينمائي */
-  mask-image: radial-gradient(circle at 50% 50%, white, transparent 90%);
-}
-
-@keyframes pulse-slow {
-  0%,
-  100% {
-    opacity: 0.8;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.1);
-  }
-}
-
-.animate-pulse-slow {
-  animation: pulse-slow 8s infinite ease-in-out;
-}
-/* */
-
-/* الشبكة الأساسية: دلوقت بقت تفاعلية */
-.bg-grid-interactive {
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background-size: 50px 50px;
+  background-size: 60px 60px;
+  /* استبدلنا rgba بالألوان الديناميكية */
   background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.07) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+    linear-gradient(to right, hsla(var(--foreground) / 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, hsla(var(--foreground) / 0.05) 1px, transparent 1px);
 
-  /* 🔦 تأثير الكشاف: الشبكة بتبان بوضوح بس في محيط الماوس */
-  mask-image: radial-gradient(
-    400px circle at var(--x) var(--y),
-    black 0%,
-    rgba(0, 0, 0, 0.2) 40%,
-    transparent 80%
-  );
-  -webkit-mask-image: radial-gradient(
-    400px circle at var(--x) var(--y),
-    black 0%,
-    rgba(0, 0, 0, 0.2) 40%,
-    transparent 80%
-  );
-}
-
-/* 🕯️ هالة ضوئية (Mouse Glow) بتتبع الماوس لزيادة الفخامة */
-.mouse-glow {
-  position: fixed;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  background: radial-gradient(
-    500px circle at var(--x) var(--y),
-    rgba(34, 211, 238, 0.06),
-    /* لون الـ Primary بتاعك */ transparent 70%
-  );
+  /* تلاشي سينمائي عند الأطراف */
+  mask-image: radial-gradient(circle at 50% 50%, black, transparent 90%);
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, black, transparent 90%);
 }

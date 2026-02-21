@@ -1,25 +1,33 @@
 <nav
-  class="fixed top-0 left-0 right-0 z-[100] border-b border-white/[0.05] bg-background/60 backdrop-blur-xl h-16 md:h-20"
+  class="fixed top-0 left-0 right-0 z-[100] border-b border-border/30 bg-background/20 backdrop-blur-xl h-16 transition-all duration-500"
 >
   <div class="max-w-7xl mx-auto px-4 md:px-8 flex items-center justify-between h-full">
     <a
       routerLink="/"
       class="flex items-center gap-2 group transition-transform hover:scale-105 shrink-0"
     >
-      <span class="font-bold text-xl md:text-2xl tracking-tighter text-foreground">Riwaq</span>
-      <span class="text-primary font-black text-xl md:text-2xl text-glow-sm">رِوَاقء</span>
+      <span class="font-black text-lg md:text-xl tracking-tighter text-foreground">Riwaq</span>
+      <span class="text-primary font-black text-lg md:text-xl text-glow-sm">رِوَاقء</span>
     </a>
 
-    <div class="hidden md:flex items-center gap-2">
+    <div class="hidden md:flex items-center gap-1">
       @if (!auth.isAuthenticated()) {
         <a href="#features" class="nav-link">Features</a>
-        <a href="#story" class="nav-link">Our Story</a>
-        <a href="#team" class="nav-link">Our Team</a>
-        <a href="#leaderboard" class="nav-link">Leaderboard</a>
+        <a href="#story" class="nav-link">Legacy</a>
+        <a href="#team" class="nav-link">Architects</a>
+        <a href="#leaderboard" class="nav-link">League</a>
       } @else {
         @for (item of navItems; track item.link) {
-          <a [routerLink]="item.link" routerLinkActive="active-link" class="nav-link">
-            <i [class]="item.icon + ' text-[10px] opacity-40'"></i>
+          <a
+            [routerLink]="item.link"
+            routerLinkActive="active-link"
+            class="nav-link flex items-center gap-2"
+          >
+            <i
+              [class]="
+                item.icon + ' text-[9px] opacity-40 group-hover:opacity-100 transition-opacity'
+              "
+            ></i>
             <span>{{ item.label }}</span>
           </a>
         }
@@ -28,57 +36,52 @@
 
     <div class="flex items-center gap-3">
       @if (!auth.isAuthenticated()) {
-        <a routerLink="/auth/login" class="nav-link !px-4">Sign In</a>
+        <a routerLink="/auth/login" class="nav-link !px-4 hover:text-primary">Sign In</a>
         <a
           routerLink="/auth/signup"
-          class="bg-primary text-primary-foreground px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-glow-sm hover:scale-105 transition-all"
+          class="bg-primary text-primary-foreground px-5 py-2 rounded-lg text-[9px] font-black tracking-widest shadow-glow-sm hover:scale-[1.03] transition-all"
         >
-          Join Now
+          Join Sanctuary
         </a>
       } @else {
-        <div class="flex items-center gap-4 animate-fade-in">
-          <div class="hidden lg:flex flex-col items-end mr-2">
-            <span class="text-[8px] font-black uppercase tracking-widest text-muted-foreground"
-              >Focus</span
+        <div class="flex items-center gap-4 animate-fade-in pl-4 border-l border-border/30">
+          <div class="hidden lg:flex flex-col items-end mr-1">
+            <span class="text-[7px] font-black tracking-[0.2em] text-muted-foreground opacity-50"
+              >Session Time</span
             >
-            <span class="text-[10px] font-bold text-primary">
+            <span class="text-[10px] font-black text-primary tabular-nums">
               {{ (auth.currentUser()?.dailyFocusSeconds || 0) / 60 | number: '1.0-0' }}m
             </span>
           </div>
 
-          <div class="flex items-center gap-3 pl-4 border-l border-white/5">
-            <a routerLink="/app/profile" class="flex items-center gap-3 group">
-              <div class="flex flex-col items-end hidden sm:flex">
-                <span
-                  class="text-[10px] font-black uppercase tracking-widest text-foreground group-hover:text-primary transition-colors"
-                >
-                  {{ auth.currentUser()?.name }}
-                </span>
-                <span class="text-[8px] font-bold text-primary/60 uppercase tracking-tighter"
-                  >Scholar</span
-                >
-              </div>
-
-              <div
-                class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 p-0.5 group-hover:border-primary/50 transition-all overflow-hidden"
+          <a routerLink="/app/profile" class="flex items-center gap-2.5 group">
+            <div class="flex flex-col items-end hidden sm:flex">
+              <span
+                class="text-[10px] font-black tracking-widest text-foreground group-hover:text-primary transition-colors"
               >
-                <img
-                  [src]="auth.currentUser()?.avatar || DEFAULT_AVATAR"
-                  (error)="handleImageError($event)"
-                  class="w-full h-full object-cover rounded-[10px]"
-                  alt="Avatar"
-                />
-              </div>
-            </a>
+                {{ auth.currentUser()?.name!.split(' ')[0] }}
+              </span>
+              <span class="text-[7px] font-black text-primary/50 tracking-tighter">Scholar</span>
+            </div>
 
-            <button
-              (click)="logout()"
-              class="p-2 text-muted-foreground hover:text-red-500 transition-colors"
-              title="Sign Out"
+            <div
+              class="w-9 h-9 rounded-lg bg-card/40 border border-border/60 p-0.5 group-hover:border-primary/50 transition-all overflow-hidden shadow-inner"
             >
-              <i class="fas fa-power-off text-sm"></i>
-            </button>
-          </div>
+              <img
+                [src]="auth.currentUser()?.avatar || DEFAULT_AVATAR"
+                class="w-full h-full object-cover rounded-[7px]"
+                alt="Scholar"
+              />
+            </div>
+          </a>
+
+          <button
+            (click)="logout()"
+            class="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-red-400 hover:bg-red-400/5 transition-all active:scale-90"
+            title="Terminate Session"
+          >
+            <i class="fas fa-power-off text-xs"></i>
+          </button>
         </div>
       }
     </div>

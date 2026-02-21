@@ -1,110 +1,119 @@
 @if (loading()) {
-  <div class="space-y-10 animate-fade-in pb-16">
-    <header class="flex flex-col md:flex-row justify-between gap-6">
+  <div class="max-w-6xl mx-auto px-4 md:px-8 space-y-10 animate-fade-in pb-16">
+    <header class="flex justify-between items-end px-2">
       <div class="space-y-3">
-        <app-skeleton width="250px" height="60px"></app-skeleton>
-        <app-skeleton width="180px" height="15px"></app-skeleton>
+        <app-skeleton width="280px" height="50px" customClass="rounded-2xl"></app-skeleton>
+        <app-skeleton
+          width="180px"
+          height="14px"
+          customClass="rounded-full opacity-40"
+        ></app-skeleton>
       </div>
-      <app-skeleton width="200px" height="50px" customClass="rounded-2xl"></app-skeleton>
+      <app-skeleton width="180px" height="48px" customClass="rounded-xl"></app-skeleton>
     </header>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       @for (i of [1, 2, 3]; track i) {
-        <div class="glass-card p-8 rounded-[2.5rem] border-white/5 h-48 space-y-4">
-          <div class="flex justify-between">
-            <app-skeleton width="100px" height="15px"></app-skeleton>
-            <app-skeleton width="48px" height="48px" customClass="rounded-2xl"></app-skeleton>
+        <div class="glass-card p-6 rounded-[2rem] border-border/30 h-40 space-y-4 animate-pulse">
+          <div class="flex justify-between items-center">
+            <app-skeleton width="100px" height="12px"></app-skeleton>
+            <div class="w-10 h-10 bg-muted/10 rounded-xl"></div>
           </div>
-          <app-skeleton width="150px" height="40px"></app-skeleton>
-          <app-skeleton width="100%" height="6px" customClass="rounded-full mt-6"></app-skeleton>
+          <app-skeleton width="140px" height="32px"></app-skeleton>
         </div>
       }
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      <div class="space-y-6">
-        <app-skeleton width="200px" height="25px"></app-skeleton>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div class="lg:col-span-7 space-y-6">
+        <app-skeleton width="200px" height="24px"></app-skeleton>
         <div class="space-y-4">
           @for (i of [1, 2, 3]; track i) {
-            <app-skeleton width="100%" height="100px" customClass="rounded-[2.5rem]"></app-skeleton>
+            <app-skeleton width="100%" height="90px" customClass="rounded-2xl"></app-skeleton>
           }
         </div>
       </div>
-      <div class="space-y-6">
-        <app-skeleton width="150px" height="25px"></app-skeleton>
-        <app-skeleton width="100%" height="410px" customClass="rounded-[2.5rem]"></app-skeleton>
+      <div class="lg:col-span-5">
+        <app-skeleton width="100%" height="450px" customClass="rounded-3xl"></app-skeleton>
       </div>
     </div>
   </div>
 } @else {
-  <div class="space-y-10 animate-fade-in pb-16" [class.pt-12]="!sidebarService.isOpen()">
+  <div
+    class="max-w-6xl mx-auto px-4 md:px-8 space-y-10 animate-fade-in pb-16"
+    [class.pt-12]="!sidebarService.isOpen()"
+  >
     <header class="flex flex-col md:flex-row md:items-end justify-between gap-6 px-2">
-      <div>
-        <h1 class="text-4xl md:text-6xl font-black tracking-tighter leading-none text-foreground">
-          Hi, <span class="text-primary text-glow">{{ firstName() }}</span
+      <div class="space-y-1">
+        <h1 class="text-4xl md:text-5xl font-black tracking-tighter leading-none text-foreground">
+          Hi, <span class="text-primary text-glow-sm">{{ firstName() }}</span
           >.
         </h1>
-        <p class="text-muted font-bold text-xs mt-4 opacity-90 uppercase tracking-[0.2em]">
-          {{ authService.isAdmin() ? '🛡️ Admin Access Granted' : 'Your sanctuary awaits.' }}
+        <p class="text-muted-foreground font-bold text-[10px] tracking-[0.3em] opacity-60">
+          {{
+            authService.isAdmin()
+              ? '🛡️ Admin Sanctuary Access'
+              : 'Your intellectual archives are ready.'
+          }}
         </p>
       </div>
 
       @if (authService.isAdmin()) {
         <button
-          type="button"
           (click)="openCreateRoomModal()"
-          class="group relative flex items-center gap-3 px-8 py-4 bg-primary text-primary-foreground rounded-2xl font-black text-xs md:text-sm uppercase tracking-widest shadow-glow hover:scale-[1.03] active:scale-95 transition-all duration-300"
+          class="group relative px-8 py-3.5 bg-primary text-primary-foreground rounded-xl font-black text-[10px] tracking-widest shadow-glow hover:scale-[1.03] transition-all"
         >
-          <i class="fas fa-plus transition-transform group-hover:rotate-90"></i>
-          <span>Create New Room</span>
-          <div
-            class="absolute inset-0 rounded-2xl bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"
-          ></div>
+          <i class="fas fa-plus mr-2 transition-transform group-hover:rotate-90"></i>
+          Construct Sanctuary
         </button>
       }
     </header>
 
     @if (focus.currentRoomId()) {
       <div
-        class="glass-card p-8 rounded-[3rem] border-primary/30 bg-primary/[0.03] animate-fade-in relative overflow-hidden group"
+        class="glass-card p-6 md:p-8 rounded-[2.5rem] border-primary/20 bg-primary/[0.03] animate-fade-in relative overflow-hidden group"
       >
-        <div class="absolute inset-0 bg-primary/5 blur-3xl -z-10"></div>
+        <div class="absolute inset-0 bg-primary/5 blur-[80px] -z-10"></div>
 
         <div class="flex flex-col md:flex-row items-center justify-between gap-8">
           <div class="flex items-center gap-6">
             <div
-              class="w-20 h-20 rounded-[2rem] bg-primary/10 flex items-center justify-center text-primary text-3xl shadow-inner"
+              class="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary text-2xl shadow-inner border border-primary/20"
             >
-              <i class="fas fa-door-open"></i>
+              <i class="fas fa-door-open animate-pulse"></i>
             </div>
             <div>
-              <p class="text-xs font-black uppercase tracking-widest text-primary mb-2">
-                Current Active Session
-              </p>
-              <h3 class="text-3xl font-black tracking-tight">{{ focus.currentRoomName() }}</h3>
-              <div class="flex items-center gap-2 mt-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span class="text-xs font-bold text-muted/80 uppercase">Live in Room</span>
+              <p class="text-[9px] font-black tracking-[0.2em] text-primary mb-1">Focusing Live</p>
+              <h3 class="text-2xl font-black tracking-tight text-foreground">
+                {{ focus.currentRoomName() }}
+              </h3>
+              <div class="flex items-center gap-2 mt-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                <span class="text-[8px] font-black text-muted-foreground tracking-widest"
+                  >Active Synchronous Session</span
+                >
               </div>
             </div>
           </div>
 
-          <div class="text-6xl font-black tabular-nums tracking-tighter text-glow-sm text-primary">
+          <div
+            class="text-5xl md:text-6xl font-black tabular-nums tracking-tighter text-primary text-glow-sm"
+          >
             {{ focus.formattedTime() }}
           </div>
 
-          <div class="flex items-center gap-4">
+          <div class="flex items-center gap-3">
             <button
               [routerLink]="['/app/rooms', focus.currentRoomId()]"
-              class="h-14 px-8 glass-card rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-white/5 transition-all"
+              class="px-6 py-3.5 glass-card rounded-xl font-black text-[9px] tracking-widest hover:bg-muted/10 transition-all border-border/60"
             >
-              Return to Room
+              Return
             </button>
             <button
               (click)="handleQuitRoom()"
-              class="h-14 px-8 bg-red-500/10 text-red-500 border border-red-500/20 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all"
+              class="px-6 py-3.5 bg-red-500/10 text-red-500 border border-red-500/20 rounded-xl font-black text-[9px] tracking-widest hover:bg-red-500 hover:text-white transition-all"
             >
-              Quit Room
+              Terminate
             </button>
           </div>
         </div>
@@ -113,168 +122,152 @@
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div
-        class="glass-card p-8 rounded-[2.5rem] flex flex-col justify-between transition-all duration-700 relative overflow-hidden group"
-        [class.border-yellow-400/40]="isGoalReached()"
-        [class.bg-yellow-400/[0.03]]="isGoalReached()"
-        [class.border-emerald-400/10]="!isGoalReached()"
-        [class.bg-emerald-400/[0.02]]="!isGoalReached()"
+        class="glass-card p-6 rounded-[2.2rem] flex flex-col justify-between border-border/40 relative overflow-hidden group transition-all"
+        [class.border-success/40]="isGoalReached()"
+        [class.bg-success/[0.02]]="isGoalReached()"
       >
         <div class="flex justify-between items-start">
-          <div>
+          <div class="space-y-1">
             <p
-              class="text-xs font-black uppercase tracking-widest mb-2 transition-colors"
-              [class.text-yellow-400]="isGoalReached()"
-              [class.text-emerald-400]="!isGoalReached()"
+              class="text-[9px] font-black tracking-[0.2em]"
+              [class.text-success]="isGoalReached()"
+              [class.text-primary]="!isGoalReached()"
             >
-              {{ isGoalReached() ? '🏆 Goal Achieved' : "Today's Focus" }}
+              {{ isGoalReached() ? '🏆 Mastery Achieved' : 'Daily Focus' }}
             </p>
-            <h3
-              class="text-4xl font-black tracking-tight tabular-nums transition-all duration-500"
-              [class.text-yellow-400]="isGoalReached()"
-              [class.animate-pulse]="isGoalReached()"
-              [class.text-glow-yellow]="isGoalReached()"
-            >
+            <h3 class="text-4xl font-black tracking-tighter tabular-nums text-foreground">
               {{ dailyTime() }}
             </h3>
           </div>
           <div
-            class="w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-500"
-            [class.bg-yellow-400/20]="isGoalReached()"
-            [class.text-yellow-400]="isGoalReached()"
-            [class.bg-emerald-400/10]="!isGoalReached()"
-            [class.text-emerald-400]="!isGoalReached()"
+            class="w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-500 bg-muted/10"
+            [class.text-success]="isGoalReached()"
+            [class.text-primary]="!isGoalReached()"
           >
-            <i [class]="isGoalReached() ? 'fas fa-trophy text-xl' : 'fas fa-calendar-day'"></i>
+            <i [class]="isGoalReached() ? 'fas fa-trophy' : 'fas fa-stopwatch'"></i>
           </div>
         </div>
-
-        <div class="w-full h-1.5 bg-white/5 rounded-full mt-6 overflow-hidden">
+        <div class="w-full h-1.5 bg-muted/10 rounded-full mt-6 overflow-hidden">
           <div
-            class="h-full transition-all duration-1000"
+            class="h-full transition-all duration-1000 ease-out"
             [style.width.%]="dailyProgressPercentage()"
-            [class.bg-yellow-400]="isGoalReached()"
-            [class.shadow-glow-yellow]="isGoalReached()"
-            [class.bg-emerald-400]="!!isGoalReached()"
+            [class.bg-success]="isGoalReached()"
+            [class.bg-primary]="!isGoalReached()"
           ></div>
         </div>
-        <p class="text-[11px] text-muted mt-3 uppercase font-bold tracking-tight opacity-70">
-          Resets 12:00 AM Egypt
-        </p>
       </div>
 
       <div
-        class="glass-card p-8 rounded-[2.5rem] flex justify-between items-start border-primary/10 transition-transform hover:scale-[1.02] bg-primary/[0.01]"
+        class="glass-card p-6 rounded-[2.2rem] flex justify-between items-start border-border/40 hover:translate-y-[-3px] transition-all bg-card/40"
       >
-        <div>
-          <p class="text-xs font-black uppercase tracking-widest text-primary mb-2">
-            Lifetime Mastery
+        <div class="space-y-1">
+          <p class="text-[9px] font-black tracking-[0.2em] text-muted-foreground opacity-70">
+            Knowledge Lifetime
           </p>
-          <h3 class="text-4xl font-black tracking-tight tabular-nums text-primary">
+          <h3 class="text-4xl font-black tracking-tighter tabular-nums text-foreground">
             {{ totalLifetimeTime() }}
           </h3>
-          <p class="text-[11px] text-muted mt-3 uppercase font-bold tracking-tight opacity-70">
-            Eternal Archives
-          </p>
+          <p class="text-[8px] font-bold text-muted-foreground mt-2">Scholar Accumulation</p>
         </div>
         <div
-          class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-glow-sm"
+          class="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-glow-sm"
         >
-          <i class="fas fa-crown text-lg"></i>
+          <i class="fas fa-crown"></i>
         </div>
       </div>
 
       <div
-        class="glass-card p-8 rounded-[2.5rem] flex justify-between items-start border-orange-400/10 transition-transform hover:scale-[1.02]"
+        class="glass-card p-6 rounded-[2.2rem] flex justify-between items-start border-border/40 hover:translate-y-[-3px] transition-all"
       >
-        <div>
-          <p class="text-xs font-black uppercase tracking-widest text-orange-400 mb-2">
-            Goals Conquered
-          </p>
-          <h3 class="text-4xl font-black text-orange-400 tabular-nums">
-            {{ completedTasksCount() }}
+        <div class="space-y-1">
+          <p class="text-[9px] font-black tracking-[0.2em] text-orange-400">Quest Streak</p>
+          <h3 class="text-4xl font-black tracking-tighter tabular-nums text-orange-400">
+            {{ journeyService.currentStreak() }} Days
           </h3>
-          <p class="text-[11px] text-muted mt-3 uppercase font-bold tracking-tight opacity-70">
-            Current Streak: {{journeyService.currentStreak()}} Days
-          </p>
+          <p class="text-[8px] font-bold text-muted-foreground mt-2">Consistent Evolution</p>
         </div>
         <div
-          class="w-12 h-12 rounded-2xl bg-orange-400/10 flex items-center justify-center text-orange-400"
+          class="w-11 h-11 rounded-xl bg-orange-400/10 flex items-center justify-center text-orange-400"
         >
-          <i class="fas fa-fire text-lg"></i>
+          <i class="fas fa-fire"></i>
         </div>
       </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
-      <div class="space-y-6">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div class="lg:col-span-7 space-y-5">
         <div class="flex items-center justify-between px-2">
-          <h3 class="font-black text-xl tracking-tighter uppercase">Available Sanctuaries</h3>
+          <h3 class="font-black text-xl tracking-tighter text-foreground">Available Sanctuaries</h3>
           <a
             routerLink="/app/rooms"
-            class="text-xs font-black text-primary uppercase tracking-widest hover:translate-x-1 transition-all"
+            class="text-[9px] font-black text-primary tracking-[0.2em] hover:translate-x-1 transition-all flex items-center gap-1.5"
           >
-            View All <i class="fas fa-chevron-right ml-1 text-[10px]"></i>
+            Archive Explorer <i class="fas fa-arrow-right text-[8px]"></i>
           </a>
         </div>
-        <div class="grid grid-cols-1 gap-4">
+        <div class="grid grid-cols-1 gap-3">
           @for (room of studyRooms(); track room.id) {
             <div
               [routerLink]="['/app/rooms', room.id]"
-              class="glass-card-hover p-6 rounded-[2.5rem] group cursor-pointer border border-transparent hover:border-primary/20 transition-all flex items-center justify-between"
+              class="glass-card-hover p-5 rounded-[1.8rem] group border-border/30 flex items-center justify-between"
             >
               <div class="flex items-center gap-5">
                 <div
-                  class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-muted group-hover:text-primary transition-colors"
+                  class="w-12 h-12 rounded-xl bg-muted/5 flex items-center justify-center text-muted group-hover:text-primary transition-all border border-border/40"
                 >
                   <i [class]="'fas ' + room.icon"></i>
                 </div>
                 <div>
-                  <h4 class="font-black text-lg tracking-tight">{{ room.name }}</h4>
-                  <div class="flex items-center gap-2 text-muted">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span class="text-xs font-bold tracking-tight opacity-80"
-                      >{{ room.current_count || 0 }} scholars focusing</span
+                  <h4
+                    class="font-black text-base tracking-tight text-foreground group-hover:text-primary transition-colors"
+                  >
+                    {{ room.name }}
+                  </h4>
+                  <div class="flex items-center gap-2 mt-0.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span class="text-[9px] font-bold text-muted-foreground tracking-wider"
+                      >{{ room.current_count || 0 }} Scholars</span
                     >
                   </div>
                 </div>
               </div>
               <i
-                class="fas fa-arrow-right text-sm opacity-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all"
+                class="fas fa-chevron-right text-muted/40 group-hover:text-primary group-hover:translate-x-1 transition-all text-xs"
               ></i>
             </div>
           }
         </div>
       </div>
 
-      <div class="space-y-6">
+      <div class="lg:col-span-5 space-y-5">
         <div class="flex justify-between items-center px-2">
-          <h3 class="font-black text-xl tracking-tighter uppercase">Daily Goals</h3>
+          <h3 class="font-black text-xl tracking-tighter text-foreground">Daily Quests</h3>
           <span
-            class="text-[11px] font-black text-primary bg-primary/10 px-4 py-1.5 rounded-full border border-primary/10 uppercase tracking-widest"
+            class="text-[9px] font-black text-primary bg-primary/10 px-4 py-1 rounded-full border border-primary/20"
           >
-            {{ completedTasksCount() }}/{{ totalTasksCount() }} Done
+            {{ completedTasksCount() }}/{{ totalTasksCount() }} Mastered
           </span>
         </div>
 
         <div
-          class="glass-card rounded-[2.5rem] p-6 space-y-3 border-white/5 h-[410px] overflow-y-auto custom-scrollbar"
+          class="glass-card rounded-[2rem] p-6 space-y-3 border-border/40 h-[430px] overflow-y-auto custom-scrollbar bg-card/20"
         >
           @for (task of taskService.tasks().slice(0, 8); track task.id) {
             <div
-              class="flex items-center gap-4 p-5 rounded-[1.8rem] bg-white/[0.02] border border-transparent transition-all group"
+              class="flex items-center gap-4 p-4 rounded-2xl bg-muted/5 border border-transparent hover:border-border/40 transition-all group"
             >
               <div
-                [class.bg-primary]="task.is_completed"
-                [class.border-primary/30]="!task.is_completed"
-                class="w-6 h-6 rounded-lg border shrink-0 flex items-center justify-center transition-colors"
+                [class.bg-success]="task.is_completed"
+                [class.border-muted/30]="!task.is_completed"
+                class="w-6 h-6 rounded-lg border shrink-0 flex items-center justify-center transition-all"
               >
                 @if (task.is_completed) {
                   <i class="fas fa-check text-[10px] text-primary-foreground"></i>
                 }
               </div>
               <span
-                class="text-sm font-bold truncate tracking-tight text-foreground flex-1"
-                [class.opacity-40]="task.is_completed"
+                class="text-sm font-bold tracking-tight text-foreground flex-1 transition-all"
+                [class.opacity-30]="task.is_completed"
                 [class.line-through]="task.is_completed"
               >
                 {{ task.title }}
@@ -282,10 +275,10 @@
             </div>
           } @empty {
             <div
-              class="h-full flex flex-col items-center justify-center text-center opacity-30 space-y-4"
+              class="h-full flex flex-col items-center justify-center text-center space-y-4 opacity-20"
             >
-              <i class="fas fa-clipboard-list text-5xl"></i>
-              <p class="text-sm font-black uppercase tracking-widest">No goals set for today</p>
+              <i class="fas fa-scroll text-5xl"></i>
+              <p class="text-[10px] font-black tracking-[0.2em]">Archive is empty</p>
             </div>
           }
         </div>

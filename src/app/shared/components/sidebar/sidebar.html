@@ -1,14 +1,13 @@
 <aside
   [class.translate-x-0]="sidebarService.isOpen()"
   [class.-translate-x-full]="!sidebarService.isOpen()"
-  class="fixed h-full inset-y-0 left-0 w-72 border-r border-border/50 bg-card/60 backdrop-blur-3xl z-50 transition-transform duration-300 ease-in-out flex flex-col overflow-hidden"
+  class="fixed h-full inset-y-0 left-0 w-72 border-r border-border/50 bg-card backdrop-blur-3xl z-50 transition-transform duration-300 ease-in-out flex flex-col overflow-hidden"
 >
   <div class="p-8 flex items-center justify-between">
     <a routerLink="/" class="flex items-center gap-2 group relative">
       <span class="font-bold text-3xl tracking-tighter text-foreground">Riwaq</span>
       <span class="font-black text-3xl text-primary text-glow-sm">رِوَاقء</span>
-      <span
-        class="absolute -right-6 -bottom-1 text-muted font-semibold text-[10px] uppercase opacity-40"
+      <span class="absolute -right-6 -bottom-1 text-muted font-semibold text-[10px] opacity-40"
         >v2.0</span
       >
     </a>
@@ -20,101 +19,86 @@
     </button>
   </div>
 
-  <nav class="flex-1 px-4 space-y-1 overflow-y-auto custom-scrollbar">
+  <nav class="flex-1 px-4 space-y-1.5 overflow-y-auto custom-scrollbar">
     @for (item of navItems; track item.link) {
       <a
         [routerLink]="item.link"
-        routerLinkActive="bg-primary/10 text-primary border-primary/20 shadow-sm shadow-primary/5"
+        routerLinkActive="bg-primary/10 text-primary border-primary/20 shadow-sm"
         [routerLinkActiveOptions]="{ exact: true }"
         (click)="sidebarService.close()"
-        class="flex items-center gap-4 px-4 py-3 rounded-2xl text-muted font-bold hover:bg-primary/5 transition-all border border-transparent group"
+        class="flex items-center gap-4 px-4 py-3 rounded-xl text-muted font-bold hover:bg-muted/5 hover:text-foreground transition-all border border-transparent group"
       >
-        <i [class]="item.icon + ' w-5 group-hover:scale-110 transition-transform'"></i>
+        <i [class]="item.icon + ' w-5 text-lg group-hover:scale-110 transition-transform'"></i>
         <span class="text-sm tracking-tight">{{ item.label }}</span>
       </a>
     }
 
     @if (authService.isAdmin()) {
-      <div class="pt-4 mt-4 border-t border-white/5 space-y-1">
-        <p class="px-4 mb-2 text-[9px] font-black uppercase tracking-[0.3em] text-primary/50">
-          Management
-        </p>
+      <div class="pt-6 mt-6 border-t border-border/40 space-y-2">
+        <p class="px-4 mb-2 text-[9px] font-black tracking-[0.3em] text-primary/60">Management</p>
 
         <a
           routerLink="/app/admin"
           routerLinkActive="bg-primary/15 text-primary border-primary/30 shadow-glow-sm"
           [routerLinkActiveOptions]="{ exact: true }"
           (click)="sidebarService.close()"
-          class="flex items-center gap-4 px-4 py-3 rounded-2xl text-primary font-black hover:bg-primary/10 transition-all border border-dashed border-primary/20 group animate-pulse-slow"
+          class="flex items-center gap-4 px-4 py-3 rounded-xl text-primary font-black hover:bg-primary/10 transition-all border border-dashed border-primary/20 group"
         >
           <div class="w-5 flex justify-center">
             <i class="fas fa-user-shield group-hover:rotate-12 transition-transform"></i>
           </div>
-          <span class="text-sm tracking-tight uppercase">Admin Command</span>
-        </a>
-
-        <a
-          routerLink="/app/admin/broadcast"
-          routerLinkActive="bg-primary/15 text-primary border-primary/30 shadow-glow-sm"
-          (click)="sidebarService.close()"
-          class="flex items-center gap-4 px-4 py-3 rounded-2xl text-muted font-bold hover:bg-primary/5 transition-all border border-transparent group"
-        >
-          <div class="w-5 flex justify-center text-[10px] opacity-60">
-            <i class="fas fa-bullhorn group-hover:-rotate-12 transition-transform"></i>
-          </div>
-          <span class="text-xs tracking-tight opacity-70">Global Broadcast</span>
+          <span class="text-[11px] tracking-widest">Admin Command</span>
         </a>
       </div>
     }
   </nav>
 
-  <div class="p-4 space-y-3 bg-background/40">
+  <div class="p-4 space-y-4 bg-background/20 border-t border-border/40">
     <div
-      class="px-4 py-2 bg-orange-400/10 rounded-xl flex items-center justify-between border border-orange-400/20 shadow-lg shadow-orange-400/5"
+      class="px-4 py-3 bg-orange-400/5 rounded-2xl flex items-center justify-between border border-orange-400/20 shadow-sm"
     >
       <div class="flex items-center gap-3">
-        <i class="fas fa-fire text-orange-400 animate-pulse"></i>
-        <span class="text-[10px] font-black uppercase tracking-widest text-orange-400">
+        <i class="fas fa-fire text-orange-400 animate-pulse text-sm"></i>
+        <span class="text-[10px] font-black tracking-widest text-orange-400">
           {{ authService.currentUser()?.currentStreak || 0 }} Day Streak
         </span>
       </div>
-      <i class="fas fa-crown text-[10px] text-orange-400/40"></i>
+      <div class="w-6 h-6 rounded-lg bg-orange-400/10 flex items-center justify-center">
+        <i class="fas fa-crown text-[8px] text-orange-400"></i>
+      </div>
     </div>
 
     <div
-      class="glass-card p-4 rounded-[2rem] flex items-center gap-3 group relative overflow-hidden border-white/5 shadow-2xl transition-all duration-500"
-      [class.border-primary/20]="authService.isAdmin()"
+      class="glass-card p-3 rounded-[1.8rem] flex items-center gap-3 group relative overflow-hidden border-border/60 hover:border-primary/30 transition-all duration-500 shadow-xl"
     >
       <div
-        class="w-10 h-10 rounded-full overflow-hidden border-2 bg-background flex items-center justify-center shrink-0 shadow-inner transition-colors"
+        class="w-12 h-12 rounded-2xl overflow-hidden border-2 bg-background flex items-center justify-center shrink-0 shadow-inner transition-all"
         [class.border-primary/40]="authService.isAdmin()"
         [class.border-border]="!authService.isAdmin()"
       >
         @if (userProfile().avatar) {
           <img
             [src]="userProfile().avatar"
-            alt="Avatar"
-            class="w-full h-full object-cover transition-transform group-hover:scale-110"
+            class="w-full h-full object-cover group-hover:scale-110 transition-transform"
           />
         } @else {
-          <span class="font-black uppercase" [class.text-primary]="authService.isAdmin()">
+          <span
+            class="font-black text-sm"
+            [class.text-primary]="authService.isAdmin()"
+            [class.text-foreground]="!authService.isAdmin()"
+          >
             {{ userProfile().initial }}
           </span>
         }
       </div>
 
       <div class="flex-1 min-w-0">
-        <p class="text-sm font-black truncate text-foreground leading-none mb-1">
+        <p class="text-[13px] font-black truncate text-foreground leading-tight">
           {{ userProfile().name }}
         </p>
-        <div class="flex items-center gap-1.5">
-          @if (authService.isAdmin()) {
-            <i class="fas fa-shield-alt text-[8px] text-primary"></i>
-          }
+        <div class="flex items-center gap-1.5 mt-0.5">
           <p
-            class="text-[8px] font-black uppercase tracking-[0.2em] transition-colors"
-            [class.text-primary]="authService.isAdmin()"
-            [class.text-muted]="!authService.isAdmin()"
+            class="text-[8px] font-black tracking-widest text-muted group-hover:text-primary/70 transition-colors"
           >
             {{ userProfile().role }}
           </p>
@@ -123,14 +107,15 @@
 
       <button
         (click)="authService.logout()"
-        class="w-9 h-9 rounded-xl flex items-center justify-center text-muted hover:text-red-400 hover:bg-red-400/10 transition-all active:scale-90"
+        class="w-8 h-8 rounded-lg flex items-center justify-center text-muted hover:text-red-500 hover:bg-red-500/10 transition-all active:scale-90"
+        title="Logout"
       >
-        <i class="fas fa-sign-out-alt text-xs"></i>
+        <i class="fas fa-power-off text-[10px]"></i>
       </button>
 
       @if (authService.isAdmin()) {
         <div
-          class="absolute -right-4 -bottom-4 w-12 h-12 bg-primary/10 rounded-full blur-xl animate-pulse"
+          class="absolute -right-2 -bottom-2 w-8 h-8 bg-primary/20 rounded-full blur-xl animate-pulse"
         ></div>
       }
     </div>

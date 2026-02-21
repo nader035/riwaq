@@ -1,5 +1,5 @@
 <div
-  class="relative min-h-screen w-full flex items-center justify-center p-6 bg-[#050505] overflow-hidden"
+  class="relative min-h-screen w-full flex items-center justify-center p-6 bg-background overflow-hidden"
 >
   <div class="absolute inset-0 z-0 pointer-events-none">
     <div
@@ -11,34 +11,32 @@
   </div>
 
   <div class="relative z-10 w-full max-w-md animate-fade-in">
-    <div class="text-center mb-6">
+    <div class="text-center mb-8">
       <a
         routerLink="/"
         class="inline-flex items-center gap-2 mb-3 group transition-transform hover:scale-105"
       >
         <span class="text-3xl font-black tracking-tighter text-foreground">Riwaq</span>
-        <span class="text-primary font-black text-3xl italic text-glow-sm">رواقء</span>
+        <span class="text-primary font-black text-3xl text-glow-sm">رواقء</span>
       </a>
-      <p class="text-muted-foreground text-[9px] font-black uppercase tracking-[0.5em] opacity-50">
+      <p class="text-muted-foreground text-[9px] font-black tracking-[0.4em] opacity-50">
         Start your path of knowledge
       </p>
     </div>
 
     <div
-      class="glass-card p-10 rounded-[3.5rem] border border-white/10 bg-white/[0.01] backdrop-blur-3xl shadow-2xl relative overflow-hidden"
+      class="glass-card p-8 md:p-10 rounded-[2.5rem] border border-border/40 bg-card/40 backdrop-blur-3xl shadow-2xl relative overflow-hidden"
     >
       <div
-        class="absolute top-0 left-1/4 right-1/4 h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent"
+        class="absolute top-0 left-1/4 right-1/4 h-[1px] bg-gradient-to-r from-transparent via-primary/40 to-transparent"
       ></div>
 
       @if (errorMessage()) {
         <div
-          class="mb-6 p-4 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-start gap-3 animate-shake"
+          class="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 flex items-start gap-3 animate-shake"
         >
-          <i class="fas fa-exclamation-circle text-red-500 mt-0.5"></i>
-          <p
-            class="text-[10px] font-black uppercase tracking-widest text-red-500/90 leading-relaxed"
-          >
+          <i class="fas fa-exclamation-circle text-red-500 mt-0.5 text-xs"></i>
+          <p class="text-[9px] font-black tracking-widest text-red-400 leading-relaxed">
             {{ errorMessage() }}
           </p>
         </div>
@@ -46,66 +44,69 @@
 
       <form (submit)="onSignup($event)" class="space-y-5">
         <div class="space-y-2">
-          <label class="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-2"
+          <label class="text-[9px] font-black tracking-[0.2em] text-primary ml-1"
             >Scholar Name</label
           >
           <div class="relative group">
             <i
-              class="fas fa-user absolute left-5 top-1/2 -translate-y-1/2 text-muted/30 text-xs group-focus-within:text-primary transition-colors"
+              class="fas fa-user absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground/30 text-xs group-focus-within:text-primary transition-colors"
             ></i>
             <input
               type="text"
               [formField]="signupForm.name"
               placeholder="Your Full Name"
-              class="w-full pl-12 pr-6 py-4 bg-white/[0.05] border border-white/10 rounded-2xl focus:border-primary/50 outline-none transition-all font-bold text-sm text-foreground placeholder:text-white/5"
+              class="w-full pl-12 pr-6 py-4 bg-muted/5 border border-border/50 rounded-xl focus:border-primary/50 focus:ring-4 focus:ring-primary/5 outline-none transition-all font-bold text-sm text-foreground placeholder:opacity-20"
             />
           </div>
           @if (signupForm.name().touched() && !signupForm.name().valid()) {
-            <p class="text-[8px] text-red-500/80 font-black uppercase mt-1 ml-4 tracking-widest">
+            <p class="text-[8px] text-red-400 font-black mt-1.5 ml-2 tracking-widest">
+              <i class="fas fa-exclamation-triangle mr-1"></i>
               {{ signupForm.name().errors()[0].message }}
             </p>
           }
         </div>
 
         <div class="space-y-2">
-          <label class="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-2"
+          <label class="text-[9px] font-black tracking-[0.2em] text-primary ml-1"
             >Identity (Email)</label
           >
           <div class="relative group">
             <i
-              class="fas fa-envelope absolute left-5 top-1/2 -translate-y-1/2 text-muted/30 text-xs group-focus-within:text-primary transition-colors"
+              class="fas fa-envelope absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground/30 text-xs group-focus-within:text-primary transition-colors"
             ></i>
             <input
               type="email"
               [formField]="signupForm.email"
               placeholder="scholar@riwaq.com"
-              class="w-full pl-12 pr-6 py-4 bg-white/[0.05] border border-white/10 rounded-2xl focus:border-primary/50 outline-none transition-all font-bold text-sm text-foreground"
+              class="w-full pl-12 pr-6 py-4 bg-muted/5 border border-border/50 rounded-xl focus:border-primary/50 focus:ring-4 focus:ring-primary/5 outline-none transition-all font-bold text-sm text-foreground placeholder:opacity-20"
             />
           </div>
           @if (signupForm.email().touched() && !signupForm.email().valid()) {
-            <p class="text-[8px] text-red-500/80 font-black uppercase mt-1 ml-4 tracking-widest">
+            <p class="text-[8px] text-red-400 font-black mt-1.5 ml-2 tracking-widest">
+              <i class="fas fa-exclamation-triangle mr-1"></i>
               {{ signupForm.email().errors()[0].message }}
             </p>
           }
         </div>
 
         <div class="space-y-2">
-          <label class="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-2"
+          <label class="text-[9px] font-black tracking-[0.2em] text-primary ml-1"
             >Security Key</label
           >
           <div class="relative group">
             <i
-              class="fas fa-lock absolute left-5 top-1/2 -translate-y-1/2 text-muted/30 text-xs group-focus-within:text-primary transition-colors"
+              class="fas fa-lock absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground/30 text-xs group-focus-within:text-primary transition-colors"
             ></i>
             <input
               type="password"
               [formField]="signupForm.password"
               placeholder="Minimum 8 characters"
-              class="w-full pl-12 pr-6 py-4 bg-white/[0.05] border border-white/10 rounded-2xl focus:border-primary/50 outline-none transition-all font-bold text-sm text-foreground"
+              class="w-full pl-12 pr-6 py-4 bg-muted/5 border border-border/50 rounded-xl focus:border-primary/50 focus:ring-4 focus:ring-primary/5 outline-none transition-all font-bold text-sm text-foreground placeholder:opacity-20"
             />
           </div>
           @if (signupForm.password().touched() && !signupForm.password().valid()) {
-            <p class="text-[8px] text-red-500/80 font-black uppercase mt-1 ml-4 tracking-widest">
+            <p class="text-[8px] text-red-400 font-black mt-1.5 ml-2 tracking-widest">
+              <i class="fas fa-exclamation-triangle mr-1"></i>
               {{ signupForm.password().errors()[0].message }}
             </p>
           }
@@ -114,7 +115,7 @@
         <button
           type="submit"
           [disabled]="loading()"
-          class="w-full py-5 bg-primary text-primary-foreground rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-glow hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-30"
+          class="w-full py-5 bg-primary text-primary-foreground rounded-xl font-black text-[11px] tracking-[0.2em] shadow-glow hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-30 flex items-center justify-center gap-3"
         >
           @if (loading()) {
             <i class="fas fa-circle-notch animate-spin"></i>
@@ -125,38 +126,42 @@
 
       <div class="relative my-8">
         <div class="absolute inset-0 flex items-center">
-          <span class="w-full border-t border-white/5"></span>
+          <span class="w-full border-t border-border/40"></span>
         </div>
-        <div
-          class="relative flex justify-center text-[8px] font-black tracking-[0.3em] uppercase italic"
-        >
-          <span class="bg-[#0b0b0b] px-4 text-muted-foreground/30">Quick Entry</span>
+        <div class="relative flex justify-center text-[8px] font-black tracking-[0.4em]">
+          <span class="bg-card px-4 text-muted-foreground/30">Quick Entry</span>
         </div>
       </div>
 
       <div class="grid grid-cols-2 gap-4">
         <button
           (click)="loginWithSocial('google')"
-          class="flex items-center justify-center gap-3 bg-white/[0.03] border border-white/10 p-4 rounded-2xl hover:bg-white/[0.08] transition-all group"
+          class="flex items-center justify-center gap-3 bg-muted/5 border border-border/50 p-4 rounded-xl hover:bg-muted/10 hover:border-primary/30 transition-all group"
         >
           <i
-            class="fab fa-google text-muted group-hover:text-primary transition-colors text-sm"
+            class="fab fa-google text-muted-foreground/40 group-hover:text-primary transition-colors text-sm"
           ></i>
-          <span class="text-[10px] font-black uppercase tracking-widest">Google</span>
+          <span class="text-[9px] font-black tracking-widest text-foreground">Google</span>
         </button>
 
         <button
-          class="relative flex items-center justify-center gap-3 bg-white/[0.01] border border-white/10 p-4 rounded-2xl opacity-20 cursor-not-allowed group overflow-hidden"
+          class="relative flex items-center justify-center gap-3 bg-muted/5 border border-border/50 p-4 rounded-xl opacity-20 cursor-not-allowed"
         >
-          <i class="fab fa-x-twitter text-muted text-sm"></i>
-          <span class="text-[10px] font-black uppercase tracking-widest">X Access</span>
+          <i class="fab fa-x-twitter text-muted-foreground/40 text-sm"></i>
+          <span class="text-[9px] font-black tracking-widest text-foreground">X Access</span>
         </button>
       </div>
 
-      <p class="text-center text-[10px] font-black uppercase tracking-widest text-muted/30 mt-4">
-        Already a Scholar?
-        <a routerLink="/auth/login" class="text-primary hover:underline ml-1">Sign In</a>
-      </p>
+      <div class="pt-6 border-t border-border/40 text-center mt-6">
+        <p class="text-[9px] font-black tracking-[0.2em] text-muted-foreground/40">
+          Already a Scholar?
+          <a
+            routerLink="/auth/login"
+            class="text-primary hover:text-primary-dark ml-1 transition-colors"
+            >Sign In</a
+          >
+        </p>
+      </div>
     </div>
   </div>
 </div>
