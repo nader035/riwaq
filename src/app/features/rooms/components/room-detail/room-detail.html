@@ -3,22 +3,22 @@
     <div class="flex items-center gap-5">
       <a
         routerLink="/app/rooms"
-        class="w-11 h-11 rounded-xl glass-card flex items-center justify-center text-muted hover:text-primary transition-all hover:scale-110 border-border/50 cursor-pointer"
+        class="w-11 h-11 rounded-xl glass-card flex items-center justify-center text-muted hover:text-primary transition-all hover:scale-110 border-2 border-white/10 cursor-pointer"
       >
         <i class="fas fa-chevron-left text-sm"></i>
       </a>
       <div>
-        <h1 class="text-3xl font-black tracking-tighter leading-none text-foreground">
-          {{ focus.currentRoomName() || 'Sanctuary' }}
+        <h1 class="text-3xl font-black uppercase tracking-tighter leading-none text-foreground">
+          {{ focus.currentRoomName() || 'Study Room' }}
         </h1>
-        <p class="text-[10px] font-bold text-muted tracking-[0.2em] mt-2 opacity-70">
-          Syncing with {{ activeScholars().length > 1 ? activeScholars().length - 1 : 0 }} scholars
+        <p class="text-[10px] font-bold uppercase text-muted tracking-[0.2em] mt-2 opacity-70">
+          Focusing with {{ activeScholars().length > 1 ? activeScholars().length - 1 : 0 }} others
         </p>
       </div>
     </div>
 
     <div
-      class="flex items-center gap-3 px-5 py-2.5 bg-primary/5 border border-primary/10 rounded-xl"
+      class="flex items-center gap-3 px-5 py-2.5 bg-primary/5 border-2 border-primary/20 rounded-xl shadow-glow-sm"
     >
       <span class="relative flex h-2 w-2">
         <span
@@ -26,7 +26,7 @@
         ></span>
         <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
       </span>
-      <span class="text-[10px] font-black text-primary tracking-widest tabular-nums">
+      <span class="text-[10px] font-black uppercase text-primary tracking-widest tabular-nums">
         {{ activeScholars().length }} Scholars Online
       </span>
     </div>
@@ -36,28 +36,28 @@
     <div class="lg:col-span-7 flex flex-col items-center justify-center space-y-10">
       <div class="relative group w-full flex justify-center">
         <div
-          [class.bg-primary/15]="focus.timerStatus() === 'focusing'"
-          [class.bg-orange-400/15]="focus.timerStatus() === 'break'"
-          [class.bg-muted/5]="focus.timerStatus() === 'idle'"
-          class="absolute inset-0 blur-[100px] rounded-full transition-all duration-1000 max-w-sm mx-auto"
+          [class.bg-primary/20]="focus.timerStatus() === 'focusing'"
+          [class.bg-orange-500/20]="focus.timerStatus() === 'break'"
+          [class.bg-white/5]="focus.timerStatus() === 'idle'"
+          class="absolute inset-0 blur-[120px] rounded-full transition-all duration-1000 max-w-sm mx-auto"
         ></div>
 
         <div
-          class="relative w-full max-w-sm aspect-square rounded-[3rem] glass-card flex flex-col items-center justify-center border-border/40 shadow-2xl backdrop-blur-3xl"
+          class="relative w-full max-w-sm aspect-square rounded-[3.5rem] glass-card flex flex-col items-center justify-center border-2 border-white/20 shadow-2xl backdrop-blur-3xl"
         >
           <div class="text-center space-y-2 relative z-10">
             <h2
-              class="text-7xl md:text-8xl font-black tracking-tighter tabular-nums text-foreground drop-shadow-xl"
+              class="text-7xl md:text-8xl font-black tracking-tighter tabular-nums text-foreground drop-shadow-2xl"
             >
               {{ focus.formattedTime() }}
             </h2>
             <div class="flex items-center justify-center gap-3">
               <span
                 [class.bg-primary]="focus.timerStatus() === 'focusing'"
-                [class.bg-orange-400]="focus.timerStatus() === 'break'"
-                class="w-2 h-2 rounded-full animate-pulse"
+                [class.bg-orange-500]="focus.timerStatus() === 'break'"
+                class="w-2.5 h-2.5 rounded-full animate-pulse shadow-glow-sm"
               ></span>
-              <p class="text-[10px] font-black tracking-[0.4em] text-muted">
+              <p class="text-[10px] font-black uppercase tracking-[0.4em] text-muted">
                 {{ focus.timerStatus() }}
               </p>
             </div>
@@ -69,20 +69,20 @@
         @if (focus.timerStatus() === 'idle') {
           <button
             (click)="handleStart()"
-            class="flex-1 py-5 bg-primary text-primary-foreground rounded-2xl font-black tracking-widest shadow-glow hover:scale-[1.02] active:scale-95 transition-all text-xs"
+            class="flex-1 py-5 bg-primary text-black rounded-2xl font-black uppercase tracking-widest shadow-glow hover:scale-[1.02] active:scale-95 transition-all text-xs border-2 border-transparent"
           >
-            Start Flow
+            Start Focus
           </button>
         } @else {
           <button
             (click)="focus.timerStatus() === 'focusing' ? handleBreak() : handleStart()"
-            class="flex-1 py-5 glass-card rounded-2xl font-black text-[10px] tracking-widest hover:bg-muted/10 transition-all border-border/50"
+            class="flex-1 py-5 bg-white/5 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-white/10 transition-all border-2 border-white/20"
           >
-            {{ focus.timerStatus() === 'focusing' ? 'Take Break' : 'Resume Flow' }}
+            {{ focus.timerStatus() === 'focusing' ? 'Take Break' : 'Resume Focus' }}
           </button>
           <button
             (click)="handleFinish()"
-            class="w-16 py-5 bg-red-500/10 text-red-500 border border-red-500/20 rounded-2xl font-black flex items-center justify-center hover:bg-red-500 hover:text-white transition-all active:scale-90"
+            class="w-16 py-5 bg-red-500/10 text-red-500 border-2 border-red-500/30 rounded-2xl font-black flex items-center justify-center hover:bg-red-500 hover:text-white transition-all active:scale-90"
           >
             <i class="fas fa-stop"></i>
           </button>
@@ -92,16 +92,18 @@
 
     <div class="lg:col-span-5 space-y-6">
       <div class="flex items-center justify-between px-2">
-        <h3 class="font-black text-lg tracking-tighter text-foreground">Live Scholars</h3>
-        <span class="text-[9px] font-bold text-muted tracking-widest opacity-60"
-          >Realtime Sync</span
+        <h3 class="font-black text-xl uppercase tracking-tighter text-foreground">Live Scholars</h3>
+        <span class="text-[9px] font-black uppercase text-primary tracking-widest animate-pulse"
+          >Syncing...</span
         >
       </div>
 
       <div class="space-y-4 max-h-[550px] overflow-y-auto pr-2 custom-scrollbar">
         @for (scholar of activeScholars(); track scholar.id) {
           <div
-            class="glass-card p-4 rounded-[2rem] flex items-center justify-between border-border/40 hover:border-primary/30 transition-all group animate-scale-in"
+            class="glass-card p-4 rounded-[2rem] flex items-center justify-between border-2 border-white/10 hover:border-primary/40 transition-all group animate-scale-in"
+            [class.border-primary/30]="scholar.id === authService.currentUser()?.id"
+            [class.bg-primary/[0.02]]="scholar.id === authService.currentUser()?.id"
           >
             <div class="flex items-center gap-4">
               <div class="relative">
@@ -109,35 +111,36 @@
                   <img
                     [src]="scholar.avatar"
                     (error)="handleAvatarError($event)"
-                    class="w-12 h-12 rounded-xl object-cover border border-border/50 group-hover:rotate-6 transition-transform"
+                    class="w-12 h-12 rounded-xl object-cover border-2 border-white/20 group-hover:rotate-6 transition-transform shadow-inner"
                   />
                 } @else {
                   <div
-                    class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center font-black text-primary text-lg border border-primary/20"
+                    class="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center font-black text-primary text-lg border-2 border-white/10 shadow-inner"
                   >
-                    {{ (scholar.name || 'S').charAt(0).to() }}
+                    {{ (scholar.name || 'S').charAt(0) }}
                   </div>
                 }
                 <div
                   [class.bg-primary]="scholar.status === 'focusing'"
-                  [class.bg-orange-400]="scholar.status === 'break'"
-                  class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-[3px] border-background"
+                  [class.bg-orange-500]="scholar.status === 'break'"
+                  [class.bg-white/20]="scholar.status === 'idle'"
+                  class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-[3px] border-[#080808] shadow-sm"
                 ></div>
               </div>
 
               <div>
                 <p
-                  class="text-sm font-black tracking-tight flex items-center gap-2 text-foreground"
+                  class="text-sm font-black uppercase tracking-tight flex items-center gap-2 text-foreground"
                 >
                   {{ scholar.name || 'Scholar' }}
                   @if (scholar.id === authService.currentUser()?.id) {
                     <span
-                      class="text-[7px] bg-primary/10 px-2 py-0.5 rounded-full text-primary font-black"
+                      class="text-[7px] bg-primary text-black px-2 py-0.5 rounded-full font-black uppercase"
                       >YOU</span
                     >
                   }
                 </p>
-                <p class="text-[9px] font-bold tracking-widest text-muted/60 mt-0.5">
+                <p class="text-[9px] font-bold uppercase tracking-widest text-muted/60 mt-0.5">
                   {{ scholar.status || 'idle' }}
                 </p>
               </div>
@@ -147,16 +150,19 @@
               <p
                 class="text-xl font-black tracking-tighter tabular-nums text-foreground"
                 [class.text-primary]="scholar.status === 'focusing'"
+                [class.text-orange-400]="scholar.status === 'break'"
               >
                 {{ scholar.time || '00:00' }}
               </p>
-              <p class="text-[7px] font-black tracking-tighter text-muted/40">Current Pace</p>
+              <p class="text-[7px] font-black uppercase tracking-tighter text-muted/40">
+                Current Pace
+              </p>
             </div>
           </div>
         } @empty {
           <div class="py-12 text-center opacity-30 text-xs space-y-3">
             <i class="fas fa-users text-3xl mb-2"></i>
-            <p>Waiting for other scholars to join the archive...</p>
+            <p class="uppercase tracking-widest">Waiting for others to join...</p>
           </div>
         }
       </div>
@@ -165,62 +171,58 @@
 </div>
 
 @defer (when showSummary()) {
-  @if (showSummary()) {
-    <div class="fixed inset-0 z-[200] flex items-center justify-center p-6 animate-fade-in">
-      <div
-        class="absolute inset-0 bg-background/90 backdrop-blur-2xl"
-        (click)="showSummary.set(false)"
-      ></div>
+  <div class="fixed inset-0 z-[200] flex items-center justify-center p-6 animate-fade-in">
+    <div
+      class="absolute inset-0 bg-black/90 backdrop-blur-2xl"
+      (click)="showSummary.set(false)"
+    ></div>
 
-      <div
-        class="glass-card w-full max-w-md p-8 rounded-[3rem] relative z-10 border-primary/20 shadow-2xl text-center scale-in bg-card/80"
-      >
-        <div class="mb-6 relative">
-          <div
-            class="w-20 h-20 bg-primary/20 rounded-2xl mx-auto flex items-center justify-center text-3xl text-primary animate-bounce"
-          >
-            <i class="fas fa-crown"></i>
-          </div>
-          <div class="absolute inset-0 bg-primary/20 blur-[50px] rounded-full"></div>
+    <div
+      class="glass-card w-full max-w-md p-8 rounded-[3.5rem] relative z-10 border-2 border-primary/30 shadow-2xl text-center scale-in bg-[#0a0a0a]"
+    >
+      <div class="mb-6 relative">
+        <div
+          class="w-20 h-20 bg-primary/20 rounded-2xl mx-auto flex items-center justify-center text-3xl text-primary animate-bounce border-2 border-primary/30"
+        >
+          <i class="fas fa-crown"></i>
         </div>
+        <div class="absolute inset-0 bg-primary/30 blur-[60px] rounded-full"></div>
+      </div>
 
-        <h2 class="text-3xl font-black tracking-tighter mb-2 text-foreground">
-          Session <span class="text-primary text-glow">Concluded</span>
-        </h2>
-        <p class="text-muted text-[9px] font-black tracking-[0.3em] mb-8 opacity-60">
-          {{ sessionSummary().message }}
-        </p>
+      <h2 class="text-3xl font-black uppercase tracking-tighter mb-2 text-foreground">
+        Session <span class="text-primary text-glow">Finished</span>
+      </h2>
+      <p class="text-muted text-[9px] font-black uppercase tracking-[0.3em] mb-8 opacity-60">
+        {{ sessionSummary().message }}
+      </p>
 
-        <div class="grid grid-cols-2 gap-4 mb-8">
-          <div class="p-5 rounded-[1.8rem] bg-muted/5 border border-border/40 text-center">
-            <p class="text-[9px] font-black text-muted tracking-widest mb-1">Duration</p>
-            <h4 class="text-xl font-black text-foreground">{{ sessionSummary().duration }}</h4>
-          </div>
-          <div class="p-5 rounded-[1.8rem] bg-primary/5 border border-primary/10 text-center">
-            <p class="text-[9px] font-black text-muted tracking-widest mb-1">Earned Units</p>
-            <h4 class="text-xl font-black text-primary">{{ sessionSummary().hoursEarned }}h</h4>
-          </div>
+      <div class="grid grid-cols-2 gap-4 mb-8">
+        <div
+          class="p-5 rounded-[1.8rem] bg-white/5 border-2 border-white/10 text-center shadow-inner"
+        >
+          <p class="text-[9px] font-black uppercase text-muted tracking-widest mb-1">Duration</p>
+          <h4 class="text-xl font-black text-foreground tabular-nums">
+            {{ sessionSummary().duration }}
+          </h4>
         </div>
-
-        <div class="space-y-4">
-          <div class="flex justify-center gap-2 mb-6">
-            @for (star of [1, 2, 3, 4]; track star) {
-              <i
-                class="fas fa-circle text-[7px]"
-                [class.text-primary]="sessionSummary().intensity >= star"
-                [class.text-muted/20]="sessionSummary().intensity < star"
-              ></i>
-            }
-          </div>
-
-          <button
-            (click)="showSummary.set(false)"
-            class="w-full py-5 bg-primary text-primary-foreground rounded-2xl font-black tracking-widest shadow-glow hover:scale-[1.02] active:scale-95 transition-all text-xs"
-          >
-            Return to Sanctuary
-          </button>
+        <div
+          class="p-5 rounded-[1.8rem] bg-primary/5 border-2 border-primary/20 text-center shadow-inner"
+        >
+          <p class="text-[9px] font-black uppercase text-muted tracking-widest mb-1">Focus Units</p>
+          <h4 class="text-xl font-black text-primary tabular-nums">
+            {{ sessionSummary().hoursEarned }}h
+          </h4>
         </div>
       </div>
+
+      <div class="space-y-4">
+        <button
+          (click)="showSummary.set(false)"
+          class="w-full py-5 bg-primary text-black rounded-2xl font-black uppercase tracking-widest shadow-glow hover:scale-[1.02] active:scale-95 transition-all text-xs border-2 border-transparent"
+        >
+          Back to Room
+        </button>
+      </div>
     </div>
-  }
+  </div>
 }

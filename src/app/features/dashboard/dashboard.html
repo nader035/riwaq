@@ -1,5 +1,5 @@
 @if (loading()) {
-  <div class="max-w-6xl mx-auto px-4 md:px-8 space-y-10 animate-fade-in pb-16">
+  <div class="max-w-6xl mx-auto px-4 md:px-8 space-y-10 animate-fade-in pb-16 pt-12">
     <header class="flex justify-between items-end px-2">
       <div class="space-y-3">
         <app-skeleton width="280px" height="50px" customClass="rounded-2xl"></app-skeleton>
@@ -14,10 +14,12 @@
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       @for (i of [1, 2, 3]; track i) {
-        <div class="glass-card p-6 rounded-[2rem] border-border/30 h-40 space-y-4 animate-pulse">
+        <div
+          class="glass-card p-6 rounded-[2rem] border-2 border-white/10 h-40 space-y-4 animate-pulse bg-white/[0.02]"
+        >
           <div class="flex justify-between items-center">
             <app-skeleton width="100px" height="12px"></app-skeleton>
-            <div class="w-10 h-10 bg-muted/10 rounded-xl"></div>
+            <div class="w-10 h-10 bg-white/5 rounded-xl"></div>
           </div>
           <app-skeleton width="140px" height="32px"></app-skeleton>
         </div>
@@ -34,26 +36,26 @@
         </div>
       </div>
       <div class="lg:col-span-5">
-        <app-skeleton width="100%" height="450px" customClass="rounded-3xl"></app-skeleton>
+        <app-skeleton width="100%" height="450px" customClass="rounded-[2.5rem]"></app-skeleton>
       </div>
     </div>
   </div>
 } @else {
-  <div
-    class="max-w-6xl mx-auto px-4 md:px-8 space-y-10 animate-fade-in pb-16"
-    [class.pt-12]="!sidebarService.isOpen()"
-  >
+  <div class="max-w-6xl mx-auto px-4 md:px-8 space-y-10 animate-fade-in pb-16 pt-12">
     <header class="flex flex-col md:flex-row md:items-end justify-between gap-6 px-2">
       <div class="space-y-1">
-        <h1 class="text-4xl md:text-5xl font-black tracking-tighter leading-none text-foreground">
-          Hi, <span class="text-primary text-glow-sm">{{ firstName() }}</span
-          >.
+        <h1
+          class="text-4xl md:text-5xl font-black uppercase tracking-tighter leading-none text-foreground"
+        >
+          Welcome, <span class="text-primary text-glow-sm">{{ firstName() }}</span>
         </h1>
-        <p class="text-muted-foreground font-bold text-[10px] tracking-[0.3em] opacity-60">
+        <p
+          class="text-muted-foreground font-bold uppercase text-[10px] tracking-[0.3em] mt-3 opacity-60"
+        >
           {{
             authService.isAdmin()
-              ? '🛡️ Admin Sanctuary Access'
-              : 'Your intellectual archives are ready.'
+              ? '🛡️ Administrator Control Center'
+              : 'Your focus systems are ready for execution.'
           }}
         </p>
       </div>
@@ -61,36 +63,44 @@
       @if (authService.isAdmin()) {
         <button
           (click)="openCreateRoomModal()"
-          class="group relative px-8 py-3.5 bg-primary text-primary-foreground rounded-xl font-black text-[10px] tracking-widest shadow-glow hover:scale-[1.03] transition-all"
+          type="button"
+          aria-label="Establish New Sanctuary"
+          class="group px-8 py-3.5 bg-primary text-black rounded-xl font-black uppercase text-[10px] tracking-widest shadow-glow hover:scale-[1.03] active:scale-95 transition-all border-2 border-primary/20"
         >
-          <i class="fas fa-plus mr-2 transition-transform group-hover:rotate-90"></i>
-          Construct Sanctuary
+          <i
+            class="fas fa-plus mr-2 transition-transform group-hover:rotate-90"
+            aria-hidden="true"
+          ></i>
+          Create Room
         </button>
       }
     </header>
 
     @if (focus.currentRoomId()) {
       <div
-        class="glass-card p-6 md:p-8 rounded-[2.5rem] border-primary/20 bg-primary/[0.03] animate-fade-in relative overflow-hidden group"
+        class="glass-card p-6 md:p-8 rounded-[2.5rem] border-2 border-primary/30 bg-primary/[0.03] animate-fade-in relative overflow-hidden group"
       >
-        <div class="absolute inset-0 bg-primary/5 blur-[80px] -z-10"></div>
-
-        <div class="flex flex-col md:flex-row items-center justify-between gap-8">
+        <div class="absolute inset-0 bg-primary/5 blur-[80px] -z-10 pointer-events-none"></div>
+        <div class="flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
           <div class="flex items-center gap-6">
             <div
-              class="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary text-2xl shadow-inner border border-primary/20"
+              class="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary text-2xl shadow-inner border-2 border-primary/20"
             >
-              <i class="fas fa-door-open animate-pulse"></i>
+              <i class="fas fa-door-open animate-pulse" aria-hidden="true"></i>
             </div>
             <div>
-              <p class="text-[9px] font-black tracking-[0.2em] text-primary mb-1">Focusing Live</p>
-              <h3 class="text-2xl font-black tracking-tight text-foreground">
+              <p class="text-[9px] font-black uppercase tracking-[0.2em] text-primary mb-1">
+                Active Sanctuary
+              </p>
+              <h2 class="text-2xl font-black uppercase tracking-tight text-foreground">
                 {{ focus.currentRoomName() }}
-              </h3>
-              <div class="flex items-center gap-2 mt-1.5">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-                <span class="text-[8px] font-black text-muted-foreground tracking-widest"
-                  >Active Synchronous Session</span
+              </h2>
+              <div class="flex items-center gap-2 mt-1.5" aria-live="polite">
+                <span
+                  class="w-2 h-2 rounded-full bg-emerald-500 animate-ping shadow-[0_0_8px_rgba(16,185,129,0.5)]"
+                ></span>
+                <span class="text-[8px] font-black uppercase text-muted-foreground tracking-widest"
+                  >Live Focus Session</span
                 >
               </div>
             </div>
@@ -105,13 +115,15 @@
           <div class="flex items-center gap-3">
             <button
               [routerLink]="['/app/rooms', focus.currentRoomId()]"
-              class="px-6 py-3.5 glass-card rounded-xl font-black text-[9px] tracking-widest hover:bg-muted/10 transition-all border-border/60"
+              aria-label="Return to focus room"
+              class="px-6 py-3.5 bg-white/5 rounded-xl font-black uppercase text-[9px] tracking-widest hover:bg-white/10 transition-all border-2 border-white/10"
             >
               Return
             </button>
             <button
               (click)="handleQuitRoom()"
-              class="px-6 py-3.5 bg-red-500/10 text-red-500 border border-red-500/20 rounded-xl font-black text-[9px] tracking-widest hover:bg-red-500 hover:text-white transition-all"
+              aria-label="Terminate current session"
+              class="px-6 py-3.5 bg-red-500/10 text-red-500 border-2 border-red-500/20 rounded-xl font-black uppercase text-[9px] tracking-widest hover:bg-red-500 hover:text-white transition-all shadow-glow-red"
             >
               Terminate
             </button>
@@ -122,74 +134,87 @@
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div
-        class="glass-card p-6 rounded-[2.2rem] flex flex-col justify-between border-border/40 relative overflow-hidden group transition-all"
-        [class.border-success/40]="isGoalReached()"
-        [class.bg-success/[0.02]]="isGoalReached()"
+        class="glass-card p-6 rounded-[2.2rem] flex flex-col justify-between border-2 border-white/10 relative overflow-hidden group transition-all"
+        [class.border-success/40]="dailyProgressPercentage() >= 100"
+        [class.bg-success/[0.02]]="dailyProgressPercentage() >= 100"
       >
         <div class="flex justify-between items-start">
           <div class="space-y-1">
             <p
-              class="text-[9px] font-black tracking-[0.2em]"
-              [class.text-success]="isGoalReached()"
-              [class.text-primary]="!isGoalReached()"
+              class="text-[9px] font-black uppercase tracking-[0.2em]"
+              [class.text-primary]="dailyProgressPercentage() < 100"
+              [class.text-success]="dailyProgressPercentage() >= 100"
             >
-              {{ isGoalReached() ? '🏆 Mastery Achieved' : 'Daily Focus' }}
+              {{ dailyProgressPercentage() >= 100 ? '🏆 Daily Goal Met' : 'Today Focus' }}
             </p>
-            <h3 class="text-4xl font-black tracking-tighter tabular-nums text-foreground">
+            <h2 class="text-4xl font-black tracking-tighter tabular-nums text-foreground">
               {{ dailyTime() }}
-            </h3>
+            </h2>
           </div>
           <div
-            class="w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-500 bg-muted/10"
-            [class.text-success]="isGoalReached()"
-            [class.text-primary]="!isGoalReached()"
+            class="w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-500 bg-white/5 border-2 border-white/5"
+            [class.text-primary]="dailyProgressPercentage() < 100"
+            [class.text-success]="dailyProgressPercentage() >= 100"
           >
-            <i [class]="isGoalReached() ? 'fas fa-trophy' : 'fas fa-stopwatch'"></i>
+            <i
+              [class]="dailyProgressPercentage() >= 100 ? 'fas fa-trophy' : 'fas fa-stopwatch'"
+              aria-hidden="true"
+            ></i>
           </div>
         </div>
-        <div class="w-full h-1.5 bg-muted/10 rounded-full mt-6 overflow-hidden">
+        <div
+          class="w-full h-2 bg-white/5 rounded-full mt-6 overflow-hidden border border-white/5 p-[1px]"
+        >
           <div
-            class="h-full transition-all duration-1000 ease-out"
+            class="h-full transition-all duration-1000 ease-out rounded-full shadow-glow-sm"
             [style.width.%]="dailyProgressPercentage()"
-            [class.bg-success]="isGoalReached()"
-            [class.bg-primary]="!isGoalReached()"
+            [class.bg-primary]="dailyProgressPercentage() < 100"
+            [class.bg-success]="dailyProgressPercentage() >= 100"
           ></div>
         </div>
       </div>
 
       <div
-        class="glass-card p-6 rounded-[2.2rem] flex justify-between items-start border-border/40 hover:translate-y-[-3px] transition-all bg-card/40"
+        class="glass-card-hover p-6 rounded-[2.2rem] flex justify-between items-start border-2 border-white/10 bg-white/[0.02] shadow-xl"
       >
         <div class="space-y-1">
-          <p class="text-[9px] font-black tracking-[0.2em] text-muted-foreground opacity-70">
+          <p
+            class="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground opacity-70"
+          >
             Knowledge Lifetime
           </p>
-          <h3 class="text-4xl font-black tracking-tighter tabular-nums text-foreground">
+          <h2 class="text-4xl font-black tracking-tighter tabular-nums text-foreground">
             {{ totalLifetimeTime() }}
-          </h3>
-          <p class="text-[8px] font-bold text-muted-foreground mt-2">Scholar Accumulation</p>
+          </h2>
+          <p class="text-[8px] font-bold uppercase text-muted-foreground mt-2 tracking-widest">
+            Scholar Accumulation
+          </p>
         </div>
         <div
-          class="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-glow-sm"
+          class="w-11 h-11 rounded-xl bg-primary/10 border-2 border-primary/20 flex items-center justify-center text-primary shadow-glow-sm"
         >
-          <i class="fas fa-crown"></i>
+          <i class="fas fa-crown" aria-hidden="true"></i>
         </div>
       </div>
 
       <div
-        class="glass-card p-6 rounded-[2.2rem] flex justify-between items-start border-border/40 hover:translate-y-[-3px] transition-all"
+        class="glass-card-hover p-6 rounded-[2.2rem] flex justify-between items-start border-2 border-white/10 hover:border-orange-500/40 transition-all bg-white/[0.01]"
       >
         <div class="space-y-1">
-          <p class="text-[9px] font-black tracking-[0.2em] text-orange-400">Quest Streak</p>
-          <h3 class="text-4xl font-black tracking-tighter tabular-nums text-orange-400">
+          <p class="text-[9px] font-black uppercase tracking-[0.2em] text-orange-400">
+            Current Streak
+          </p>
+          <h2 class="text-4xl font-black tracking-tighter tabular-nums text-orange-400">
             {{ journeyService.currentStreak() }} Days
-          </h3>
-          <p class="text-[8px] font-bold text-muted-foreground mt-2">Consistent Evolution</p>
+          </h2>
+          <p class="text-[8px] font-bold uppercase text-muted-foreground mt-2 tracking-widest">
+            Consistent Mastery
+          </p>
         </div>
         <div
-          class="w-11 h-11 rounded-xl bg-orange-400/10 flex items-center justify-center text-orange-400"
+          class="w-11 h-11 rounded-xl bg-orange-400/10 border-2 border-orange-400/20 flex items-center justify-center text-orange-400 shadow-glow-sm"
         >
-          <i class="fas fa-fire"></i>
+          <i class="fas fa-fire" aria-hidden="true"></i>
         </div>
       </div>
     </div>
@@ -197,42 +222,47 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
       <div class="lg:col-span-7 space-y-5">
         <div class="flex items-center justify-between px-2">
-          <h3 class="font-black text-xl tracking-tighter text-foreground">Available Sanctuaries</h3>
+          <h2 class="font-black text-xl uppercase tracking-tighter text-foreground">
+            Top Study Rooms
+          </h2>
           <a
             routerLink="/app/rooms"
-            class="text-[9px] font-black text-primary tracking-[0.2em] hover:translate-x-1 transition-all flex items-center gap-1.5"
+            aria-label="View all study rooms"
+            class="text-[9px] font-black uppercase text-primary tracking-[0.2em] hover:translate-x-1 transition-all flex items-center gap-1.5"
           >
-            Archive Explorer <i class="fas fa-arrow-right text-[8px]"></i>
+            View All Rooms <i class="fas fa-arrow-right text-[8px]" aria-hidden="true"></i>
           </a>
         </div>
         <div class="grid grid-cols-1 gap-3">
-          @for (room of studyRooms(); track room.id) {
+          @for (room of activeRooms(); track room.id) {
             <div
               [routerLink]="['/app/rooms', room.id]"
-              class="glass-card-hover p-5 rounded-[1.8rem] group border-border/30 flex items-center justify-between"
+              class="glass-card p-5 rounded-[1.8rem] group border-2 border-white/10 flex items-center justify-between transition-all hover:border-primary/40 hover:bg-white/[0.03] cursor-pointer"
             >
               <div class="flex items-center gap-5">
                 <div
-                  class="w-12 h-12 rounded-xl bg-muted/5 flex items-center justify-center text-muted group-hover:text-primary transition-all border border-border/40"
+                  class="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-muted group-hover:text-primary transition-all border-2 border-white/10 shadow-inner"
                 >
-                  <i [class]="'fas ' + room.icon"></i>
+                  <i [class]="'fas ' + room.icon" aria-hidden="true"></i>
                 </div>
                 <div>
-                  <h4
-                    class="font-black text-base tracking-tight text-foreground group-hover:text-primary transition-colors"
+                  <h3
+                    class="font-black text-base uppercase tracking-tight text-foreground group-hover:text-primary transition-colors"
                   >
                     {{ room.name }}
-                  </h4>
+                  </h3>
                   <div class="flex items-center gap-2 mt-0.5">
                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span class="text-[9px] font-bold text-muted-foreground tracking-wider"
-                      >{{ room.current_count || 0 }} Scholars</span
+                    <span
+                      class="text-[9px] font-bold uppercase text-muted-foreground tracking-wider"
+                      >{{ room.current_count || 0 }} Scholars Live</span
                     >
                   </div>
                 </div>
               </div>
               <i
                 class="fas fa-chevron-right text-muted/40 group-hover:text-primary group-hover:translate-x-1 transition-all text-xs"
+                aria-hidden="true"
               ></i>
             </div>
           }
@@ -241,28 +271,30 @@
 
       <div class="lg:col-span-5 space-y-5">
         <div class="flex justify-between items-center px-2">
-          <h3 class="font-black text-xl tracking-tighter text-foreground">Daily Quests</h3>
+          <h2 class="font-black text-xl uppercase tracking-tighter text-foreground">
+            Active Tasks
+          </h2>
           <span
-            class="text-[9px] font-black text-primary bg-primary/10 px-4 py-1 rounded-full border border-primary/20"
+            class="text-[9px] font-black uppercase text-primary bg-primary/10 px-4 py-1.5 rounded-full border-2 border-primary/20"
           >
-            {{ completedTasksCount() }}/{{ totalTasksCount() }} Mastered
+            {{ completedTasksCount() }}/{{ totalTasksCount() }} Goals Met
           </span>
         </div>
 
         <div
-          class="glass-card rounded-[2rem] p-6 space-y-3 border-border/40 h-[430px] overflow-y-auto custom-scrollbar bg-card/20"
+          class="glass-card rounded-[2.5rem] p-6 space-y-3 border-2 border-white/10 h-[430px] overflow-y-auto custom-scrollbar bg-white/[0.02]"
         >
           @for (task of taskService.tasks().slice(0, 8); track task.id) {
             <div
-              class="flex items-center gap-4 p-4 rounded-2xl bg-muted/5 border border-transparent hover:border-border/40 transition-all group"
+              class="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border-2 border-transparent hover:border-white/20 transition-all group shadow-inner"
             >
               <div
                 [class.bg-success]="task.is_completed"
-                [class.border-muted/30]="!task.is_completed"
-                class="w-6 h-6 rounded-lg border shrink-0 flex items-center justify-center transition-all"
+                [class.border-white/20]="!task.is_completed"
+                class="w-6 h-6 rounded-lg border-2 shrink-0 flex items-center justify-center transition-all shadow-sm"
               >
                 @if (task.is_completed) {
-                  <i class="fas fa-check text-[10px] text-primary-foreground"></i>
+                  <i class="fas fa-check text-[10px] text-black" aria-hidden="true"></i>
                 }
               </div>
               <span
@@ -277,8 +309,8 @@
             <div
               class="h-full flex flex-col items-center justify-center text-center space-y-4 opacity-20"
             >
-              <i class="fas fa-scroll text-5xl"></i>
-              <p class="text-[10px] font-black tracking-[0.2em]">Archive is empty</p>
+              <i class="fas fa-scroll text-5xl" aria-hidden="true"></i>
+              <p class="text-[10px] font-black uppercase tracking-[0.2em]">Goal list is clear</p>
             </div>
           }
         </div>

@@ -1,3 +1,4 @@
+/* - Riwaq Room Engine: Fixed Avatar Logic & Performance v3.1 */
 import {
   Component,
   inject,
@@ -9,6 +10,7 @@ import {
   NgZone,
   computed,
   HostListener,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -25,8 +27,10 @@ import { NotificationService } from '../../../../core/services/notification';
   standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './room-detail.html',
+  changeDetection: ChangeDetectionStrategy.OnPush, // 🔥 أداء عالي جداً
 })
 export class RoomDetailComponent implements OnInit, OnDestroy {
+  // --- Injections ---
   protected focus = inject(Focus);
   protected authService = inject(AuthService);
   protected roomService = inject(RoomService);
@@ -35,57 +39,52 @@ export class RoomDetailComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private ngZone = inject(NgZone);
 
-  // 🚥 إشارات الحالة
+  // --- Signals ---
   private presenceState = signal<any>({});
   private currentRoomId: string | null = null;
   roomIcon = signal<string>('fa-door-open');
   showSummary = signal(false);
   sessionSummary = signal({ duration: '', hoursEarned: 0, intensity: 0, message: '' });
 
-  // 🕒 "نبض الصفحة": ساعة داخلية لتحديث الرندر اللحظي (سر الحركة المحلية)
   private now = signal(Date.now());
   private clockIntervalId: any;
   private broadcastIntervalId: any;
-  private roomChannel?: RealtimeChannel;
   private syncIntervalId: any;
+  private roomChannel?: RealtimeChannel;
 
   @HostListener('window:beforeunload')
   async onBeforeUnload() {
-    if (this.currentRoomId) await this.roomService.leaveRoom(this.currentRoomId);
+    if (this.currentRoomId) await this.roomService.leaveRoom();
   }
 
   /**
-   * 🔥 الحساب الذكي الموحد (Computed)
-   * يجعل العدادات تتحرك بالثانية محلياً بين الطلبات
+   * 🚀 الـ Scholars النشطون: حساب متزامن لكل المستخدمين
    */
-activeScholars = computed(() => {
-  const state = this.presenceState();
-  const myId = this.authService.currentUser()?.id;
-  const currentTick = this.now(); // إشارة الساعة المحلية (تتحدث كل ثانية)
+  activeScholars = computed(() => {
+    const state = this.presenceState();
+    const myId = this.authService.currentUser()?.id;
+    const currentTick = this.now(); 
 
-  return Object.keys(state).map((key) => {
-    const scholar = { ...state[key][0] };
-    
-    if (scholar.id === myId) {
-      // وقتي أنا: من السيرفس مباشرة
-      scholar.status = this.focus.timerStatus();
-      scholar.time = this.focus.formattedTime();
-    } else if (scholar.status === 'focusing' && scholar.last_updated_at) {
-      // 🚀 حساب (الثواني الفعلية المستلمة + الفرق الزمني منذ وصول الرسالة)
-      scholar.time = this.calculateSyncedTime(
-        scholar.offset_seconds || 0, 
-        scholar.last_updated_at, 
-        currentTick
-      );
-    } else {
-      scholar.time = scholar.time || '00:00';
-    }
-    return scholar;
+    return Object.keys(state).map((key) => {
+      const scholar = { ...state[key][0] };
+      
+      if (scholar.id === myId) {
+        scholar.status = this.focus.timerStatus();
+        scholar.time = this.focus.formattedTime();
+      } else if (scholar.status === 'focusing' && scholar.last_updated_at) {
+        scholar.time = this.calculateSyncedTime(
+          scholar.offset_seconds || 0, 
+          scholar.last_updated_at, 
+          currentTick
+        );
+      } else {
+        scholar.time = scholar.time || '00:00';
+      }
+      return scholar;
+    });
   });
-});
 
   constructor() {
-    // 📡 تحديث فوري عند تغيير الحالة اليدوي (Focus/Break)
     effect(() => {
       this.focus.timerStatus();
       untracked(() => {
@@ -101,24 +100,33 @@ activeScholars = computed(() => {
       await this.roomService.joinRoom(this.currentRoomId);
       this.setupRealtime(this.currentRoomId);
 
-      // 🕒 1. تشغيل الساعة المحلية لتحديث الواجهة كل ثانية (الحركة المحلية)
       this.clockIntervalId = setInterval(() => {
         this.ngZone.run(() => this.now.set(Date.now()));
       }, 1000);
 
-      // 📡 2. "نبضة البث" الإجبارية كل 10 ثوانٍ لضمان المزامنة عند الكل
-      this.broadcastIntervalId = setInterval(() => {
-        this.syncMyStatus();
-      }, 10000);
-
-      // 🔄 3. نبضة البقاء في الداتابيز كل 30 ثانية
+      this.broadcastIntervalId = setInterval(() => this.syncMyStatus(), 10000);
       this.syncIntervalId = setInterval(() => {
         if (this.currentRoomId) this.roomService.joinRoom(this.currentRoomId);
       }, 30000);
     }
   }
 
-  //
+  /**
+   * ✅ حل المشكلة: معالجة خطأ تحميل الأفاتار
+   */
+  handleAvatarError(event: any) {
+    const img = event.target as HTMLImageElement;
+    // نخفي الصورة المكسورة فوراً
+    img.style.display = 'none';
+    
+    // نبحث عن الـ Fallback اللي جنبها ونظهره
+    const container = img.closest('.relative');
+    const fallback = container?.querySelector('.avatar-fallback');
+    if (fallback) {
+      fallback.classList.remove('hidden');
+    }
+  }
+
   private setupRealtime(roomId: string) {
     const user = this.authService.currentUser();
     if (!user) return;
@@ -129,92 +137,51 @@ activeScholars = computed(() => {
 
     this.roomChannel
       .on('presence', { event: 'sync' }, () => {
-        console.log('🔄 Presence Sync Event Fired!'); // 👈 سطر للتأكد من وصول البيانات
         this.ngZone.run(() => {
           this.presenceState.set(this.roomChannel?.presenceState() || {});
         });
       })
-      // 👈 ضيف ده عشان تشوف مين دخل ومين خرج في الـ Console
-      .on('presence', { event: 'join' }, ({ key, newPresences }) => {
-        console.log('👋 Scholar joined channel:', key, newPresences);
-      })
       .subscribe(async (status) => {
-        console.log('📡 Channel Status:', status); // 👈 لازم تطلع "SUBSCRIBED"
         if (status === 'SUBSCRIBED') await this.syncMyStatus();
       });
   }
 
-//
-private async syncMyStatus() {
-  const user = this.authService.currentUser();
-  
-  // 🛡️ التأكد من أن القناة مفتوحة (joined) تماماً قبل الإرسال
-  if (this.roomChannel && this.roomChannel.state === 'joined' && user) {
-    
-    await this.roomChannel.track({
-      id: user.id,
-      name: user.name,
-      avatar: user.avatar,
-      status: this.focus.timerStatus(),
-      
-      // 🚩 نرسل "عدد الثواني الفعلي" الذي وصل له تايمرك (يخصم منه البريك تلقائياً)
-      offset_seconds: this.focus.totalSeconds(),
-      
-      // 🚀 "البصمة الذكية": تجبر سوبابيس على إذاعة الرسالة للكل فوراً
-      last_updated_at: new Date().toISOString(),
-      nonce: Math.random(), // 👈 هذا السطر هو مفتاح الحل
-      
-      time: this.focus.formattedTime(),
-    });
-
-    console.log('📡 Heartbeat broadcasted to all scholars.');
+  private async syncMyStatus() {
+    const user = this.authService.currentUser();
+    if (this.roomChannel && this.roomChannel.state === 'joined' && user) {
+      await this.roomChannel.track({
+        id: user.id,
+        name: user.name,
+        avatar: user.avatar,
+        status: this.focus.timerStatus(),
+        offset_seconds: this.focus.totalSeconds(),
+        last_updated_at: new Date().toISOString(),
+        nonce: Math.random(),
+      });
+    }
   }
-}
 
-  /**
-   * دالة حساب الوقت المتزامن (الدقة بالثانية)
-   */
- private calculateSyncedTime(offset: number, lastUpdateIso: string, nowMs: number): string {
-  const lastUpdate = new Date(lastUpdateIso).getTime();
-  const drift = Math.floor((nowMs - lastUpdate) / 1000); // الثواني التي مرت منذ وصول آخر ريكويست
-  const totalSecs = Math.max(0, offset + drift);
-
-  const hrs = Math.floor(totalSecs / 3600);
-  const mins = Math.floor((totalSecs % 3600) / 60);
-  const secs = totalSecs % 60;
-  
-  const pad = (n: number) => n.toString().padStart(2, '0');
-  return hrs > 0 
-    ? `${pad(hrs)}:${pad(mins)}:${pad(secs)}` 
-    : `${pad(mins)}:${pad(secs)}`;
-}
-
-  handleAvatarError(event: any) {
-    const img = event.target as HTMLImageElement;
-    img.classList.add('hidden');
-    const container = img.closest('.relative');
-    const fallback = container?.querySelector('.avatar-fallback');
-    if (fallback) fallback.classList.remove('hidden');
+  private calculateSyncedTime(offset: number, lastUpdateIso: string, nowMs: number): string {
+    const lastUpdate = new Date(lastUpdateIso).getTime();
+    const drift = Math.floor((nowMs - lastUpdate) / 1000); 
+    const totalSecs = Math.max(0, offset + drift);
+    const hrs = Math.floor(totalSecs / 3600);
+    const mins = Math.floor((totalSecs % 3600) / 60);
+    const secs = totalSecs % 60;
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    return hrs > 0 ? `${pad(hrs)}:${pad(mins)}:${pad(secs)}` : `${pad(mins)}:${pad(secs)}`;
   }
 
   async loadRoomDetails(roomId: string) {
-    const { data } = await this.supabase
-      .from('rooms')
-      .select('name, icon')
-      .eq('id', roomId)
-      .single();
+    const { data } = await this.supabase.from('rooms').select('name, icon').eq('id', roomId).single();
     if (data) {
       this.focus.setRoom(roomId, data.name);
       this.roomIcon.set(data.icon);
     }
   }
 
-  handleStart() {
-    this.focus.startTimer();
-  }
-  handleBreak() {
-    this.focus.pauseTimer();
-  }
+  handleStart() { this.focus.startTimer(); }
+  handleBreak() { this.focus.pauseTimer(); }
 
   async handleFinish() {
     const seconds = this.focus.totalSeconds();
@@ -227,7 +194,7 @@ private async syncMyStatus() {
       duration: this.focus.formattedTime(),
       hoursEarned: Number((seconds / 3600).toFixed(2)),
       intensity: 3,
-      message: 'Legacy archived.',
+      message: 'Focus archived in the vaults.',
     });
     await this.focus.saveProgress(seconds);
     this.showSummary.set(true);
@@ -235,10 +202,8 @@ private async syncMyStatus() {
   }
 
   async ngOnDestroy() {
-    if (this.currentRoomId) await this.roomService.leaveRoom(this.currentRoomId);
-    if (this.syncIntervalId) clearInterval(this.syncIntervalId);
-    if (this.clockIntervalId) clearInterval(this.clockIntervalId);
-    if (this.broadcastIntervalId) clearInterval(this.broadcastIntervalId);
+    if (this.currentRoomId) await this.roomService.leaveRoom();
+    [this.syncIntervalId, this.clockIntervalId, this.broadcastIntervalId].forEach(clearInterval);
     if (this.roomChannel) this.roomChannel.unsubscribe();
   }
 }

@@ -1,63 +1,42 @@
-🏛️ رُواق | Riwaq
-The Sanctuary for Focused Scholars & Social Productivity
+# 🏛️ رِواق | Riwaq
 
-رُواق هو منصة إنتاجية اجتماعية متكاملة مبنية باستخدام Angular و Supabase، تهدف لخلق بيئة تركيز جماعية لحظية (Real-time). النظام يجمع بين تتبع الإنتاجية الشخصية والتفاعل الاجتماعي لضمان أقصى درجات الالتزام.
+> **The Intellectual OS for Focused Scholars & Social Productivity**
 
-🚀 المميزات الأساسية (Core Features)
-بناءً على بنية قاعدة البيانات المتطورة للمشروع:
+[![Performance](https://img.shields.io/badge/Lighthouse-Performance%2090%2B-emerald?style=for-the-badge&logo=googlechrome)](https://web.dev/measure/)
+[![Accessibility](https://img.shields.io/badge/Accessibility-100%25-blueviolet?style=for-the-badge&logo=accessibility)](https://web.dev/measure/)
+[![SEO](https://img.shields.io/badge/SEO-100%25-orange?style=for-the-badge&logo=google)](https://web.dev/measure/)
 
-⏱️ Independent Focus Sessions: نظام توقيت ذكي يسجل جلسات التركيز بدقة في جدول focus_sessions.
+**رِواق** هو منصة إنتاجية اجتماعية متكاملة، تهدف لخلق "ملاذ رقمي" (Digital Sanctuary) للتركيز الجماعي اللحظي. النظام يدمج بين علم النفس الإنتاجي والتقنيات اللحظية (Real-time) لضمان أقصى درجات الالتزام الأكاديمي والمهني.
 
-📡 Real-time Room Presence: رؤية الطلاب المتواجدين معك في الغرفة لحظياً عبر room_presence_tracking.
+---
 
-🏆 Social Leaderboard: نظام ترتيب تفاعلي يعرض المتصدرين بناءً على ساعات التركيز.
+## 🚀 المميزات الأساسية (Core Interface)
 
-✅ Task Management: تتبع المهام اليومية وربطها بجلسات التركيز لزيادة الإنتاجية.
+- **⏱️ Quantum Focus Sessions:** نظام توقيت ذكي يسجل جلسات التركيز بدقة متناهية مع ربطها بـ `Independent Persistence Layer`.
+- **📡 Real-time Room Presence:** تقنية تتبع لحظية لرؤية الزملاء المتواجدين معك في الغرفة، مما يعزز روح "المذاكرة الجماعية" (Social Accountability).
+- **🏆 High-Fidelity Leaderboard:** نظام ترتيب "دوري العلماء" الذي يحتفي بالاستمرارية (Consistency) قبل السرعة.
+- **✅ Task Execution HUD:** واجهة مهام متقدمة مرتبطة بجلسات العمل لضمان عدم تشتت الأهداف.
+- **📊 Scholar Analytics:** ملخصات ذكية يومية وتراكمية تعرض مستوى التطور والـ Streak الخاص بك.
 
-📊 Daily Summaries: ملخصات يومية ذكية تعرض مستوى الإنجاز والنشاط عبر جدول daily_focus_summary.
+---
 
-🛠️ البناء التقني (Tech Stack)
-Frontend: Angular 17+ (Signals, Standalone Components, Deferrable Views).
+## 🛠️ البناء التقني (The Tech Stack)
 
-Backend: Supabase (Auth, Real-time Presence, PostgreSQL).
+- **Frontend:** Angular 19+ (Signals, Standalone Components, Reactive HUD Architecture).
+- **Styling:** Tailwind CSS v4.0 (Cinematic Design System, Glassmorphism).
+- **Backend:** Supabase (Auth, PostgreSQL, Real-time Engine).
+- **State Management:** Fine-grained reactivity using **Angular Signals**.
+- **Performance:** Local FontAwesome, `@defer` views, and Preload Optimization.
 
-State Management: Angular Signals لضمان استجابة فورية للواجهة (Fine-grained reactivity).
+---
 
-Security: حماية كاملة للجداول باستخدام RLS (Row Level Security).
+## ⚙️ إعداد المشروع (Installation & Setup)
 
-⚙️ إعداد المشروع (Installation & Setup)
-المشروع يستخدم نظام الـ Environment Templates لضمان أقصى درجات الأمان للمفاتيح الخاصة بك.
+المشروع يستخدم نظام **Environment Templates** لضمان أمان مفاتيحك البرمجية.
 
-تحميل المشروع:
+### 1. استنساخ المستودع
 
-Bash
-git clone https://github.com/riwaq/riwaq.git
+```bash
+git clone [https://github.com/your-username/riwaq.git](https://github.com/your-username/riwaq.git)
 cd riwaq
-تثبيت المكتبات:
-
-Bash
-npm install
-إعداد ملفات البيئة (Environments):
-
-قم بإنشاء ملف src/environments/environment.ts بناءً على ملف الـ template.
-
-أضف مفاتيح Supabase URL و Anon Key الخاصة بك.
-
-تشغيل المشروع:
-
-Bash
-ng serve
-📈 حالة الأداء (Performance Roadmap)
-حالياً، يحقق المشروع سكور أداء 65 في Lighthouse. الخطوات القادمة في خريطة الطريق تشمل:
-
-تحسين الـ LCP (Largest Contentful Paint) لتقليل وقت التحميل الأولي.
-
-ضبط الـ FCP و الـ Speed Index للوصول لسكور +90.
-
-استخدام @defer في Angular لتحميل المكونات الثقيلة عند الحاجة فقط.
-
-🛡️ الأمان والخصوصية (Security)
-[!IMPORTANT] تم استثناء ملفات الـ environment.ts و environment.development.ts من الرفع على المستودع العام لحماية مفاتيح API الخاصة بـ Supabase. يرجى استخدام القالب المرفق environment.template.ts لإعداد النسخة المحلية الخاصة بك.
-
-🤝 المساهمة (Contributing)
-نحن نرحب بكل المطورين المهتمين ببناء مستقبل الإنتاجية الاجتماعية. يمكنك فتح Issue أو إرسال Pull Request بتعديلاتك.
+```

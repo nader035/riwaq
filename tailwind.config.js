@@ -7,7 +7,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // ألوان رِواق الأساسية (Sanctuary Theme)
+        // ألوان رِوَاقء الأساسية (Sanctuary Theme)
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         primary: {

@@ -1,70 +1,78 @@
-<div class="max-w-6xl mx-auto px-4 md:px-8 space-y-10 animate-fade-in pb-12">
+<div class="max-w-6xl mx-auto px-4 md:px-8 space-y-10 animate-fade-in pb-16 pt-12">
   <header
-    class="flex flex-col md:flex-row justify-between items-center gap-4 border-b border-border/30 pb-8"
+    class="flex flex-col md:flex-row justify-between items-center gap-6 border-b-2 border-white/10 pb-10"
   >
     <div class="text-center md:text-left space-y-1">
-      <h1 class="text-3xl md:text-4xl font-black tracking-tighter leading-none text-foreground">
-        Scholar <span class="text-primary text-glow-sm">Archives</span>
+      <h1
+        class="text-3xl md:text-5xl font-black uppercase tracking-tighter leading-none text-foreground"
+      >
+        Scholar <span class="text-primary text-glow-sm">Profile</span>
       </h1>
-      <p class="text-muted-foreground font-bold text-[10px] tracking-[0.3em] opacity-60">
-        Your journey through the path of knowledge
+      <p
+        class="text-muted-foreground font-bold uppercase text-[10px] tracking-[0.3em] mt-2 opacity-60"
+      >
+        Your permanent record in the halls of knowledge
       </p>
     </div>
 
     <button
       (click)="authService.logout()"
-      class="px-6 py-2.5 bg-red-500/5 text-red-500 border border-red-500/10 rounded-xl font-black text-[10px] tracking-widest hover:bg-red-500 hover:text-white transition-all active:scale-95"
+      class="px-8 py-3 bg-red-500/10 text-red-500 border-2 border-red-500/20 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-red-500 hover:text-white transition-all shadow-glow-red active:scale-95"
     >
-      Terminate Session
+      Logout Session
     </button>
   </header>
 
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
     <div class="lg:col-span-4 space-y-6">
       <div
-        class="glass-card p-8 rounded-[2rem] flex flex-col items-center text-center border-border/40 relative overflow-hidden group bg-card/30"
+        class="glass-card p-8 rounded-[2.5rem] flex flex-col items-center text-center border-2 border-white/20 relative overflow-hidden group bg-white/[0.02] shadow-2xl"
       >
         <div class="absolute -top-10 inset-x-0 h-40 bg-primary/5 blur-[80px] -z-10"></div>
 
-        <div class="relative mb-6">
+        <div class="relative mb-8">
           <div
-            class="w-28 h-28 md:w-32 md:h-32 rounded-[2rem] border-4 border-primary/20 p-1 bg-muted/10 shadow-2xl transition-transform duration-500 group-hover:scale-[1.02]"
+            class="w-32 h-32 md:w-40 md:h-40 rounded-[2.5rem] border-4 border-primary/20 p-1.5 bg-white/5 shadow-2xl transition-transform duration-500 group-hover:scale-[1.03]"
           >
             @if (authService.currentUser()?.avatar) {
               <img
                 [src]="authService.currentUser()?.avatar"
-                class="w-full h-full rounded-[1.8rem] object-cover"
+                class="w-full h-full rounded-[2rem] object-cover border-2 border-white/10"
               />
             } @else {
               <div
-                class="w-full h-full rounded-[1.8rem] bg-primary/10 flex items-center justify-center"
+                class="w-full h-full rounded-[2rem] bg-primary/10 flex items-center justify-center border-2 border-primary/20 shadow-inner"
               >
-                <span class="text-4xl font-black text-primary">{{
+                <span class="text-5xl font-black text-primary">{{
                   getUserInitial(authService.currentUser()?.name)
                 }}</span>
               </div>
             }
           </div>
           <div
-            class="absolute -bottom-1 -right-1 bg-primary text-primary-foreground w-9 h-9 rounded-xl flex items-center justify-center shadow-glow border-4 border-background"
+            class="absolute -bottom-2 -right-2 bg-primary text-black w-10 h-10 rounded-2xl flex items-center justify-center shadow-glow border-4 border-[#080808]"
           >
-            <i class="fas fa-feather-alt text-xs"></i>
+            <i class="fas fa-feather-alt text-sm"></i>
           </div>
         </div>
 
         @if (!editMode()) {
-          <div class="space-y-1">
-            <h3 class="text-xl md:text-2xl font-black tracking-tight text-foreground">
+          <div class="space-y-2">
+            <h3 class="text-2xl md:text-3xl font-black uppercase tracking-tight text-foreground">
               {{ authService.currentUser()?.name }}
             </h3>
-            <p class="text-[10px] font-black text-primary tracking-[0.2em]">
-              Level {{ userLevel() }} Scholar
-            </p>
+            <div
+              class="inline-block px-4 py-1 rounded-full bg-primary/10 border-2 border-primary/20"
+            >
+              <p class="text-[9px] font-black text-primary uppercase tracking-[0.25em]">
+                Level {{ userLevel() }} Scholar
+              </p>
+            </div>
           </div>
 
           <button
             (click)="startEdit()"
-            class="mt-8 px-5 py-2 border border-border/60 rounded-lg text-[9px] font-black tracking-widest text-muted-foreground hover:text-primary hover:border-primary/40 transition-all"
+            class="mt-10 px-8 py-3 border-2 border-white/20 rounded-xl text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary hover:border-primary/40 transition-all bg-white/5"
           >
             Edit Identity
           </button>
@@ -72,20 +80,20 @@
           <div class="w-full space-y-4 animate-scale-in">
             <input
               [(ngModel)]="newName"
-              class="w-full bg-muted/5 border border-border/50 p-4 rounded-xl outline-none focus:border-primary text-center font-bold text-foreground text-sm"
-              placeholder="Enter new name"
+              class="w-full bg-white/5 border-2 border-white/20 p-5 rounded-2xl outline-none focus:border-primary text-center font-black uppercase text-foreground text-base shadow-inner transition-all"
+              placeholder="Enter Name"
             />
-            <div class="flex gap-2">
+            <div class="flex gap-3">
               <button
                 (click)="updateProfile()"
                 [disabled]="loading()"
-                class="flex-1 py-3 bg-primary text-primary-foreground rounded-lg font-black text-[9px] tracking-widest shadow-glow"
+                class="flex-1 py-4 bg-primary text-black rounded-xl font-black uppercase text-[10px] tracking-widest shadow-glow hover:scale-[1.02] active:scale-95 disabled:opacity-50"
               >
                 Save
               </button>
               <button
                 (click)="editMode.set(false)"
-                class="flex-1 py-3 bg-muted/10 rounded-lg font-black text-[9px] tracking-widest text-foreground"
+                class="flex-1 py-4 bg-white/10 rounded-xl font-black uppercase text-[10px] tracking-widest text-foreground hover:bg-white/20 transition-all"
               >
                 Cancel
               </button>
@@ -98,53 +106,65 @@
     <div class="lg:col-span-8 space-y-6">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div
-          class="glass-card p-6 rounded-[2rem] border-border/50 space-y-4 relative overflow-hidden"
+          class="glass-card p-8 rounded-[2.5rem] border-2 border-white/10 space-y-4 relative overflow-hidden bg-white/[0.01] shadow-xl"
         >
           <div class="flex justify-between items-start text-primary">
-            <p class="text-[9px] font-black tracking-widest opacity-80">Lifetime Mastery</p>
-            <i class="fas fa-crown text-xs"></i>
+            <p class="text-[10px] font-black uppercase tracking-widest opacity-80">
+              Lifetime Mastery
+            </p>
+            <i class="fas fa-crown text-sm"></i>
           </div>
-          <h2 class="text-4xl font-black tabular-nums text-foreground tracking-tighter">
+          <h2 class="text-4xl md:text-5xl font-black tabular-nums text-foreground tracking-tighter">
             {{ formatTime(authService.currentUser()?.totalFocusSeconds || 0) }}
           </h2>
-          <p class="text-[9px] text-muted-foreground font-bold tracking-tight opacity-60">
-            Knowledge accumulated
+          <p
+            class="text-[9px] text-muted-foreground font-bold uppercase tracking-widest opacity-60"
+          >
+            Total focus accumulated
           </p>
         </div>
 
         <div
-          class="glass-card p-6 rounded-[2rem] border-orange-400/20 bg-orange-400/[0.02] space-y-4 text-orange-400"
+          class="glass-card p-8 rounded-[2.5rem] border-2 border-orange-500/20 bg-orange-500/[0.02] space-y-4 text-orange-400 shadow-xl"
         >
           <div class="flex justify-between items-start">
-            <p class="text-[9px] font-black tracking-widest">Scholar Streak</p>
-            <i class="fas fa-fire text-xs"></i>
+            <p class="text-[10px] font-black uppercase tracking-widest">Scholar Streak</p>
+            <i class="fas fa-fire text-sm shadow-glow-sm"></i>
           </div>
-          <h2 class="text-4xl font-black tabular-nums tracking-tighter text-foreground">
+          <h2 class="text-4xl md:text-5xl font-black tabular-nums tracking-tighter text-foreground">
             {{ journeyService.currentStreak() }} Days
           </h2>
-          <p class="text-[9px] text-orange-400/60 font-bold tracking-tight">Consistency reward</p>
+          <p class="text-[9px] text-orange-400/60 font-bold uppercase tracking-widest">
+            Consistency reward active
+          </p>
         </div>
       </div>
 
-      <div class="glass-card p-8 rounded-[2.5rem] border-border/50 space-y-8 bg-card/20">
-        <div class="flex items-center justify-between">
-          <h4 class="font-black tracking-[0.2em] text-xs text-foreground">Deep Focus Progress</h4>
+      <div
+        class="glass-card p-8 md:p-10 rounded-[3rem] border-2 border-white/10 space-y-10 bg-white/[0.02] shadow-2xl relative overflow-hidden"
+      >
+        <div class="flex items-center justify-between relative z-10">
+          <h4 class="font-black uppercase tracking-[0.2em] text-sm text-foreground">
+            Focus Goal Evolution
+          </h4>
           <span
-            class="text-[9px] font-black text-primary bg-primary/10 px-4 py-1.5 rounded-full border border-primary/20 tracking-widest"
+            class="text-[9px] font-black uppercase text-primary bg-primary/10 px-5 py-2 rounded-full border-2 border-primary/30 tracking-widest shadow-glow-sm"
           >
-            Level {{ userLevel() }}
+            Rank: Level {{ userLevel() }}
           </span>
         </div>
 
-        <div class="space-y-4">
-          <div class="flex justify-between text-[10px] font-black tracking-widest">
-            <span class="text-muted-foreground">Daily Objective (4h)</span>
-            <span class="text-primary"
+        <div class="space-y-5 relative z-10">
+          <div class="flex justify-between text-[11px] font-black uppercase tracking-widest">
+            <span class="text-muted-foreground opacity-60">Daily Goal Progress (4h)</span>
+            <span class="text-primary text-glow-sm"
               >{{ (authService.currentUser()?.dailyFocusSeconds || 0) / 3600 | number: '1.1-1' }}h /
               4h</span
             >
           </div>
-          <div class="h-4 bg-muted/10 rounded-full p-1 border border-border/30 overflow-hidden">
+          <div
+            class="h-5 bg-white/5 rounded-full p-1 border-2 border-white/10 overflow-hidden shadow-inner"
+          >
             <div
               class="h-full bg-primary rounded-full shadow-glow-sm transition-all duration-1000 ease-out"
               [style.width.%]="dailyProgress()"
@@ -152,14 +172,21 @@
           </div>
         </div>
 
-        <div class="p-6 bg-muted/5 rounded-2xl border border-border/30 border-dashed">
-          <p class="text-xs text-muted-foreground leading-relaxed text-center">
+        <div
+          class="p-8 bg-white/[0.03] rounded-3xl border-2 border-white/10 border-dashed relative group"
+        >
+          <p class="text-sm text-muted-foreground leading-relaxed text-center font-medium">
             "The mind is not a vessel to be filled, but a fire to be kindled."
-            <span class="text-primary font-black not- ml-2 block mt-2 tracking-[0.2em] text-[8px]"
+            <span
+              class="text-primary font-black uppercase block mt-4 tracking-[0.3em] text-[10px] opacity-80"
               >— Plutarch</span
             >
           </p>
         </div>
+
+        <div
+          class="absolute -right-20 -bottom-20 w-60 h-60 bg-primary/5 rounded-full blur-[100px] pointer-events-none"
+        ></div>
       </div>
     </div>
   </div>

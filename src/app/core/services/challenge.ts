@@ -1,4 +1,4 @@
-/* - Riwaq Mission Control v5.2 (Zero Errors Edition) */
+/* - Riwaq Mission Control v6.0: High-Performance Engine */
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { SupabaseClient, createClient } from '@supabase/supabase-js';
@@ -37,16 +37,17 @@ export class ChallengeService {
   private router = inject(Router);
   private auth = inject(AuthService);
 
-  // --- Signals ---
+  // --- Signals (The Reactive Core) ---
   public catalog = signal<CatalogItem[]>([]);
   public activeQuests = signal<UserQuest[]>([]);
   public dailyLogs = signal<any[]>([]);
   public isLoading = signal<boolean>(false);
 
+  // 🛡️ الحد الأقصى للتحديات النشطة
   public canStartNewQuest = computed(() => this.activeQuests().length < 3);
 
   /**
-   * 1. الحارس الذكي: إنشاء سجل اليوم عند الحاجة
+   * 1. الحارس الذكي: إنشاء سجل اليوم (Lazy Initialization)
    */
   async ensureDayExists(questId: string, dayNumber: number) {
     const { data: existing } = await this.supabase
@@ -73,14 +74,14 @@ export class ChallengeService {
       .single();
 
     if (error) {
-      console.error('Lazy Load Error:', error.message);
+      console.error('Day Creation Error:', error.message);
       return null;
     }
     return created;
   }
 
   /**
-   * 2. جلب الكتالوج
+   * 2. جلب كتالوج التحديات
    */
   async fetchCatalog() {
     const { data, error } = await this.supabase
@@ -92,7 +93,7 @@ export class ChallengeService {
   }
 
   /**
-   * 3. جلب التحديات النشطة
+   * 3. جلب التحديات النشطة (Optimized with Indexing Support)
    */
   async fetchUserActiveQuests(userId: string) {
     this.isLoading.set(true);
@@ -109,10 +110,10 @@ export class ChallengeService {
   }
 
   /**
-   * 4. بدء رحلة جديدة
+   * 4. بدء تحدي جديد
    */
   async startQuest(userId: string, catalogItem: CatalogItem, goal: string) {
-    if (!this.canStartNewQuest()) throw new Error('Limit Reached');
+    if (!this.canStartNewQuest()) throw new Error('Slots Full');
 
     this.isLoading.set(true);
 
@@ -143,28 +144,23 @@ export class ChallengeService {
   }
 
   /**
-   * 5. تحميل تفاصيل المحطات (Net Focus Time)
+   * 5. تحميل تفاصيل التحدي (Net Focus Calculation)
    */
-  /* */
-
   async loadQuestDetails(questId: string, userId: string) {
     this.isLoading.set(true);
 
-    // 1. جلب بيانات البروفايل (التايمر)
     const { data: profile } = await this.supabase
       .from('profiles')
       .select('daily_focus_seconds')
       .eq('id', userId)
       .single();
 
-    // 2. جلب سجلات الأيام
     const { data: logs } = await this.supabase
       .from('daily_logs')
       .select('*')
       .eq('quest_id', questId)
       .order('day_number', { ascending: true });
 
-    // 🚨 فحص ذكي: لو الـ activeQuests فاضية، روح هاتها مخصوص للكويست ده
     let quest = this.activeQuests().find((q) => q.id === questId);
 
     if (!quest) {
@@ -195,29 +191,44 @@ export class ChallengeService {
   }
 
   /**
-   * 6. تحديث المهام وهدف اليوم
+   * 6. تحديث المهام (Optimistic Update)
    */
   async updateTasks(logId: string, tasks: any[]) {
-    const { error } = await this.supabase.from('daily_logs').update({ tasks }).eq('id', logId);
-    if (!error) {
-      this.dailyLogs.update((logs) => logs.map((l) => (l.id === logId ? { ...l, tasks } : l)));
-    }
+    // ⚡ تحديث محلي فوري للأداء
+    this.dailyLogs.update((logs) =>
+      logs.map((l) => (l.id === logId ? { ...l, tasks } : l))
+    );
+
+    // 📡 المزامنة في الخلفية
+    const { error } = await this.supabase
+      .from('daily_logs')
+      .update({ tasks })
+      .eq('id', logId);
+
+    if (error) console.error('Failed to sync tasks');
   }
 
+  /**
+   * 7. تحديث هدف اليوم (Optimistic Update)
+   */
   async updateDailyObjective(logId: string, objective: string) {
+    // ⚡ تحديث محلي فوري
+    this.dailyLogs.update((logs) =>
+      logs.map((l) =>
+        l.id === logId ? { ...l, daily_objective: objective } : l
+      )
+    );
+
     const { error } = await this.supabase
       .from('daily_logs')
       .update({ daily_objective: objective })
       .eq('id', logId);
-    if (!error) {
-      this.dailyLogs.update((logs) =>
-        logs.map((l) => (l.id === logId ? { ...l, daily_objective: objective } : l)),
-      );
-    }
+
+    if (error) console.error('Failed to sync objective');
   }
 
   /**
-   * 7. ختم المحطة (Seal Station)
+   * 8. إنهاء اليوم (Complete Day)
    */
   async sealDay(logId: string, quest_id: string, nextDay: number): Promise<boolean> {
     const user = this.auth.currentUser();
@@ -226,12 +237,22 @@ export class ChallengeService {
     const quest = this.activeQuests().find((q) => q.id === quest_id);
     const totalDays = quest?.challenges_catalog?.total_days || 14;
 
-    // 🛡️ لو وصلنا لليوم الأخير، بنثبته مش بنزوده (عشان يفضل ظاهر في الـ Hub)
     const dayToSave = nextDay > totalDays ? totalDays : nextDay;
+
+    // جلب التايمر الحالي لتثبيته في الـ Snapshot
+    const { data: profile } = await this.supabase
+      .from('profiles')
+      .select('daily_focus_seconds')
+      .eq('id', user.id)
+      .single();
 
     const { error: lError } = await this.supabase
       .from('daily_logs')
-      .update({ is_completed: true, completed_at: new Date() })
+      .update({ 
+        is_completed: true, 
+        completed_at: new Date(),
+        snapshot_focus_at_seal: profile?.daily_focus_seconds || 0
+      })
       .eq('id', logId);
 
     const { error: qError } = await this.supabase
@@ -246,48 +267,26 @@ export class ChallengeService {
     }
     return false;
   }
+
   /**
-   * 8. الأرشفة
+   * 9. حذف التحدي نهائياً (Hard Delete)
    */
-  async archiveQuest(questId: string) {
-    const { error } = await this.supabase
-      .from('user_quests')
-      .update({ status: 'archived' })
-      .eq('id', questId);
-
-    if (!error) {
-      this.activeQuests.update((quests) => quests.filter((q) => q.id !== questId));
-      this.router.navigate(['/app/challenges']);
-    }
-  } /* - Hard Delete Logic */
-
   async deleteQuestPermanently(questId: string) {
     this.isLoading.set(true);
     try {
-      // 1. مسح كل السجلات اليومية المرتبطة بالتحدي أولاً (Foreign Key Requirement)
-      const { error: logsError } = await this.supabase
-        .from('daily_logs')
-        .delete()
-        .eq('quest_id', questId);
+      // 1. مسح السجلات اليومية (Cascade Manual)
+      await this.supabase.from('daily_logs').delete().eq('quest_id', questId);
 
-      if (logsError) throw logsError;
+      // 2. مسح التحدي
+      await this.supabase.from('user_quests').delete().eq('id', questId);
 
-      // 2. مسح التحدي نفسه من جدول user_quests
-      const { error: questError } = await this.supabase
-        .from('user_quests')
-        .delete()
-        .eq('id', questId);
-
-      if (questError) throw questError;
-
-      // 3. تحديث الـ Signals محلياً فوراً
+      // 3. تحديث الـ Signals محلياً فوراً لفتح الـ Slot
       this.activeQuests.update((quests) => quests.filter((q) => q.id !== questId));
-      this.dailyLogs.set([]); // تنظيف السجلات المعروضة
+      this.dailyLogs.set([]);
 
-      // 4. العودة للـ Hub
       this.router.navigate(['/app/challenges']);
     } catch (error) {
-      console.error('Delete Error:', error);
+      console.error('Hard Delete Failed:', error);
     } finally {
       this.isLoading.set(false);
     }

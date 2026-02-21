@@ -22,16 +22,31 @@
           ></app-skeleton>
         </div>
         <div class="flex justify-center gap-12 pt-4">
-          <app-skeleton
-            width="60px"
-            height="40px"
-            customClass="rounded-lg opacity-40"
-          ></app-skeleton>
-          <app-skeleton
-            width="60px"
-            height="40px"
-            customClass="rounded-lg opacity-40"
-          ></app-skeleton>
+          <div class="flex flex-col items-center gap-2">
+            <app-skeleton
+              width="50px"
+              height="35px"
+              customClass="rounded-lg opacity-40"
+            ></app-skeleton>
+            <app-skeleton
+              width="70px"
+              height="8px"
+              customClass="rounded-full opacity-10"
+            ></app-skeleton>
+          </div>
+          <div class="w-px h-10 bg-white/10"></div>
+          <div class="flex flex-col items-center gap-2">
+            <app-skeleton
+              width="50px"
+              height="35px"
+              customClass="rounded-lg opacity-40"
+            ></app-skeleton>
+            <app-skeleton
+              width="70px"
+              height="8px"
+              customClass="rounded-full opacity-10"
+            ></app-skeleton>
+          </div>
         </div>
       </header>
 
@@ -49,15 +64,15 @@
     <nav class="max-w-7xl mx-auto p-4 md:p-6 flex justify-between items-center animate-fade-in">
       <button
         routerLink="/app/challenges"
-        class="text-[9px] md:text-[10px] font-black tracking-widest text-muted-foreground hover:text-primary transition-colors flex items-center border border-white/20 px-4 py-2 rounded-xl bg-white/5 hover:border-primary/40"
+        class="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors flex items-center border border-white/20 px-4 py-2 rounded-xl bg-white/5 hover:border-primary/40"
       >
-        <i class="fas fa-arrow-left mr-2"></i> <span class="hidden xs:inline">Return to</span> Hub
+        <i class="fas fa-arrow-left mr-2"></i> Back to Challenges
       </button>
       <div class="flex items-center gap-4">
         <span
-          class="px-3 md:px-4 py-1.5 bg-primary/10 border border-primary/40 rounded-full text-[8px] md:text-[9px] font-black text-primary tracking-widest animate-pulse shadow-glow-sm"
+          class="px-3 md:px-4 py-1.5 bg-primary/10 border border-primary/40 rounded-full text-[9px] font-black text-primary uppercase tracking-widest animate-pulse shadow-glow-sm"
         >
-          Mission Active
+          Challenge Active
         </span>
       </div>
     </nav>
@@ -66,17 +81,17 @@
       class="max-w-6xl mx-auto px-4 md:px-6 mt-8 md:mt-12 space-y-10 md:space-y-16 animate-fade-in"
     >
       <header class="text-center space-y-4 md:space-y-6">
-        <p class="text-primary text-[8px] md:text-[10px] font-black tracking-[0.5em] opacity-60">
-          Objective Analysis
+        <p class="text-primary text-[10px] font-black uppercase tracking-[0.5em] opacity-60">
+          Challenge Overview
         </p>
 
         <h1
-          class="text-3xl sm:text-4xl md:text-6xl font-black tracking-tighter leading-tight max-w-4xl mx-auto text-foreground px-2"
+          class="text-3xl sm:text-4xl md:text-6xl font-black uppercase tracking-tighter leading-tight max-w-4xl mx-auto text-foreground px-2"
         >
           @if (currentQuest()?.main_goal) {
             "{{ currentQuest()?.main_goal }}"
           } @else {
-            <span class="opacity-0">Loading Mission Data...</span>
+            <span class="opacity-0">Loading...</span>
           }
         </h1>
 
@@ -91,9 +106,9 @@
               }}
             </p>
             <p
-              class="text-[7px] md:text-[8px] font-black text-muted-foreground tracking-widest opacity-80"
+              class="text-[7px] md:text-[8px] font-black uppercase text-muted-foreground tracking-widest opacity-80"
             >
-              Active Station
+              Current Day
             </p>
           </div>
           <div class="w-px h-8 md:h-10 bg-white/30"></div>
@@ -102,9 +117,9 @@
               {{ currentQuest()?.challenges_catalog?.total_days || 14 }}
             </p>
             <p
-              class="text-[7px] md:text-[8px] font-black text-muted-foreground tracking-widest opacity-80"
+              class="text-[7px] md:text-[8px] font-black uppercase text-muted-foreground tracking-widest opacity-80"
             >
-              Plan Duration
+              Total Days
             </p>
           </div>
         </div>
@@ -152,17 +167,21 @@
             <i class="fas fa-trash-alt"></i>
           </div>
           <div class="text-center space-y-2">
-            <h3 class="text-white font-black tracking-tighter text-2xl">Mission Concluded</h3>
-            <p class="text-[10px] text-muted-foreground tracking-[0.3em] leading-relaxed px-4">
-              All stations cleared. Terminating this journey will
-              <span class="text-red-500 font-black underline">permanently erase</span> all logs.
+            <h3 class="text-white font-black uppercase tracking-tighter text-2xl">
+              Challenge Completed
+            </h3>
+            <p
+              class="text-[10px] text-muted-foreground uppercase tracking-[0.3em] leading-relaxed px-4"
+            >
+              Well done! All days are finished. To start a new one, you can
+              <span class="text-red-500 font-black underline">delete</span> this record.
             </p>
           </div>
           <button
             (click)="terminateExpedition()"
-            class="px-12 py-5 bg-red-500 text-white rounded-2xl font-black text-xs tracking-widest hover:bg-red-600 hover:scale-[1.03] transition-all shadow-2xl"
+            class="px-12 py-5 bg-red-500 text-white rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-red-600 hover:scale-[1.03] transition-all shadow-2xl"
           >
-            Erase & Return to Hub <i class="fas fa-flag-checkered ml-2"></i>
+            Delete Challenge & Finish <i class="fas fa-flag-checkered ml-2"></i>
           </button>
         </div>
       }
@@ -180,11 +199,13 @@
       >
         <header class="flex justify-between items-start mb-8 md:mb-12">
           <div>
-            <h2 class="text-3xl font-black tracking-tighter text-primary">
-              Station {{ selectedDay().day_number }}
+            <h2 class="text-3xl font-black uppercase tracking-tighter text-primary">
+              Day {{ selectedDay().day_number }}
             </h2>
-            <p class="text-[9px] font-black tracking-[0.4em] text-muted-foreground opacity-60">
-              Logbook Entry
+            <p
+              class="text-[9px] font-black uppercase tracking-[0.4em] text-muted-foreground opacity-60"
+            >
+              Daily Record
             </p>
           </div>
           <button
@@ -197,13 +218,13 @@
 
         <div class="flex-1 overflow-y-auto custom-scrollbar space-y-8 md:space-y-10 pr-2">
           <div class="space-y-4">
-            <h3 class="text-[10px] font-black tracking-[0.4em] text-muted-foreground">
-              Today's Mission
+            <h3 class="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground">
+              Today's Goal
             </h3>
             <textarea
               [(ngModel)]="selectedDay().daily_objective"
               (blur)="updateDailyObjective()"
-              placeholder="Describe achievement..."
+              placeholder="Define today's focus..."
               rows="2"
               class="w-full bg-white/[0.04] border-2 border-white/20 p-6 rounded-[2rem] outline-none focus:border-primary/60 text-base text-foreground resize-none transition-all placeholder:opacity-30 custom-scrollbar shadow-inner"
             ></textarea>
@@ -221,15 +242,15 @@
               <p class="text-3xl font-black tabular-nums leading-none tracking-tighter text-white">
                 {{ formatTime(selectedDay().total_focus_seconds) }}
               </p>
-              <p class="text-[9px] font-black tracking-widest text-primary/70 mt-1">
-                Deep Work Logged
+              <p class="text-[9px] font-black uppercase tracking-widest text-primary/70 mt-1">
+                Focus Time
               </p>
             </div>
           </div>
 
           <div class="space-y-6 pb-12">
-            <h3 class="text-[10px] font-black tracking-[0.4em] text-muted-foreground">
-              Detailed Tasks
+            <h3 class="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground">
+              To-Do List
             </h3>
             @if (
               !selectedDay().is_completed &&
@@ -241,7 +262,7 @@
                   type="text"
                   (keyup.enter)="addTask(tInput.value); tInput.value = ''"
                   class="flex-1 bg-white/[0.04] border-2 border-white/20 p-4 rounded-2xl outline-none focus:border-primary/50 text-sm transition-all text-foreground shadow-inner"
-                  placeholder="Define next move..."
+                  placeholder="Add a new task..."
                 />
                 <button
                   (click)="addTask(tInput.value); tInput.value = ''"
@@ -282,9 +303,9 @@
           <div class="pt-6 mt-auto border-t-2 border-white/15 bg-[#0a0a0a]">
             <button
               (click)="sealAndShare()"
-              class="w-full py-5 bg-primary text-black rounded-3xl font-black text-xs tracking-[0.25em] shadow-glow active:scale-95 transition-all"
+              class="w-full py-5 bg-primary text-black rounded-3xl font-black uppercase text-xs tracking-[0.25em] shadow-glow active:scale-95 transition-all"
             >
-              Seal Day & Share <i class="fas fa-rocket ml-2"></i>
+              Complete Day & Share <i class="fas fa-rocket ml-2"></i>
             </button>
           </div>
         }
@@ -292,7 +313,7 @@
     </div>
   }
 
-  @if (showShareModal()) {
+  @defer (when showShareModal()) {
     <app-quest-share-card
       [totalDays]="currentQuest()?.challenges_catalog?.total_days || 14"
       [dayNumber]="selectedDay().day_number"
@@ -300,5 +321,7 @@
       [focusTime]="formatTime(selectedDay().total_focus_seconds)"
       (close)="showShareModal.set(false)"
     ></app-quest-share-card>
+  } @placeholder {
+    <div class="hidden"></div>
   }
 </div>

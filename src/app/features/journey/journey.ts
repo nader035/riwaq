@@ -1,5 +1,15 @@
-//
-import { Component, inject, signal, OnInit, OnDestroy, computed } from '@angular/core';
+/* - Riwaq Journey Archive: Persistence & Auto-Sync Edition */
+import {
+  Component,
+  inject,
+  signal,
+  OnInit,
+  OnDestroy,
+  computed,
+  effect,
+  untracked,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { JourneyService } from '../../core/services/journey';
 import { AuthService } from '../../core/auth/auth';
@@ -9,39 +19,42 @@ import { AuthService } from '../../core/auth/auth';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './journey.html',
+  // 🔥 OnPush: لضمان سلاسة المتصفح أثناء معالجة الخريطة السنوية
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class JourneyComponent implements OnInit, OnDestroy {
   protected journeyService = inject(JourneyService);
   protected authService = inject(AuthService);
 
-  // معرف المؤقت لمراقبة تغيير اليوم بتوقيت القاهرة
   private dayFlipInterval: any;
 
   /**
    * 📊 إجمالي ساعات المعرفة (Lifetime)
-   * يتم تحديثه تلقائياً عند تغيير بيانات المستخدم في الـ AuthService
    */
   totalKnowledgeHours = computed(() => {
     const seconds = this.authService.currentUser()?.totalFocusSeconds || 0;
-    return Math.floor(seconds / 3600);
+    return Math.floor(Number(seconds) / 3600);
   });
 
   /**
-   * 🧩 توليد شبكة الأيام (Heatmap) - مزامنة 100% مع توقيت القاهرة
+   * 🧩 توليد شبكة الأيام (Heatmap)
+   * مزامنة دقيقة مع توقيت القاهرة لضمان توحيد سجلات الرواد
    */
   days = computed(() => {
-    // 1. الحصول على التاريخ الحالي في القاهرة حصراً لضمان توحيد اليوم للكل
     const egyptTimeStr = new Date().toLocaleString('en-US', { timeZone: 'Africa/Cairo' });
     const egyptNow = new Date(egyptTimeStr);
+
+    // تصفير الوقت للمقارنة الدقيقة بالأيام
+    egyptNow.setHours(0, 0, 0, 0);
 
     const result = [];
     const stats = this.journeyService.dailyStats();
 
-    // 2. توليد 365 يوم رجوعاً من تاريخ القاهرة الحالي
     for (let i = 364; i >= 0; i--) {
       const d = new Date(egyptNow);
       d.setDate(egyptNow.getDate() - i);
 
+      // تنسيق التاريخ ليتطابق مع شكل المفاتيح في السيرفيس (YYYY-MM-DD)
       const year = d.getFullYear();
       const month = String(d.getMonth() + 1).padStart(2, '0');
       const day = String(d.getDate()).padStart(2, '0');
@@ -58,10 +71,25 @@ export class JourneyComponent implements OnInit, OnDestroy {
     return result;
   });
 
-  /**
-   * 🚀 دورة الحياة: جلب البيانات باستخدام معرف المستخدم لفك التعارض
-   */
+  constructor() {
+    /**
+     * 🛡️ صمام الأمان للـ Refresh:
+     * هذا الـ Effect يراقب حالة المستخدم. أول ما الـ Auth ينجح في جلب الـ Profile
+     * بعد الريفرش، سيقوم بجلب بيانات الـ Journey فوراً.
+     */
+    effect(() => {
+      const user = this.authService.currentUser();
+      if (user?.id) {
+        // نستخدم untracked لمنع الـ Effect من إعادة تشغيل نفسه دون داعٍ
+        untracked(() => {
+          this.loadJourneyData(user.id);
+        });
+      }
+    });
+  }
+
   async ngOnInit() {
+    // محاولة جلب أولية (تعمل في حالة التنقل العادي داخل التطبيق)
     const user = this.authService.currentUser();
     if (user?.id) {
       await this.loadJourneyData(user.id);
@@ -70,45 +98,45 @@ export class JourneyComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 🔄 جلب البيانات التاريخية والـ Streak
-   * @param userId معرف المستخدم لفك الارتباط الدائري بين الخدمات
+   * 🔄 جلب بيانات الأرشيف بالتوازي لضمان سرعة الاستجابة
    */
-  private async loadJourneyData(userId: string) {
-    //
-    await Promise.all([
-      this.journeyService.fetchHistory(userId),
-      this.journeyService.fetchStreak(userId)  
-    ]);
+  private async loadJourneyData(userId: string | any) {
+    console.log('🏛️ Journey Sync: Fetching records for Scholar:', userId);
+    try {
+      await Promise.all([
+        this.journeyService.fetchHistory(userId),
+        this.journeyService.fetchStreak(userId),
+      ]);
+    } catch (err) {
+      console.error('❌ Journey Sync Failed:', err);
+    }
   }
 
   /**
-   * 🕒 مراقب منتصف الليل بتوقيت القاهرة
-   * يقوم بتحديث الواجهة فوراً عند بدء يوم جديد
+   * 🕒 مراقب "لحظة الصفر" بتوقيت القاهرة لتحديث اليوم الجديد
    */
   private setupMidnightWatcher() {
     this.dayFlipInterval = setInterval(() => {
       const egyptTime = new Date(new Date().toLocaleString('en-US', { timeZone: 'Africa/Cairo' }));
 
-      // إذا كانت الساعة 00:00 (بداية دقيقة منتصف الليل)
       if (egyptTime.getHours() === 0 && egyptTime.getMinutes() === 0) {
         const userId = this.authService.currentUser()?.id;
         if (userId) {
-          console.log('🏛️ Riwaq: Cairo Midnight reached. Refreshing Journey...');
           this.loadJourneyData(userId);
         }
       }
-    }, 60000); // يفحص كل دقيقة
+    }, 60000);
   }
 
   /**
-   * 🎨 حساب شدة اللون بناءً على المجهود (مقياس رُواق)
+   * 🎨 محرك شدة الألوان بناءً على ساعات التركيز
    */
   private calculateIntensity(seconds: number): number {
     if (seconds === 0) return 0;
-    if (seconds < 3600) return 1;    // أقل من ساعة
-    if (seconds < 10800) return 2;  // 1-3 ساعات
-    if (seconds < 21600) return 3;  // 3-6 ساعات
-    return 4;                       // أكثر من 6 ساعات 🔥
+    if (seconds < 3600) return 1; // < 1h
+    if (seconds < 10800) return 2; // 1-3h
+    if (seconds < 21600) return 3; // 3-6h
+    return 4; // > 6h 🔥
   }
 
   ngOnDestroy() {

@@ -1,45 +1,61 @@
-//
-import { Component, inject, OnInit, OnDestroy } from '@angular/core';
+/* - Riwaq Hall of Fame: Ultimate Performance & High-Precision Tracking */
+import {
+  Component,
+  inject,
+  OnInit,
+  OnDestroy,
+  ChangeDetectionStrategy,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LeaderboardService } from '../../core/services/leaderboard';
-import { SkeletonComponent } from '../../shared/components/skeleton/skeleton'; // 👈 تأكد من المسار
+import { SkeletonComponent } from '../../shared/components/skeleton/skeleton';
 
 @Component({
   selector: 'app-leaderboard',
   standalone: true,
-  imports: [CommonModule, SkeletonComponent], // 👈 إضافة السكيلتون هنا
+  imports: [CommonModule, SkeletonComponent],
   templateUrl: './leaderboard.html',
+  // 🔥 OnPush Strategy: المكون لا يعيد الرسم إلا عند تحديث الـ Signals
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LeaderboardComponent implements OnInit, OnDestroy {
+  // --- Injections ---
   protected leaderboard = inject(LeaderboardService);
+
+  // --- Local State ---
   private refreshInterval: any;
 
+  /**
+   * 🔄 تهيئة لوحة الشرف عند البدء
+   */
   async ngOnInit() {
-    // تحميل أولي للبيانات
+    // تحميل أولي للبيانات (يستفيد مباشرة من Index total_focus_seconds)
     await this.leaderboard.fetchDailyTop();
 
-    // تحديث ذكي كل دقيقة لتعقب التغيير في الترتيب أو بداية يوم جديد
+    // تحديث ذكي في الخلفية (Background Sync) كل 60 ثانية
+    // يضمن بقاء الترتيب حياً دون إزعاج المستخدم بـ Skeletons متكررة
     this.refreshInterval = setInterval(async () => {
       const now = new Date();
-      // تحويل الوقت لتوقيت القاهرة
+      // توقيت القاهرة لضمان تزامن الجميع في نفس اليوم
       const egyptTime = new Date(now.toLocaleString('en-US', { timeZone: 'Africa/Cairo' }));
 
-      // إذا كانت الساعة 12 منتصف الليل بالضبط، نقوم بطلب تصفير القائمة (لو مش عاملها في السيرفر)
+      // رصد بداية يوم جديد لتصفير العدادات ذهنياً وبصرياً
       if (egyptTime.getHours() === 0 && egyptTime.getMinutes() === 0) {
-        console.log('🏛️ Riwaq Hall of Fame: Starting a new day...');
+        console.log('🏛️ Hall of Fame: New cycle initiated.');
       }
 
-      // جلب البيانات بدون إظهار الـ Loading (Background Refresh)
-      // ملاحظة: لو حابب تظهر Loading كل مرة، خلي السيرفس تغير الـ Signal قبل الفيتش
       await this.leaderboard.fetchDailyTop();
     }, 60000);
   }
 
   /**
-   * ⏳ تنسيق الوقت بطريقة العلماء
+   * ⏳ تنسيق وقت التركيز (HD Duration Format)
+   * يعرض الساعات والدقائق بوضوح فائق
    */
   formatTime(seconds: number): string {
-    if (!seconds || seconds < 0) return '0m';
+    if (!seconds || seconds <= 0) return '0m';
+
     const h = Math.floor(seconds / 3600);
     const m = Math.floor((seconds % 3600) / 60);
 
@@ -47,7 +63,12 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     return `${h}h ${m}m`;
   }
 
+  /**
+   * 🧹 تنظيف الذاكرة ومنع تسريب الـ Intervals
+   */
   ngOnDestroy() {
-    if (this.refreshInterval) clearInterval(this.refreshInterval);
+    if (this.refreshInterval) {
+      clearInterval(this.refreshInterval);
+    }
   }
 }

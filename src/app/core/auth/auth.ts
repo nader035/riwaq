@@ -1,4 +1,4 @@
-/* - Riwaq Original AuthService */
+/* - Riwaq Core Auth: High-Performance Identity Engine v3.5 */
 import { Injectable, inject, signal, computed, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { SupabaseService } from '../services/supabase';
@@ -26,12 +26,14 @@ export class AuthService {
   private ngZone = inject(NgZone);
   private notify = inject(NotificationService);
 
+  // --- Signals (The Reactive Core) ---
   session = signal<any>(null);
   isAuthenticated = signal<boolean>(false);
   currentUser = signal<UserProfile | null>(null);
 
   private profileChannel?: RealtimeChannel;
 
+  // --- Computed States ---
   isAdmin = computed(() => this.currentUser()?.role?.toLowerCase() === 'admin');
   isBanned = computed(() => this.currentUser()?.isBanned === true);
 
@@ -43,24 +45,17 @@ export class AuthService {
    * 🛡️ تهيئة المصادقة ومراقبة الجلسة
    */
   private async initAuth() {
-    const {
-      data: { session: initialSession },
-    } = await this.supabase.auth.getSession();
+    const { data: { session: initialSession } } = await this.supabase.auth.getSession();
 
     if (initialSession) {
-      this.session.set(initialSession);
-      this.isAuthenticated.set(true);
-      await this.refreshUserProfile(initialSession);
-      this.listenToProfileChanges();
+      await this.handleSessionUpdate(initialSession);
     }
 
+    // مراقب التغير في حالة الدخول (Login/Logout/Token Refresh)
     this.supabase.auth.onAuthStateChange((event, session) => {
       this.ngZone.run(async () => {
         if (session) {
-          this.session.set(session);
-          this.isAuthenticated.set(true);
-          await this.refreshUserProfile(session);
-          this.listenToProfileChanges();
+          await this.handleSessionUpdate(session);
         } else {
           this.cleanupAuth();
           if (!this.router.url.includes('/auth')) {
@@ -72,9 +67,18 @@ export class AuthService {
   }
 
   /**
-   * 🔄 مزامنة البروفايل وعلاج مشكلة الصور (Avatar Fix)
+   * 🔄 معالج الجلسة: تحديث البيانات وفتح قنوات المزامنة
    */
-  /* - Optimized for Challenges & Avatars */
+  private async handleSessionUpdate(session: any) {
+    this.session.set(session);
+    this.isAuthenticated.set(true);
+    await this.refreshUserProfile(session);
+    this.listenToProfileChanges();
+  }
+
+  /**
+   * 🎭 مزامنة البروفايل وعلاج مشكلة الصور (Avatar Normalization)
+   */
   async refreshUserProfile(session: any) {
     if (!session?.user) return;
 
@@ -90,38 +94,41 @@ export class AuthService {
       if (data) {
         let finalAvatarUrl = data.avatar;
 
-        // 1. حماية الأفاتار: لو مش رابط (اسم ملف) هاته من الـ Storage
+        // 1. Storage Avatar Resolver: تحويل أسماء الملفات لروابط عامة
         if (finalAvatarUrl && !finalAvatarUrl.startsWith('http')) {
           const { data: imgData } = this.supabase.storage
             .from('avatars')
             .getPublicUrl(finalAvatarUrl);
           finalAvatarUrl = imgData.publicUrl;
         }
-        // 2. لو مفيش صورة في الداتابيز، استلف صورة جوجل من الـ Session
+        // 2. OAuth Fallback: لو مفيش صورة، استلف صورة جوجل/تويتر
         else if (!finalAvatarUrl && session.user.user_metadata?.['avatar_url']) {
           finalAvatarUrl = session.user.user_metadata['avatar_url'];
         }
 
-        // 3. تحديث الـ Signal ببيانات التحديات الضرورية
+        // 3. Mapping: تحويل مسميات الداتابيز لمسميات الكود (CamelCase)
         this.currentUser.set({
-          ...data,
           id: data.id,
-          name: data.name,
-          avatar: finalAvatarUrl,
+          email: session.user.email,
+          name: data.name || 'Scholar',
+          avatar: finalAvatarUrl || 'assets/images/default-avatar.png',
+          role: data.role || 'scholar',
           isBanned: data.is_banned || false,
           totalFocusSeconds: data.total_focus_seconds || 0,
-          dailyFocusSeconds: data.daily_focus_seconds || 0, // 👈 دي اللي الـ ChallengeService محتاجها
+          dailyFocusSeconds: data.daily_focus_seconds || 0,
           currentStreak: data.current_streak || 0,
           longestStreak: data.longest_streak || 0,
+          currentRoomId: data.current_room_id
         });
       }
     } catch (err) {
-      console.error('AuthService Error:', err);
+      console.error('refreshUserProfile Failed:', err);
     }
   }
 
   /**
-   * ⚡ المراقبة اللحظية (Real-time Sync)
+   * ⚡ المزامنة اللحظية (Real-time Broadcast)
+   * يضمن تحديث الـ XP والـ Streak فوراً عند انتهاء جلسة التركيز
    */
   private listenToProfileChanges() {
     const user = this.currentUser();
@@ -130,28 +137,42 @@ export class AuthService {
     if (this.profileChannel) this.supabase.removeChannel(this.profileChannel);
 
     this.profileChannel = this.supabase
-      .channel(`profile_sync_${user.id}`)
+      .channel(`sync_profile_${user.id}`)
       .on(
         'postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'profiles', filter: `id=eq.${user.id}` },
         (payload) => {
           this.ngZone.run(() => {
             const updated = payload.new as any;
+            
+            // صمام أمان الحظر
             if (updated.is_banned === true) {
               this.handleBannedUser();
               return;
             }
-            this.currentUser.update((prev) => (prev ? { ...prev, ...updated } : null));
+
+            // تحديث جزئي للسيجنال لضمان سلاسة الواجهة
+            this.currentUser.update((prev) => prev ? {
+              ...prev,
+              totalFocusSeconds: updated.total_focus_seconds ?? prev.totalFocusSeconds,
+              dailyFocusSeconds: updated.daily_focus_seconds ?? prev.dailyFocusSeconds,
+              currentStreak: updated.current_streak ?? prev.currentStreak,
+              longestStreak: updated.longest_streak ?? prev.longestStreak,
+              name: updated.name ?? prev.name,
+              avatar: updated.avatar ?? prev.avatar
+            } : null);
           });
-        },
+        }
       )
       .subscribe();
   }
 
   private async handleBannedUser() {
-    this.notify.show('Access revoked. You have been exiled.', 'error');
+    this.notify.show('Access revoked. Your essence has been exiled.', 'error');
     await this.logout();
   }
+
+  // --- Auth Actions ---
 
   async signIn(email: string, password: string) {
     return await this.supabase.auth.signInWithPassword({ email, password });
@@ -166,12 +187,10 @@ export class AuthService {
   }
 
   async signInWithSocial(provider: 'google' | 'twitter') {
-    const { data, error } = await this.supabase.auth.signInWithOAuth({
+    return await this.supabase.auth.signInWithOAuth({
       provider,
       options: { redirectTo: window.location.origin + '/app/dashboard' },
     });
-    if (error) throw error;
-    return data;
   }
 
   async logout() {

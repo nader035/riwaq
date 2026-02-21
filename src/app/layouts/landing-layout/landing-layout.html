@@ -1,19 +1,33 @@
-<div 
-  class="min-h-screen bg-background relative overflow-hidden transition-colors duration-700"
+<div
+  class="min-h-screen bg-background relative overflow-hidden transition-colors duration-1000 selection:bg-primary/30"
   [style.--x.px]="mouseX()"
   [style.--y.px]="mouseY()"
 >
-  <div class="bg-ambient-glow"></div>
+  <div class="bg-ambient-glow pointer-events-none absolute inset-0 z-0 opacity-50"></div>
 
-  <div class="bg-stars"></div>
+  <div
+    class="bg-stars pointer-events-none absolute inset-0 z-10 opacity-30 scale-110 animate-pulse-slow"
+  ></div>
 
-  <div class="mouse-glow-dynamic"></div>
+  <div
+    class="mouse-glow-dynamic pointer-events-none fixed inset-0 z-20 transition-opacity duration-500"
+  ></div>
 
   <div class="relative z-50 flex flex-col min-h-screen">
-    <app-landing-header></app-landing-header>
-    <main class="flex-1">
+    <header class="w-full relative z-[60]">
+      <app-landing-header></app-landing-header>
+    </header>
+
+    <main class="flex-1 relative z-40">
       <router-outlet></router-outlet>
     </main>
-    <app-footer></app-footer>
+
+    <footer class="w-full relative z-40 border-t border-white/5 bg-black/20 backdrop-blur-md">
+      <app-footer></app-footer>
+    </footer>
   </div>
+
+  <div
+    class="fixed inset-0 pointer-events-none z-[70] bg-gradient-to-b from-transparent via-transparent to-background/40"
+  ></div>
 </div>

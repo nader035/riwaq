@@ -3,22 +3,24 @@
 >
   <header class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 px-2">
     <div class="space-y-1">
-      <h1 class="text-3xl md:text-5xl font-black tracking-tighter text-primary text-glow-sm">
+      <h1
+        class="text-3xl md:text-5xl font-black uppercase tracking-tighter text-primary text-glow-sm"
+      >
         Challenges
       </h1>
-      <p class="text-muted-foreground font-bold text-[9px] tracking-[0.4em] opacity-60">
-        Manage your active focus challenges
+      <p class="text-muted-foreground font-bold uppercase text-[9px] tracking-[0.4em] opacity-60">
+        Manage your active focus goals
       </p>
     </div>
 
     <div
-      class="glass-card px-6 py-3 rounded-xl border border-white/10 bg-white/5 flex items-center gap-4 shadow-glow-sm"
+      class="glass-card px-6 py-3 rounded-xl border-2 border-white/20 bg-white/5 flex items-center gap-4 shadow-glow-sm"
     >
       <div class="text-center">
         <p class="text-xl font-black tabular-nums text-primary">
           {{ activeQuests().length }}<span class="text-muted-foreground/30">/3</span>
         </p>
-        <p class="text-[7px] font-black tracking-widest opacity-60">Slots Occupied</p>
+        <p class="text-[7px] font-black uppercase tracking-widest opacity-60">Active Slots</p>
       </div>
     </div>
   </header>
@@ -28,40 +30,40 @@
       <div
         class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_8px_rgba(34,211,238,0.8)]"
       ></div>
-      <h2 class="text-[9px] font-black tracking-[0.4em] text-muted-foreground">
-        Operational Missions
+      <h2 class="text-[9px] font-black uppercase tracking-[0.4em] text-muted-foreground">
+        Active Challenges
       </h2>
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
       @for (quest of activeQuests(); track quest.id) {
         <div
-          class="glass-card p-6 md:p-8 rounded-[2.5rem] border border-white/15 bg-primary/[0.03] flex flex-col justify-between h-[340px] relative overflow-hidden group transition-all hover:border-primary/40 hover:bg-primary/[0.05] shadow-xl"
+          class="glass-card p-6 md:p-8 rounded-[2.5rem] border-2 border-white/20 bg-primary/[0.03] flex flex-col justify-between h-[340px] relative overflow-hidden group transition-all hover:border-primary/40 hover:bg-primary/[0.05] shadow-xl"
         >
           <button
             (click)="confirmDelete($event, quest.id)"
-            class="absolute top-5 right-5 z-20 w-9 h-9 rounded-lg bg-red-500/10 border border-red-500/30 text-red-500 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white flex items-center justify-center"
+            class="absolute top-5 right-5 z-20 w-9 h-9 rounded-lg bg-red-500/10 border-2 border-red-500/30 text-red-500 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white flex items-center justify-center"
           >
             <i class="fas fa-trash-alt text-[10px]"></i>
           </button>
 
           <div class="space-y-4 relative z-10">
             <span
-              class="px-3 py-1 bg-white/5 rounded-lg text-[8px] font-black text-primary border border-white/20 tracking-widest"
+              class="px-3 py-1 bg-white/5 rounded-lg text-[8px] font-black text-primary uppercase border-2 border-white/20 tracking-widest"
             >
               {{ quest.challenges_catalog?.name }}
             </span>
             <h3
-              class="text-xl font-black tracking-tight leading-tight text-foreground line-clamp-3 group-hover:text-primary transition-colors"
+              class="text-xl font-black uppercase tracking-tight leading-tight text-foreground line-clamp-3 group-hover:text-primary transition-colors"
             >
               "{{ quest.main_goal }}"
             </h3>
 
             <div class="space-y-2 pt-2">
               <div
-                class="flex justify-between text-[8px] font-black tracking-widest text-muted-foreground opacity-60"
+                class="flex justify-between text-[8px] font-black uppercase tracking-widest text-muted-foreground opacity-60"
               >
-                <span>Progress</span>
+                <span>Status</span>
                 <span class="text-primary"
                   >{{
                     getPercent(quest.current_day, quest.challenges_catalog?.total_days || 1)
@@ -78,43 +80,49 @@
                   "
                 ></div>
               </div>
-              <p class="text-[8px] text-muted-foreground font-bold tracking-tighter opacity-40">
-                Station {{ quest.current_day }} / {{ quest.challenges_catalog?.total_days }}
+              <p
+                class="text-[8px] text-muted-foreground font-bold uppercase tracking-tighter opacity-40"
+              >
+                Day {{ quest.current_day }} of {{ quest.challenges_catalog?.total_days }}
               </p>
             </div>
           </div>
 
           <button
             [routerLink]="['/app/challenges/quest', quest.id]"
-            class="relative z-10 w-full py-4 bg-primary text-black rounded-xl font-black text-[10px] tracking-widest shadow-glow hover:scale-[1.02] active:scale-95 transition-all"
+            class="relative z-10 w-full py-4 bg-primary text-black rounded-xl font-black uppercase text-[10px] tracking-widest shadow-glow hover:scale-[1.02] active:scale-95 transition-all"
           >
-            Enter Station
+            Open Challenge
           </button>
         </div>
       }
 
       @if (activeQuests().length < 3) {
-        <div
-          class="border-2 border-dashed border-white/20 rounded-[2.5rem] flex flex-col items-center justify-center gap-3 opacity-40 hover:opacity-100 hover:border-primary/40 hover:bg-primary/[0.02] transition-all h-[340px] group cursor-pointer shadow-inner"
+        <button
+          (click)="scrollToArchive()"
+          class="border-2 border-dashed border-white/30 rounded-[2.5rem] flex flex-col items-center justify-center gap-3 opacity-40 hover:opacity-100 hover:border-primary/40 hover:bg-primary/[0.01] transition-all h-[340px] group cursor-pointer shadow-inner"
         >
           <div
-            class="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-lg group-hover:scale-110 group-hover:bg-primary/20 group-hover:text-primary transition-all duration-500 border border-white/10"
+            class="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-lg group-hover:scale-110 group-hover:bg-primary/20 group-hover:text-primary transition-all duration-500 border-2 border-white/10"
           >
             <i class="fas fa-plus"></i>
           </div>
           <p
-            class="text-[9px] font-black tracking-[0.3em] group-hover:text-primary transition-colors"
+            class="text-[9px] font-black uppercase tracking-[0.3em] group-hover:text-primary transition-colors"
           >
-            Available Slot
+            Start New Challenge
           </p>
-        </div>
+          <i
+            class="fas fa-chevron-down text-[8px] opacity-20 group-hover:opacity-100 animate-bounce mt-2"
+          ></i>
+        </button>
       }
     </div>
   </section>
 
-  <section class="space-y-8 pt-6">
+  <section id="discovery-archive" class="space-y-8 pt-6">
     <div class="flex items-center gap-4 px-2">
-      <h2 class="text-[9px] font-black tracking-[0.5em] text-muted-foreground opacity-50">
+      <h2 class="text-[9px] font-black uppercase tracking-[0.5em] text-muted-foreground opacity-50">
         Discovery Archive
       </h2>
       <div class="flex-1 h-px bg-white/10"></div>
@@ -124,15 +132,15 @@
       @for (path of catalog(); track path.slug) {
         <div
           (click)="openInitiateModal(path)"
-          class="glass-card group p-8 rounded-[2.5rem] border border-white/15 bg-white/[0.02] hover:border-primary/50 transition-all cursor-pointer relative overflow-hidden h-60 flex flex-col justify-end shadow-lg hover:-translate-y-1"
+          class="glass-card group p-8 rounded-[2.5rem] border-2 border-white/15 bg-white/[0.02] hover:border-primary/50 transition-all cursor-pointer relative overflow-hidden h-60 flex flex-col justify-end shadow-lg hover:-translate-y-1"
         >
           <div
-            class="absolute top-8 left-8 w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary text-xl group-hover:rotate-12 transition-all border border-primary/20"
+            class="absolute top-8 left-8 w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary text-xl group-hover:rotate-12 transition-all border-2 border-primary/20"
           >
             <i class="fas {{ path.icon }}"></i>
           </div>
           <div class="space-y-1 relative z-10">
-            <h3 class="text-2xl font-black text-foreground leading-none tracking-tighter">
+            <h3 class="text-2xl font-black uppercase text-foreground leading-none tracking-tighter">
               {{ path.name }}
             </h3>
             <p
@@ -151,56 +159,61 @@
     </div>
   </section>
 
-  @if (isModalOpen()) {
+  @defer (when isModalOpen()) {
     <div
       class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-2xl animate-fade-in"
       (click)="closeModal()"
     >
       <div
-        class="glass-card w-full max-w-xl p-8 md:p-12 rounded-[3rem] border border-white/20 bg-[#0a0a0a] shadow-[0_0_50px_-12px_rgba(34,211,238,0.2)] animate-slide-up"
+        class="glass-card w-full max-w-xl p-8 md:p-12 rounded-[3rem] border-2 border-white/20 bg-[#0a0a0a] shadow-glow animate-slide-up"
         (click)="$event.stopPropagation()"
       >
         <header class="space-y-2 mb-8 text-center">
-          <p class="text-primary text-[9px] font-black tracking-[0.4em]">Initializing Expedition</p>
-          <h2 class="text-3xl font-black tracking-tighter text-foreground">
+          <p class="text-primary text-[9px] font-black uppercase tracking-[0.4em]">
+            Setting Up Challenge
+          </p>
+          <h2 class="text-3xl font-black uppercase tracking-tighter text-foreground">
             {{ selectedPath()?.name }}
           </h2>
         </header>
 
         <div class="space-y-6">
           <div class="space-y-3">
-            <label class="text-[9px] font-black tracking-widest text-muted-foreground ml-2"
-              >Define Your Directive</label
+            <label
+              class="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-2"
+              >Define Your Goal</label
             >
             <textarea
               [(ngModel)]="userGoal"
-              placeholder="I will master..."
+              placeholder="What do you want to achieve?"
               rows="3"
-              class="w-full bg-white/5 border border-white/20 p-6 rounded-[1.5rem] outline-none focus:border-primary/50 font-bold text-lg text-foreground resize-none transition-all placeholder:opacity-20 custom-scrollbar"
+              class="w-full bg-white/5 border-2 border-white/20 p-6 rounded-[1.5rem] outline-none focus:border-primary/50 font-bold text-lg text-foreground resize-none transition-all placeholder:opacity-20 custom-scrollbar shadow-inner"
             ></textarea>
           </div>
 
           <div class="flex gap-3">
             <button
               (click)="closeModal()"
-              class="flex-1 py-4 rounded-xl font-black text-[9px] tracking-widest hover:bg-white/5 transition-all text-muted-foreground border border-white/10"
+              class="flex-1 py-4 rounded-xl font-black uppercase text-[9px] tracking-widest hover:bg-white/5 transition-all text-muted-foreground border-2 border-white/10"
             >
               Cancel
             </button>
             <button
               (click)="startNewQuest()"
               [disabled]="!userGoal().trim() || isLoading()"
-              class="flex-[2] py-4 bg-primary text-black rounded-xl font-black text-[9px] tracking-[0.2em] shadow-glow hover:scale-[1.02] active:scale-95 disabled:opacity-50 transition-all"
+              class="flex-[2] py-4 bg-primary text-black rounded-xl font-black uppercase text-[9px] tracking-[0.2em] shadow-glow hover:scale-[1.02] active:scale-95 disabled:opacity-50 transition-all"
             >
               @if (isLoading()) {
-                <i class="fas fa-spinner fa-spin mr-2"></i> Initializing...
+                <i class="fas fa-spinner fa-spin mr-2"></i> Starting...
               } @else {
-                Initiate Mission
+                Start Challenge
               }
             </button>
           </div>
         </div>
       </div>
     </div>
+  } @placeholder {
+    <div class="hidden"></div>
   }
 </div>
