@@ -1,4 +1,4 @@
-/* - Riwaq Study Rooms: High-Performance Social Logic v3.0 */
+/* - Riwaq Study Rooms: High-Performance Social Logic v4.0 */
 import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -27,6 +27,7 @@ export class RoomsComponent implements OnInit {
   private notify = inject(NotificationService);
   private router = inject(Router);
   sidebarService = inject(SidebarService);
+
   // --- UI State Signals ---
   isModalOpen = signal(false);
   selectedIcon = signal('fa-laptop-code');
@@ -44,37 +45,24 @@ export class RoomsComponent implements OnInit {
     'fa-lightbulb',
   ];
 
-  /**
-   * 🔄 تهيئة البيانات عند فتح الصفحة
-   */
   async ngOnInit() {
     try {
-      // جلب الغرف (الـ Real-time مفعل تلقائياً داخل الـ RoomService)
       await this.roomService.fetchRooms();
-
-      // فحص إذا كان المستخدم قادماً لإنشاء غرفة مباشرة
       if (window.history.state?.openModal) {
         this.isModalOpen.set(true);
       }
     } catch (err) {
-      this.notify.show('Failed to load study rooms', 'error');
+      this.notify.show('Failed to load study sanctuaries', 'error');
     }
   }
 
-  /**
-   * 🚀 الانتقال لغرفة مذاكرة معينة
-   */
   async joinRoom(room: Room) {
-    // التوجيه لصفحة الغرفة، والـ Service هناك ستتولى الـ Presence Ping
     this.router.navigate(['/app/rooms', room.id]);
   }
 
-  /**
-   * ✨ إنشاء غرفة مذاكرة جديدة (خاص بالـ Admin)
-   */
   async handleCreate(name: string) {
     if (!name || name.trim().length < 3) {
-      this.notify.show('Room name must be at least 3 characters', 'error');
+      this.notify.show('Protocol requires at least 3 characters', 'error');
       return;
     }
 
@@ -86,10 +74,9 @@ export class RoomsComponent implements OnInit {
 
     if (success) {
       this.isModalOpen.set(false);
-      this.notify.show('Room created successfully', 'success');
-      // لا نحتاج لإعادة الجلب يدوياً لأن الـ Realtime سيحدث القائمة فوراً
+      this.notify.show('Sanctuary established successfully', 'success');
     } else {
-      this.notify.show('Failed to create room', 'error');
+      this.notify.show('Failed to initiate room sequence', 'error');
     }
   }
 }

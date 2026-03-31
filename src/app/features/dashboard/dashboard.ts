@@ -125,15 +125,26 @@ export class DashboardComponent implements OnInit {
   /**
    * 🚪 الخروج المنظم من الغرفة الحالية
    */
-  async handleQuitRoom() {
-    try {
-      await this.roomService.leaveRoom();
+async handleQuitRoom() {
+  try {
+    const elapsed = this.focus.elapsedSeconds();
+
+    // 1. مسح اليوزر من الغرفة (تحديث الداتابيز فوراً)
+    await this.roomService.leaveRoom();
+
+    // 2. حفظ الوقت وتصفير العداد
+    if (elapsed > 0) {
+      await this.focus.saveProgress(elapsed);
+    } else {
       this.focus.reset();
-      this.notify.show('Session finished.', 'info');
-    } catch (e) {
-      this.notify.show('Disconnect error.', 'error');
     }
+
+    this.notify.show('Sanctuary cleared. Systems standby.', 'success');
+  } catch (e) {
+    console.error('Quit error:', e);
+    this.focus.reset(); // تصفير إجباري لو حصل مشكلة
   }
+}
 
   /**
    * تنسيق الوقت الاحترافي (HD Duration Format)

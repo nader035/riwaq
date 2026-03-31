@@ -10,7 +10,7 @@ import {
   NgZone,
   computed,
   HostListener,
-  ChangeDetectionStrategy
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -63,19 +63,19 @@ export class RoomDetailComponent implements OnInit, OnDestroy {
   activeScholars = computed(() => {
     const state = this.presenceState();
     const myId = this.authService.currentUser()?.id;
-    const currentTick = this.now(); 
+    const currentTick = this.now();
 
     return Object.keys(state).map((key) => {
       const scholar = { ...state[key][0] };
-      
+
       if (scholar.id === myId) {
         scholar.status = this.focus.timerStatus();
         scholar.time = this.focus.formattedTime();
       } else if (scholar.status === 'focusing' && scholar.last_updated_at) {
         scholar.time = this.calculateSyncedTime(
-          scholar.offset_seconds || 0, 
-          scholar.last_updated_at, 
-          currentTick
+          scholar.offset_seconds || 0,
+          scholar.last_updated_at,
+          currentTick,
         );
       } else {
         scholar.time = scholar.time || '00:00';
@@ -118,7 +118,7 @@ export class RoomDetailComponent implements OnInit, OnDestroy {
     const img = event.target as HTMLImageElement;
     // نخفي الصورة المكسورة فوراً
     img.style.display = 'none';
-    
+
     // نبحث عن الـ Fallback اللي جنبها ونظهره
     const container = img.closest('.relative');
     const fallback = container?.querySelector('.avatar-fallback');
@@ -163,7 +163,7 @@ export class RoomDetailComponent implements OnInit, OnDestroy {
 
   private calculateSyncedTime(offset: number, lastUpdateIso: string, nowMs: number): string {
     const lastUpdate = new Date(lastUpdateIso).getTime();
-    const drift = Math.floor((nowMs - lastUpdate) / 1000); 
+    const drift = Math.floor((nowMs - lastUpdate) / 1000);
     const totalSecs = Math.max(0, offset + drift);
     const hrs = Math.floor(totalSecs / 3600);
     const mins = Math.floor((totalSecs % 3600) / 60);
@@ -173,15 +173,23 @@ export class RoomDetailComponent implements OnInit, OnDestroy {
   }
 
   async loadRoomDetails(roomId: string) {
-    const { data } = await this.supabase.from('rooms').select('name, icon').eq('id', roomId).single();
+    const { data } = await this.supabase
+      .from('rooms')
+      .select('name, icon')
+      .eq('id', roomId)
+      .single();
     if (data) {
       this.focus.setRoom(roomId, data.name);
       this.roomIcon.set(data.icon);
     }
   }
 
-  handleStart() { this.focus.startTimer(); }
-  handleBreak() { this.focus.pauseTimer(); }
+  handleStart() {
+    this.focus.startTimer();
+  }
+  handleBreak() {
+    this.focus.pauseTimer();
+  }
 
   async handleFinish() {
     const seconds = this.focus.totalSeconds();
