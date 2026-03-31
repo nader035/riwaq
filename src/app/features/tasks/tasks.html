@@ -1,3 +1,4 @@
+@defer (when !taskStore.isLoading()) {
 <div class="max-w-5xl mx-auto space-y-8 animate-fade-in pb-20 relative px-4 md:px-8 py-6">
   <header
     class="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-border/30 pb-10"
@@ -78,7 +79,7 @@
       >
         <div class="flex items-center gap-5 flex-1">
           <button
-            (click)="taskService.toggleTask(task)"
+            (click)="taskStore.toggleTask(task)"
             [class.bg-primary]="task.is_completed"
             [class.border-primary]="task.is_completed"
             class="w-8 h-8 rounded-lg border-2 border-border/60 flex items-center justify-center transition-all group-hover:border-primary/40 shadow-inner shrink-0"
@@ -141,6 +142,32 @@
       </div>
     }
   </div>
+</div>
+} @placeholder {
+  <div class="max-w-5xl mx-auto space-y-8 animate-fade-in pb-20 relative px-4 md:px-8 py-6">
+    <header class="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-border/30 pb-10">
+      <div class="space-y-5 flex-1">
+        <div class="space-y-3">
+          <app-skeleton width="250px" height="48px" customClass="rounded-2xl"></app-skeleton>
+          <app-skeleton width="180px" height="12px" customClass="rounded-full opacity-60"></app-skeleton>
+        </div>
+        <app-skeleton width="100%" height="6px" customClass="rounded-full max-w-md"></app-skeleton>
+      </div>
+      <app-skeleton width="180px" height="56px" customClass="rounded-xl"></app-skeleton>
+    </header>
+
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 py-2">
+      <app-skeleton width="320px" height="40px" customClass="rounded-xl"></app-skeleton>
+      <app-skeleton width="180px" height="20px" customClass="rounded-lg"></app-skeleton>
+    </div>
+
+    <div class="space-y-4">
+      @for (i of [1, 2, 3, 4, 5]; track i) {
+        <app-skeleton width="100%" height="80px" customClass="rounded-2xl"></app-skeleton>
+      }
+    </div>
+  </div>
+}
 
   @if (isModalOpen()) {
     <div class="fixed inset-0 z-[200] flex items-center justify-center p-6 animate-fade-in">
@@ -227,4 +254,3 @@
       </div>
     </div>
   }
-</div>

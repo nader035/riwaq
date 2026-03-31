@@ -1,29 +1,10 @@
-/* - Riwaq Mission Control v6.0: High-Performance Engine */
-import { Injectable, inject, signal, computed } from '@angular/core';
-import { Router } from '@angular/router';
+/* - Riwaq Mission Control v6.0: Database Layer */
+import { Injectable, inject } from '@angular/core';
 import { SupabaseClient, createClient } from '@supabase/supabase-js';
 import { environment } from '../../../environments/environment';
-import { AuthService } from '../auth/auth';
+import { CatalogItem, UserQuest } from '../models/challenge';
 
-// --- Interfaces ---
-export interface CatalogItem {
-  id: string;
-  slug: string;
-  name: string;
-  total_days: number;
-  description: string;
-  icon: string;
-}
-
-export interface UserQuest {
-  id: string;
-  main_goal: string;
-  current_day: number;
-  status: 'active' | 'completed' | 'archived';
-  started_at: string;
-  catalog_id: string;
-  challenges_catalog?: CatalogItem;
-}
+export type { CatalogItem, UserQuest } from '../models/challenge';
 
 @Injectable({
   providedIn: 'root',
@@ -34,22 +15,7 @@ export class ChallengeService {
     environment.supabaseAnonKey,
   );
 
-  private router = inject(Router);
-  private auth = inject(AuthService);
-
-  // --- Signals (The Reactive Core) ---
-  public catalog = signal<CatalogItem[]>([]);
-  public activeQuests = signal<UserQuest[]>([]);
-  public dailyLogs = signal<any[]>([]);
-  public isLoading = signal<boolean>(false);
-
-  // 🛡️ الحد الأقصى للتحديات النشطة
-  public canStartNewQuest = computed(() => this.activeQuests().length < 3);
-
-  /**
-   * 1. الحارس الذكي: إنشاء سجل اليوم (Lazy Initialization)
-   */
-  async ensureDayExists(questId: string, dayNumber: number) {
+  async ensureDayExistsInDb(questId: string, dayNumber: number) {
     const { data: existing } = await this.supabase
       .from('daily_logs')
       .select('*')
@@ -80,23 +46,17 @@ export class ChallengeService {
     return created;
   }
 
-  /**
-   * 2. جلب كتالوج التحديات
-   */
-  async fetchCatalog() {
+  async fetchCatalogFromDb() {
     const { data, error } = await this.supabase
       .from('challenges_catalog')
       .select('*')
       .order('total_days', { ascending: true });
 
-    if (!error && data) this.catalog.set(data);
+    if (!error && data) return data as CatalogItem[];
+    return [];
   }
 
-  /**
-   * 3. جلب التحديات النشطة (Optimized with Indexing Support)
-   */
-  async fetchUserActiveQuests(userId: string) {
-    this.isLoading.set(true);
+  async fetchUserActiveQuestsFromDb(userId: string) {
     const { data, error } = await this.supabase
       .from('user_quests')
       .select('*, challenges_catalog(*)')
@@ -104,19 +64,11 @@ export class ChallengeService {
       .eq('status', 'active')
       .order('started_at', { ascending: false });
 
-    if (!error && data) this.activeQuests.set(data);
-    this.isLoading.set(false);
-    return data;
+    if (!error && data) return data as UserQuest[];
+    return [];
   }
 
-  /**
-   * 4. بدء تحدي جديد
-   */
-  async startQuest(userId: string, catalogItem: CatalogItem, goal: string) {
-    if (!this.canStartNewQuest()) throw new Error('Slots Full');
-
-    this.isLoading.set(true);
-
+  async startQuestInDb(userId: string, catalogItem: CatalogItem, goal: string) {
     const { data: quest, error: qError } = await this.supabase
       .from('user_quests')
       .insert([
@@ -132,23 +84,12 @@ export class ChallengeService {
       .single();
 
     if (qError) {
-      this.isLoading.set(false);
       throw qError;
     }
-
-    await this.ensureDayExists(quest.id, 1);
-
-    this.activeQuests.update((prev) => [quest, ...prev]);
-    this.router.navigate(['/app/challenges/quest', quest.id]);
-    this.isLoading.set(false);
+    return quest as UserQuest;
   }
 
-  /**
-   * 5. تحميل تفاصيل التحدي (Net Focus Calculation)
-   */
-  async loadQuestDetails(questId: string, userId: string) {
-    this.isLoading.set(true);
-
+  async loadQuestDetailsFromDb(questId: string, userId: string, activeQuest: UserQuest | undefined) {
     const { data: profile } = await this.supabase
       .from('profiles')
       .select('daily_focus_seconds')
@@ -161,8 +102,7 @@ export class ChallengeService {
       .eq('quest_id', questId)
       .order('day_number', { ascending: true });
 
-    let quest = this.activeQuests().find((q) => q.id === questId);
-
+    let quest = activeQuest;
     if (!quest) {
       const { data: qData } = await this.supabase
         .from('user_quests')
@@ -172,8 +112,9 @@ export class ChallengeService {
       quest = qData;
     }
 
+    let enrichedLogs: any[] = [];
     if (logs && quest) {
-      const enrichedLogs = logs.map((log, index) => {
+      enrichedLogs = logs.map((log, index) => {
         if (log.is_completed) return log;
 
         if (log.day_number === quest?.current_day) {
@@ -184,22 +125,12 @@ export class ChallengeService {
         }
         return log;
       });
-      this.dailyLogs.set(enrichedLogs);
     }
 
-    this.isLoading.set(false);
+    return { quest, enrichedLogs };
   }
 
-  /**
-   * 6. تحديث المهام (Optimistic Update)
-   */
-  async updateTasks(logId: string, tasks: any[]) {
-    // ⚡ تحديث محلي فوري للأداء
-    this.dailyLogs.update((logs) =>
-      logs.map((l) => (l.id === logId ? { ...l, tasks } : l))
-    );
-
-    // 📡 المزامنة في الخلفية
+  async updateTasksInDb(logId: string, tasks: any[]) {
     const { error } = await this.supabase
       .from('daily_logs')
       .update({ tasks })
@@ -208,17 +139,7 @@ export class ChallengeService {
     if (error) console.error('Failed to sync tasks');
   }
 
-  /**
-   * 7. تحديث هدف اليوم (Optimistic Update)
-   */
-  async updateDailyObjective(logId: string, objective: string) {
-    // ⚡ تحديث محلي فوري
-    this.dailyLogs.update((logs) =>
-      logs.map((l) =>
-        l.id === logId ? { ...l, daily_objective: objective } : l
-      )
-    );
-
+  async updateDailyObjectiveInDb(logId: string, objective: string) {
     const { error } = await this.supabase
       .from('daily_logs')
       .update({ daily_objective: objective })
@@ -227,23 +148,11 @@ export class ChallengeService {
     if (error) console.error('Failed to sync objective');
   }
 
-  /**
-   * 8. إنهاء اليوم (Complete Day)
-   */
-  async sealDay(logId: string, quest_id: string, nextDay: number): Promise<boolean> {
-    const user = this.auth.currentUser();
-    if (!user) return false;
-
-    const quest = this.activeQuests().find((q) => q.id === quest_id);
-    const totalDays = quest?.challenges_catalog?.total_days || 14;
-
-    const dayToSave = nextDay > totalDays ? totalDays : nextDay;
-
-    // جلب التايمر الحالي لتثبيته في الـ Snapshot
+  async sealDayInDb(userId: string, logId: string, quest_id: string, dayToSave: number, nextDay: number, totalDays: number): Promise<boolean> {
     const { data: profile } = await this.supabase
       .from('profiles')
       .select('daily_focus_seconds')
-      .eq('id', user.id)
+      .eq('id', userId)
       .single();
 
     const { error: lError } = await this.supabase
@@ -261,34 +170,14 @@ export class ChallengeService {
       .eq('id', quest_id);
 
     if (!lError && !qError) {
-      if (nextDay <= totalDays) await this.ensureDayExists(quest_id, nextDay);
-      await this.loadQuestDetails(quest_id, user.id);
+      if (nextDay <= totalDays) await this.ensureDayExistsInDb(quest_id, nextDay);
       return true;
     }
     return false;
   }
 
-  /**
-   * 9. حذف التحدي نهائياً (Hard Delete)
-   */
-  async deleteQuestPermanently(questId: string) {
-    this.isLoading.set(true);
-    try {
-      // 1. مسح السجلات اليومية (Cascade Manual)
-      await this.supabase.from('daily_logs').delete().eq('quest_id', questId);
-
-      // 2. مسح التحدي
-      await this.supabase.from('user_quests').delete().eq('id', questId);
-
-      // 3. تحديث الـ Signals محلياً فوراً لفتح الـ Slot
-      this.activeQuests.update((quests) => quests.filter((q) => q.id !== questId));
-      this.dailyLogs.set([]);
-
-      this.router.navigate(['/app/challenges']);
-    } catch (error) {
-      console.error('Hard Delete Failed:', error);
-    } finally {
-      this.isLoading.set(false);
-    }
+  async deleteQuestPermanentlyInDb(questId: string) {
+    await this.supabase.from('daily_logs').delete().eq('quest_id', questId);
+    await this.supabase.from('user_quests').delete().eq('id', questId);
   }
 }

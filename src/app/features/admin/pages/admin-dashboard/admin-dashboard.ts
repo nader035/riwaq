@@ -6,7 +6,7 @@ import { RouterLink } from '@angular/router';
 
 // استيراد الخدمات الأساسية
 import { AdminService } from '../../../../core/services/admin';
-import { RoomService } from '../../../../core/services/room';
+import { RoomStore } from '../../../../core/store/room.store';
 import { NotificationService } from '../../../../core/services/notification';
 import { ConfirmService } from '../../../../core/services/confirm';
 
@@ -18,7 +18,7 @@ import { ConfirmService } from '../../../../core/services/confirm';
 })
 export class AdminDashboardComponent implements OnInit {
   adminService = inject(AdminService);
-  roomService = inject(RoomService);
+  protected roomStore = inject(RoomStore);
   confirmService = inject(ConfirmService);
   private notify = inject(NotificationService);
 
@@ -53,7 +53,7 @@ export class AdminDashboardComponent implements OnInit {
       if (error) throw error;
       if (data) this.users.set(data);
 
-      await this.roomService.fetchRooms();
+      await this.roomStore.fetchRooms();
     } catch (err) {
       this.notify.show('Failed to synchronize Archive data', 'error');
     } finally {
@@ -102,7 +102,7 @@ export class AdminDashboardComponent implements OnInit {
       const success = await this.adminService.deleteRoom(roomId);
       if (success) {
         this.notify.show('Sanctuary dissolved', 'success');
-        await this.roomService.fetchRooms(); // تحديث قائمة الغرف
+        await this.roomStore.fetchRooms(); // تحديث قائمة الغرف
       }
     }
   }

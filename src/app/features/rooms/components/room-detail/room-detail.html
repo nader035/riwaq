@@ -113,6 +113,11 @@
                     (error)="handleAvatarError($event)"
                     class="w-12 h-12 rounded-xl object-cover border-2 border-white/20 group-hover:rotate-6 transition-transform shadow-inner"
                   />
+                  <div
+                    class="avatar-fallback hidden w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center font-black text-primary text-lg border-2 border-white/10 shadow-inner"
+                  >
+                    {{ (scholar.name || 'S').charAt(0) }}
+                  </div>
                 } @else {
                   <div
                     class="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center font-black text-primary text-lg border-2 border-white/10 shadow-inner"
@@ -146,16 +151,28 @@
               </div>
             </div>
 
-            <div class="text-right">
+            <div class="text-right flex flex-col items-end">
               <p
-                class="text-xl font-black tracking-tighter tabular-nums text-foreground"
+                class="text-xl font-black tracking-tighter tabular-nums transition-colors duration-500"
                 [class.text-primary]="scholar.status === 'focusing'"
                 [class.text-orange-400]="scholar.status === 'break'"
+                [class.text-foreground]="scholar.status === 'idle'"
+                [class.opacity-50]="scholar.status === 'break'"
               >
                 {{ scholar.time || '00:00' }}
               </p>
-              <p class="text-[7px] font-black uppercase tracking-tighter text-muted/40">
-                Current Pace
+              <p class="text-[7px] font-black uppercase tracking-widest text-muted/40 transition-all duration-500 flex items-center gap-1"
+                 [class.text-orange-400/50]="scholar.status === 'break'"
+              >
+                @if (scholar.status === 'focusing') {
+                  <span class="w-1 h-1 rounded-full bg-primary animate-ping"></span>
+                  Current Pace
+                } @else if (scholar.status === 'break') {
+                  <i class="fas fa-coffee text-[7px]"></i>
+                  Recovering
+                } @else {
+                  Idle State
+                }
               </p>
             </div>
           </div>
@@ -171,58 +188,60 @@
 </div>
 
 @defer (when showSummary()) {
-  <div class="fixed inset-0 z-[200] flex items-center justify-center p-6 animate-fade-in">
-    <div
-      class="absolute inset-0 bg-black/90 backdrop-blur-2xl"
-      (click)="showSummary.set(false)"
-    ></div>
+  @if (showSummary()) {
+    <div class="fixed inset-0 z-[200] flex items-center justify-center p-6 animate-fade-in">
+      <div
+        class="absolute inset-0 bg-black/90 backdrop-blur-2xl"
+        (click)="showSummary.set(false)"
+      ></div>
 
-    <div
-      class="glass-card w-full max-w-md p-8 rounded-[3.5rem] relative z-10 border-2 border-primary/30 shadow-2xl text-center scale-in bg-[#0a0a0a]"
-    >
-      <div class="mb-6 relative">
-        <div
-          class="w-20 h-20 bg-primary/20 rounded-2xl mx-auto flex items-center justify-center text-3xl text-primary animate-bounce border-2 border-primary/30"
-        >
-          <i class="fas fa-crown"></i>
+      <div
+        class="glass-card w-full max-w-md p-8 rounded-[3.5rem] relative z-10 border-2 border-primary/30 shadow-2xl text-center scale-in bg-[#0a0a0a]"
+      >
+        <div class="mb-6 relative">
+          <div
+            class="w-20 h-20 bg-primary/20 rounded-2xl mx-auto flex items-center justify-center text-3xl text-primary animate-bounce border-2 border-primary/30"
+          >
+            <i class="fas fa-crown"></i>
+          </div>
+          <div class="absolute inset-0 bg-primary/30 blur-[60px] rounded-full"></div>
         </div>
-        <div class="absolute inset-0 bg-primary/30 blur-[60px] rounded-full"></div>
-      </div>
 
-      <h2 class="text-3xl font-black uppercase tracking-tighter mb-2 text-foreground">
-        Session <span class="text-primary text-glow">Finished</span>
-      </h2>
-      <p class="text-muted text-[9px] font-black uppercase tracking-[0.3em] mb-8 opacity-60">
-        {{ sessionSummary().message }}
-      </p>
+        <h2 class="text-3xl font-black uppercase tracking-tighter mb-2 text-foreground">
+          Session <span class="text-primary text-glow">Finished</span>
+        </h2>
+        <p class="text-muted text-[9px] font-black uppercase tracking-[0.3em] mb-8 opacity-60">
+          {{ sessionSummary().message }}
+        </p>
 
-      <div class="grid grid-cols-2 gap-4 mb-8">
-        <div
-          class="p-5 rounded-[1.8rem] bg-white/5 border-2 border-white/10 text-center shadow-inner"
-        >
-          <p class="text-[9px] font-black uppercase text-muted tracking-widest mb-1">Duration</p>
-          <h4 class="text-xl font-black text-foreground tabular-nums">
-            {{ sessionSummary().duration }}
-          </h4>
+        <div class="grid grid-cols-2 gap-4 mb-8">
+          <div
+            class="p-5 rounded-[1.8rem] bg-white/5 border-2 border-white/10 text-center shadow-inner"
+          >
+            <p class="text-[9px] font-black uppercase text-muted tracking-widest mb-1">Duration</p>
+            <h4 class="text-xl font-black text-foreground tabular-nums">
+              {{ sessionSummary().duration }}
+            </h4>
+          </div>
+          <div
+            class="p-5 rounded-[1.8rem] bg-primary/5 border-2 border-primary/20 text-center shadow-inner"
+          >
+            <p class="text-[9px] font-black uppercase text-muted tracking-widest mb-1">Focus Units</p>
+            <h4 class="text-xl font-black text-primary tabular-nums">
+              {{ sessionSummary().hoursEarned }}h
+            </h4>
+          </div>
         </div>
-        <div
-          class="p-5 rounded-[1.8rem] bg-primary/5 border-2 border-primary/20 text-center shadow-inner"
-        >
-          <p class="text-[9px] font-black uppercase text-muted tracking-widest mb-1">Focus Units</p>
-          <h4 class="text-xl font-black text-primary tabular-nums">
-            {{ sessionSummary().hoursEarned }}h
-          </h4>
-        </div>
-      </div>
 
-      <div class="space-y-4">
-        <button
-          (click)="showSummary.set(false)"
-          class="w-full py-5 bg-primary text-black rounded-2xl font-black uppercase tracking-widest shadow-glow hover:scale-[1.02] active:scale-95 transition-all text-xs border-2 border-transparent"
-        >
-          Back to Room
-        </button>
+        <div class="space-y-4">
+          <button
+            (click)="showSummary.set(false)"
+            class="w-full py-5 bg-primary text-black rounded-2xl font-black uppercase tracking-widest shadow-glow hover:scale-[1.02] active:scale-95 transition-all text-xs border-2 border-transparent"
+          >
+            Back to Room
+          </button>
+        </div>
       </div>
     </div>
-  </div>
+  }
 }

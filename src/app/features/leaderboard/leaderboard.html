@@ -17,7 +17,201 @@
     </p>
   </header>
 
-  @if (leaderboard.loading()) {
+  @defer (when !leaderboard.isLoading()) {
+    @if (leaderboard.topScholars().length > 0) {
+      <div class="relative grid grid-cols-3 gap-3 md:gap-8 items-end pt-16 max-w-4xl mx-auto">
+        <div class="flex flex-col items-center space-y-4 z-20">
+          @if (leaderboard.topScholars()[1]) {
+            @let scholar2 = leaderboard.topScholars()[1];
+            <div class="relative group">
+              @defer (on viewport) {
+                <img
+                  [src]="scholar2.avatar"
+                  class="w-16 h-16 md:w-22 md:h-22 rounded-2xl border-2 border-white/20 object-cover shadow-xl transition-transform group-hover:scale-105"
+                />
+              } @placeholder {
+                <div class="w-16 h-16 md:w-22 md:h-22 rounded-2xl bg-white/5 animate-pulse"></div>
+              }
+              <div
+                class="absolute -top-2 -left-2 w-7 h-7 bg-white/10 text-foreground rounded-lg flex items-center justify-center font-black text-[10px] shadow-lg border-2 border-white/20"
+              >
+                2
+              </div>
+            </div>
+            <div
+              class="glass-card w-full min-h-[120px] rounded-t-[1.5rem] flex flex-col items-center justify-center p-4 border-2 border-white/10 bg-white/5 shadow-xl"
+            >
+              <p
+                class="text-[9px] font-black uppercase truncate w-full text-center text-muted-foreground mb-1 tracking-widest"
+              >
+                {{ scholar2.name }}
+              </p>
+              <p class="text-foreground font-black text-sm md:text-lg tabular-nums">
+                {{ formatTime(scholar2.daily_focus_seconds) }}
+              </p>
+              <div
+                class="flex items-center gap-1 mt-2 px-2 py-0.5 rounded-full bg-orange-500/10 border-2 border-orange-500/20"
+              >
+                <i class="fas fa-fire text-orange-500 text-[8px]"></i>
+                <span class="text-[8px] font-black text-orange-500"
+                  >{{ scholar2.current_streak }}d</span
+                >
+              </div>
+            </div>
+          }
+        </div>
+
+        <div
+          class="flex flex-col items-center space-y-4 z-30 transform scale-110 md:scale-120 -translate-y-4"
+        >
+          @if (leaderboard.topScholars()[0]) {
+            @let scholar1 = leaderboard.topScholars()[0];
+            <div class="relative group">
+              <div
+                class="absolute -top-8 left-1/2 -translate-x-1/2 text-primary animate-bounce shadow-glow-sm"
+              >
+                <i class="fas fa-crown text-3xl"></i>
+              </div>
+              @defer (on viewport) {
+                <img
+                  [src]="scholar1.avatar"
+                  class="w-20 h-20 md:w-26 md:h-26 rounded-3xl border-4 border-primary shadow-glow object-cover transition-transform group-hover:scale-105"
+                />
+              } @placeholder {
+                <div class="w-20 h-20 md:w-26 md:h-26 rounded-3xl bg-primary/10 animate-pulse"></div>
+              }
+              <div
+                class="absolute -top-2 -left-2 w-9 h-9 bg-primary text-black rounded-xl flex items-center justify-center font-black shadow-glow border-2 border-white/20"
+              >
+                1
+              </div>
+            </div>
+            <div
+              class="glass-card w-full min-h-[160px] rounded-t-[2rem] flex flex-col items-center justify-center p-4 border-2 border-primary/30 bg-primary/5 backdrop-blur-3xl shadow-2xl"
+            >
+              <p
+                class="text-[10px] font-black uppercase truncate w-full text-center text-primary mb-1 tracking-[0.2em]"
+              >
+                {{ scholar1.name }}
+              </p>
+              <h4 class="text-foreground font-black text-lg md:text-2xl tabular-nums text-glow-sm">
+                {{ formatTime(scholar1.daily_focus_seconds) }}
+              </h4>
+              <div
+                class="flex items-center gap-1 mt-2 px-3 py-1 rounded-full bg-orange-500/20 border-2 border-orange-500/30"
+              >
+                <i class="fas fa-fire text-orange-500 text-[10px]"></i>
+                <span class="text-[9px] font-black text-orange-400 uppercase tracking-tighter"
+                  >{{ scholar1.current_streak }} Day Streak</span
+                >
+              </div>
+            </div>
+          }
+        </div>
+
+        <div class="flex flex-col items-center space-y-4 z-20">
+          @if (leaderboard.topScholars()[2]) {
+            @let scholar3 = leaderboard.topScholars()[2];
+            <div class="relative group">
+              @defer (on viewport) {
+                <img
+                  [src]="scholar3.avatar"
+                  class="w-14 h-14 md:w-20 md:h-20 rounded-2xl border-2 border-white/20 object-cover shadow-xl transition-transform group-hover:scale-105"
+                />
+              } @placeholder {
+                <div class="w-14 h-14 md:w-20 md:h-20 rounded-2xl bg-white/5 animate-pulse"></div>
+              }
+              <div
+                class="absolute -top-2 -left-2 w-7 h-7 bg-orange-900 text-white rounded-lg flex items-center justify-center font-black text-[10px] shadow-lg border-2 border-white/20"
+              >
+                3
+              </div>
+            </div>
+            <div
+              class="glass-card w-full min-h-[100px] rounded-t-[1.5rem] flex flex-col items-center justify-center p-4 border-2 border-white/10 bg-white/5 shadow-xl"
+            >
+              <p
+                class="text-[9px] font-black uppercase truncate w-full text-center text-muted-foreground mb-1 tracking-widest"
+              >
+                {{ scholar3.name }}
+              </p>
+              <p class="text-foreground font-black text-xs md:text-base tabular-nums">
+                {{ formatTime(scholar3.daily_focus_seconds) }}
+              </p>
+              <div
+                class="flex items-center gap-1 mt-2 px-2 py-0.5 rounded-full bg-orange-500/10 border-2 border-orange-500/20"
+              >
+                <i class="fas fa-fire text-orange-500 text-[8px]"></i>
+                <span class="text-[8px] font-black text-orange-500"
+                  >{{ scholar3.current_streak }}d</span
+                >
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="max-w-3xl mx-auto space-y-3 mt-12">
+        @for (scholar of leaderboard.topScholars().slice(3); track scholar.id; let i = $index) {
+          <div
+            class="glass-card p-4 rounded-2xl border-2 border-white/10 flex items-center justify-between hover:bg-white/5 hover:border-primary/40 transition-all group bg-white/[0.02] shadow-sm"
+          >
+            <div class="flex items-center gap-5">
+              <span
+                class="font-black text-muted-foreground/30 w-6 text-center text-xs uppercase tracking-tighter"
+                >#{{ i + 4 }}</span
+              >
+              @defer (on viewport) {
+                <img
+                  [src]="scholar.avatar"
+                  class="w-12 h-12 rounded-xl object-cover border-2 border-white/10 group-hover:border-primary/30 transition-colors"
+                />
+              } @placeholder {
+                <div class="w-12 h-12 rounded-xl bg-white/5 animate-pulse"></div>
+              }
+              <div>
+                <div class="flex items-center gap-2">
+                  <p
+                    class="font-black text-sm uppercase tracking-tight text-foreground group-hover:text-primary transition-colors"
+                  >
+                    {{ scholar.name }}
+                  </p>
+                  @if (scholar.current_streak > 0) {
+                    <div
+                      class="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-orange-500/5 border border-orange-500/10"
+                    >
+                      <i class="fas fa-fire text-orange-500 text-[8px]"></i>
+                      <span class="text-orange-500 text-[8px] font-black">{{
+                        scholar.current_streak
+                      }}</span>
+                    </div>
+                  }
+                </div>
+                <p class="text-[8px] text-muted-foreground font-black uppercase tracking-[0.2em]">
+                  Ranked Scholar
+                </p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p class="font-black text-primary tabular-nums text-lg tracking-tight uppercase">
+                {{ formatTime(scholar.daily_focus_seconds) }}
+              </p>
+              <p class="text-[7px] text-muted-foreground font-black uppercase tracking-widest">
+                Focus Time
+              </p>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div
+        class="text-center py-20 opacity-30 font-black tracking-widest text-[10px] text-muted-foreground uppercase"
+      >
+        <i class="fas fa-scroll text-4xl mb-4 block"></i>
+        The Hall is empty. Claim your throne today!
+      </div>
+    }
+  } @placeholder {
     <div class="relative grid grid-cols-3 gap-4 md:gap-8 items-end pt-16 max-w-3xl mx-auto">
       <div class="flex flex-col items-center space-y-4">
         <app-skeleton width="70px" height="70px" customClass="rounded-2xl"></app-skeleton>
@@ -41,198 +235,6 @@
           class="glass-card w-full h-20 rounded-t-2xl border-2 border-white/10 animate-pulse bg-white/5"
         ></div>
       </div>
-    </div>
-  } @else if (leaderboard.topScholars().length > 0) {
-    <div class="relative grid grid-cols-3 gap-3 md:gap-8 items-end pt-16 max-w-4xl mx-auto">
-      <div class="flex flex-col items-center space-y-4 z-20">
-        @if (leaderboard.topScholars()[1]) {
-          @let scholar2 = leaderboard.topScholars()[1];
-          <div class="relative group">
-            @defer (on viewport) {
-              <img
-                [src]="scholar2.avatar"
-                class="w-16 h-16 md:w-22 md:h-22 rounded-2xl border-2 border-white/20 object-cover shadow-xl transition-transform group-hover:scale-105"
-              />
-            } @placeholder {
-              <div class="w-16 h-16 md:w-22 md:h-22 rounded-2xl bg-white/5 animate-pulse"></div>
-            }
-            <div
-              class="absolute -top-2 -left-2 w-7 h-7 bg-white/10 text-foreground rounded-lg flex items-center justify-center font-black text-[10px] shadow-lg border-2 border-white/20"
-            >
-              2
-            </div>
-          </div>
-          <div
-            class="glass-card w-full min-h-[120px] rounded-t-[1.5rem] flex flex-col items-center justify-center p-4 border-2 border-white/10 bg-white/5 shadow-xl"
-          >
-            <p
-              class="text-[9px] font-black uppercase truncate w-full text-center text-muted-foreground mb-1 tracking-widest"
-            >
-              {{ scholar2.name }}
-            </p>
-            <p class="text-foreground font-black text-sm md:text-lg tabular-nums">
-              {{ formatTime(scholar2.daily_focus_seconds) }}
-            </p>
-            <div
-              class="flex items-center gap-1 mt-2 px-2 py-0.5 rounded-full bg-orange-500/10 border-2 border-orange-500/20"
-            >
-              <i class="fas fa-fire text-orange-500 text-[8px]"></i>
-              <span class="text-[8px] font-black text-orange-500"
-                >{{ scholar2.current_streak }}d</span
-              >
-            </div>
-          </div>
-        }
-      </div>
-
-      <div
-        class="flex flex-col items-center space-y-4 z-30 transform scale-110 md:scale-120 -translate-y-4"
-      >
-        @if (leaderboard.topScholars()[0]) {
-          @let scholar1 = leaderboard.topScholars()[0];
-          <div class="relative group">
-            <div
-              class="absolute -top-8 left-1/2 -translate-x-1/2 text-primary animate-bounce shadow-glow-sm"
-            >
-              <i class="fas fa-crown text-3xl"></i>
-            </div>
-            @defer (on viewport) {
-              <img
-                [src]="scholar1.avatar"
-                class="w-20 h-20 md:w-26 md:h-26 rounded-3xl border-4 border-primary shadow-glow object-cover transition-transform group-hover:scale-105"
-              />
-            } @placeholder {
-              <div class="w-20 h-20 md:w-26 md:h-26 rounded-3xl bg-primary/10 animate-pulse"></div>
-            }
-            <div
-              class="absolute -top-2 -left-2 w-9 h-9 bg-primary text-black rounded-xl flex items-center justify-center font-black shadow-glow border-2 border-white/20"
-            >
-              1
-            </div>
-          </div>
-          <div
-            class="glass-card w-full min-h-[160px] rounded-t-[2rem] flex flex-col items-center justify-center p-4 border-2 border-primary/30 bg-primary/5 backdrop-blur-3xl shadow-2xl"
-          >
-            <p
-              class="text-[10px] font-black uppercase truncate w-full text-center text-primary mb-1 tracking-[0.2em]"
-            >
-              {{ scholar1.name }}
-            </p>
-            <h4 class="text-foreground font-black text-lg md:text-2xl tabular-nums text-glow-sm">
-              {{ formatTime(scholar1.daily_focus_seconds) }}
-            </h4>
-            <div
-              class="flex items-center gap-1 mt-2 px-3 py-1 rounded-full bg-orange-500/20 border-2 border-orange-500/30"
-            >
-              <i class="fas fa-fire text-orange-500 text-[10px]"></i>
-              <span class="text-[9px] font-black text-orange-400 uppercase tracking-tighter"
-                >{{ scholar1.current_streak }} Day Streak</span
-              >
-            </div>
-          </div>
-        }
-      </div>
-
-      <div class="flex flex-col items-center space-y-4 z-20">
-        @if (leaderboard.topScholars()[2]) {
-          @let scholar3 = leaderboard.topScholars()[2];
-          <div class="relative group">
-            @defer (on viewport) {
-              <img
-                [src]="scholar3.avatar"
-                class="w-14 h-14 md:w-20 md:h-20 rounded-2xl border-2 border-white/20 object-cover shadow-xl transition-transform group-hover:scale-105"
-              />
-            } @placeholder {
-              <div class="w-14 h-14 md:w-20 md:h-20 rounded-2xl bg-white/5 animate-pulse"></div>
-            }
-            <div
-              class="absolute -top-2 -left-2 w-7 h-7 bg-orange-900 text-white rounded-lg flex items-center justify-center font-black text-[10px] shadow-lg border-2 border-white/20"
-            >
-              3
-            </div>
-          </div>
-          <div
-            class="glass-card w-full min-h-[100px] rounded-t-[1.5rem] flex flex-col items-center justify-center p-4 border-2 border-white/10 bg-white/5 shadow-xl"
-          >
-            <p
-              class="text-[9px] font-black uppercase truncate w-full text-center text-muted-foreground mb-1 tracking-widest"
-            >
-              {{ scholar3.name }}
-            </p>
-            <p class="text-foreground font-black text-xs md:text-base tabular-nums">
-              {{ formatTime(scholar3.daily_focus_seconds) }}
-            </p>
-            <div
-              class="flex items-center gap-1 mt-2 px-2 py-0.5 rounded-full bg-orange-500/10 border-2 border-orange-500/20"
-            >
-              <i class="fas fa-fire text-orange-500 text-[8px]"></i>
-              <span class="text-[8px] font-black text-orange-500"
-                >{{ scholar3.current_streak }}d</span
-              >
-            </div>
-          </div>
-        }
-      </div>
-    </div>
-
-    <div class="max-w-3xl mx-auto space-y-3 mt-12">
-      @for (scholar of leaderboard.topScholars().slice(3); track scholar.id; let i = $index) {
-        <div
-          class="glass-card p-4 rounded-2xl border-2 border-white/10 flex items-center justify-between hover:bg-white/5 hover:border-primary/40 transition-all group bg-white/[0.02] shadow-sm"
-        >
-          <div class="flex items-center gap-5">
-            <span
-              class="font-black text-muted-foreground/30 w-6 text-center text-xs uppercase tracking-tighter"
-              >#{{ i + 4 }}</span
-            >
-            @defer (on viewport) {
-              <img
-                [src]="scholar.avatar"
-                class="w-12 h-12 rounded-xl object-cover border-2 border-white/10 group-hover:border-primary/30 transition-colors"
-              />
-            } @placeholder {
-              <div class="w-12 h-12 rounded-xl bg-white/5 animate-pulse"></div>
-            }
-            <div>
-              <div class="flex items-center gap-2">
-                <p
-                  class="font-black text-sm uppercase tracking-tight text-foreground group-hover:text-primary transition-colors"
-                >
-                  {{ scholar.name }}
-                </p>
-                @if (scholar.current_streak > 0) {
-                  <div
-                    class="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-orange-500/5 border border-orange-500/10"
-                  >
-                    <i class="fas fa-fire text-orange-500 text-[8px]"></i>
-                    <span class="text-orange-500 text-[8px] font-black">{{
-                      scholar.current_streak
-                    }}</span>
-                  </div>
-                }
-              </div>
-              <p class="text-[8px] text-muted-foreground font-black uppercase tracking-[0.2em]">
-                Ranked Scholar
-              </p>
-            </div>
-          </div>
-          <div class="text-right">
-            <p class="font-black text-primary tabular-nums text-lg tracking-tight uppercase">
-              {{ formatTime(scholar.daily_focus_seconds) }}
-            </p>
-            <p class="text-[7px] text-muted-foreground font-black uppercase tracking-widest">
-              Focus Time
-            </p>
-          </div>
-        </div>
-      }
-    </div>
-  } @else {
-    <div
-      class="text-center py-20 opacity-30 font-black tracking-widest text-[10px] text-muted-foreground uppercase"
-    >
-      <i class="fas fa-scroll text-4xl mb-4 block"></i>
-      The Hall is empty. Claim your throne today!
     </div>
   }
 </div>

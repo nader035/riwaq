@@ -8,7 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LeaderboardService } from '../../core/services/leaderboard';
+import { LeaderboardStore } from '../../core/store/leaderboard.store';
 import { SkeletonComponent } from '../../shared/components/skeleton/skeleton';
 
 @Component({
@@ -21,7 +21,7 @@ import { SkeletonComponent } from '../../shared/components/skeleton/skeleton';
 })
 export class LeaderboardComponent implements OnInit, OnDestroy {
   // --- Injections ---
-  protected leaderboard = inject(LeaderboardService);
+  protected leaderboard = inject(LeaderboardStore);
 
   // --- Local State ---
   private refreshInterval: any;

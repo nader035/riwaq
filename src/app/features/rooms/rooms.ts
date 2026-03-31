@@ -4,8 +4,9 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
 // Core Services & Interfaces
-import { RoomService, Room } from '../../core/services/room';
-import { Focus } from '../../core/services/focus';
+import { RoomStore } from '../../core/store/room.store';
+import { Room } from '../../core/models/room';
+import { FocusStore } from '../../core/store/focus.store';
 import { AuthService } from '../../core/auth/auth';
 import { NotificationService } from '../../core/services/notification';
 import { SkeletonComponent } from '../../shared/components/skeleton/skeleton';
@@ -21,8 +22,8 @@ import { SidebarService } from '../../core/services/sidebar';
 })
 export class RoomsComponent implements OnInit {
   // --- Injections ---
-  protected roomService = inject(RoomService);
-  protected focus = inject(Focus);
+  protected roomStore = inject(RoomStore);
+  protected focus = inject(FocusStore);
   protected authService = inject(AuthService);
   private notify = inject(NotificationService);
   private router = inject(Router);
@@ -47,7 +48,7 @@ export class RoomsComponent implements OnInit {
 
   async ngOnInit() {
     try {
-      await this.roomService.fetchRooms();
+     const allRooms = this.roomStore.rooms();
       if (window.history.state?.openModal) {
         this.isModalOpen.set(true);
       }
@@ -66,13 +67,13 @@ export class RoomsComponent implements OnInit {
       return;
     }
 
-    const success = await this.roomService.createRoom({
+    const created = await this.roomStore.createRoom({
       name: name.trim(),
       icon: this.selectedIcon(),
       description: 'A dedicated space for deep focus and shared mastery.',
     });
 
-    if (success) {
+    if (created) {
       this.isModalOpen.set(false);
       this.notify.show('Sanctuary established successfully', 'success');
     } else {

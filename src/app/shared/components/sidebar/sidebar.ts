@@ -11,7 +11,7 @@ import { RouterModule } from '@angular/router';
 // Core Services
 import { AuthService } from '../../../core/auth/auth';
 import { SidebarService } from '../../../core/services/sidebar';
-import { JourneyService } from '../../../core/services/journey';
+import { JourneyStore } from '../../../core/store/journey.store';
 
 @Component({
   selector: 'app-sidebar',
@@ -25,7 +25,7 @@ export class SidebarComponent {
   // --- Injections ---
   public authService = inject(AuthService);
   public sidebarService = inject(SidebarService);
-  protected journeyService = inject(JourneyService);
+  protected journeyStore = inject(JourneyStore);
 
   /**
    * 🗺️ خريطة التنقل: تم ترتيب العناصر بناءً على سيكولوجية المستخدم (The F-Pattern)
@@ -52,7 +52,7 @@ export class SidebarComponent {
       avatar: user?.avatar,
       initial: user?.name?.trim().charAt(0).toUpperCase() || 'S',
       role: user?.role || 'scholar',
-      streak: this.journeyService.currentStreak() || 0
+      streak: this.journeyStore.currentStreak() || 0
     };
   });
 

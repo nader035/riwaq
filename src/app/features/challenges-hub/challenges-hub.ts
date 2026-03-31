@@ -5,14 +5,16 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
 // Core Services
-import { ChallengeService, CatalogItem } from '../../core/services/challenge';
+import { ChallengeStore } from '../../core/store/challenge.store';
+import { CatalogItem } from '../../core/models/challenge';
 import { AuthService } from '../../core/auth/auth';
 import { ConfirmService } from '../../core/services/confirm';
+import { SkeletonComponent } from '../../shared/components/skeleton/skeleton';
 
 @Component({
   selector: 'app-challenges-hub',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, SkeletonComponent],
   templateUrl: './challenges-hub.html',
   styleUrl: './challenges-hub.css',
   // 🔥 المحرك السري للأداء: يمنع إعادة الرسم غير الضرورية
@@ -20,16 +22,16 @@ import { ConfirmService } from '../../core/services/confirm';
 })
 export class ChallengesHub implements OnInit {
   // --- Injections ---
-  private challengeService = inject(ChallengeService);
+  private challengeStore = inject(ChallengeStore);
   private auth = inject(AuthService);
   private confirmService = inject(ConfirmService);
 
   // --- Signals (The Reactive Core) ---
   // الربط المباشر مع سيرفيس التحديات لضمان تدفق البيانات لحظياً
-  catalog = this.challengeService.catalog;
-  activeQuests = this.challengeService.activeQuests;
-  isLoading = this.challengeService.isLoading;
-  canStart = this.challengeService.canStartNewQuest;
+  catalog = this.challengeStore.catalog;
+  activeQuests = this.challengeStore.activeQuests;
+  isLoading = this.challengeStore.isLoading;
+  canStart = this.challengeStore.canStartNewQuest;
 
   // --- Local UI State ---
   selectedPath = signal<CatalogItem | null>(null);
@@ -40,11 +42,14 @@ export class ChallengesHub implements OnInit {
    * 🔄 تهيئة البيانات عند تحميل الـ Hub
    */
   async ngOnInit() {
-    await this.challengeService.fetchCatalog();
     const user = this.auth.currentUser();
+    const requests: Promise<any>[] = [this.challengeStore.fetchCatalog()];
+    
     if (user) {
-      await this.challengeService.fetchUserActiveQuests(user.id);
+      requests.push(this.challengeStore.fetchUserActiveQuests(user.id));
     }
+    
+    await Promise.all(requests);
   }
 
   /**
@@ -83,7 +88,7 @@ export class ChallengesHub implements OnInit {
 
     if (user && path && this.userGoal().trim()) {
       try {
-        await this.challengeService.startQuest(user.id, path, this.userGoal());
+        await this.challengeStore.startQuest(user.id, path, this.userGoal());
         this.closeModal();
       } catch (e) {
         console.error('Failed to start challenge:', e);
@@ -121,15 +126,8 @@ export class ChallengesHub implements OnInit {
     );
 
     if (confirmed) {
-      try {
-        this.challengeService.isLoading.set(true);
-        // تحديث محلي وسحابي فوري
-        await this.challengeService.deleteQuestPermanently(questId);
-      } catch (error) {
-        console.error('Termination Error:', error);
-      } finally {
-        this.challengeService.isLoading.set(false);
-      }
+      // التخزين يتولى إدارةالة التحميل (isLoading) والتعامل مع الأخطاء
+      await this.challengeStore.deleteQuestPermanently(questId);
     }
   }
 

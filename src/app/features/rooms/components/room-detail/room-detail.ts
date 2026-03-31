@@ -17,9 +17,9 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { RealtimeChannel } from '@supabase/supabase-js';
 
 import { AuthService } from '../../../../core/auth/auth';
-import { Focus } from '../../../../core/services/focus';
+import { FocusStore } from '../../../../core/store/focus.store';
 import { SupabaseService } from '../../../../core/services/supabase';
-import { RoomService } from '../../../../core/services/room';
+import { RoomStore } from '../../../../core/store/room.store';
 import { NotificationService } from '../../../../core/services/notification';
 
 @Component({
@@ -31,9 +31,9 @@ import { NotificationService } from '../../../../core/services/notification';
 })
 export class RoomDetailComponent implements OnInit, OnDestroy {
   // --- Injections ---
-  protected focus = inject(Focus);
+  protected focus = inject(FocusStore);
   protected authService = inject(AuthService);
-  protected roomService = inject(RoomService);
+  protected roomStore = inject(RoomStore);
   protected notify = inject(NotificationService);
   private supabase = inject(SupabaseService).supabase;
   private route = inject(ActivatedRoute);
@@ -54,7 +54,7 @@ export class RoomDetailComponent implements OnInit, OnDestroy {
 
   @HostListener('window:beforeunload')
   async onBeforeUnload() {
-    if (this.currentRoomId) await this.roomService.leaveRoom();
+    if (this.currentRoomId) await this.roomStore.leaveRoom();
   }
 
   /**
@@ -77,6 +77,13 @@ export class RoomDetailComponent implements OnInit, OnDestroy {
           scholar.last_updated_at,
           currentTick,
         );
+      } else if (scholar.status === 'break') {
+        const totalSecs = scholar.offset_seconds || 0;
+        const hrs = Math.floor(totalSecs / 3600);
+        const mins = Math.floor((totalSecs % 3600) / 60);
+        const secs = totalSecs % 60;
+        const pad = (n: number) => n.toString().padStart(2, '0');
+        scholar.time = hrs > 0 ? `${pad(hrs)}:${pad(mins)}:${pad(secs)}` : `${pad(mins)}:${pad(secs)}`;
       } else {
         scholar.time = scholar.time || '00:00';
       }
@@ -97,7 +104,7 @@ export class RoomDetailComponent implements OnInit, OnDestroy {
     this.currentRoomId = this.route.snapshot.paramMap.get('id');
     if (this.currentRoomId) {
       await this.loadRoomDetails(this.currentRoomId);
-      await this.roomService.joinRoom(this.currentRoomId);
+      await this.roomStore.joinRoom(this.currentRoomId);
       this.setupRealtime(this.currentRoomId);
 
       this.clockIntervalId = setInterval(() => {
@@ -106,7 +113,7 @@ export class RoomDetailComponent implements OnInit, OnDestroy {
 
       this.broadcastIntervalId = setInterval(() => this.syncMyStatus(), 10000);
       this.syncIntervalId = setInterval(() => {
-        if (this.currentRoomId) this.roomService.joinRoom(this.currentRoomId);
+        if (this.currentRoomId) this.roomStore.joinRoom(this.currentRoomId);
       }, 30000);
     }
   }
@@ -210,7 +217,7 @@ export class RoomDetailComponent implements OnInit, OnDestroy {
   }
 
   async ngOnDestroy() {
-    if (this.currentRoomId) await this.roomService.leaveRoom();
+    if (this.currentRoomId) await this.roomStore.leaveRoom();
     [this.syncIntervalId, this.clockIntervalId, this.broadcastIntervalId].forEach(clearInterval);
     if (this.roomChannel) this.roomChannel.unsubscribe();
   }

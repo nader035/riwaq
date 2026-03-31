@@ -14,7 +14,7 @@ import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 
 // Core Services
 import { AuthService } from '../../../../core/auth/auth';
-import { ChallengeService } from '../../../../core/services/challenge';
+import { ChallengeStore } from '../../../../core/store/challenge.store';
 import { SidebarService } from '../../../../core/services/sidebar';
 import { ConfirmService } from '../../../../core/services/confirm';
 
@@ -35,15 +35,15 @@ export class ActiveQuests implements OnInit {
   // --- Injections ---
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-  public challengeService = inject(ChallengeService);
+  public challengeStore = inject(ChallengeStore);
   private auth = inject(AuthService);
   public sidebarService = inject(SidebarService);
   private confirmService = inject(ConfirmService);
 
   // --- Signals & State ---
   questId = signal<string | null>(null);
-  dailyLogs = this.challengeService.dailyLogs;
-  activeQuests = this.challengeService.activeQuests;
+  dailyLogs = this.challengeStore.dailyLogs;
+  activeQuests = this.challengeStore.activeQuests;
   currentQuest = signal<any>(null);
 
   // 📊 خريطة الأيام تعتمد على حالة الـ Challenge الحالية
@@ -99,28 +99,25 @@ export class ActiveQuests implements OnInit {
    * 🏗️ محرك جلب البيانات الرئيسي
    */
   async loadQuestData(questId: string, userId: string) {
-    if (this.challengeService.isLoading()) return;
+    if (this.challengeStore.isLoading()) return;
 
-    this.challengeService.isLoading.set(true);
     try {
       // جلب التحديات لو كانت القائمة فارغة (حالة تحديث الصفحة)
       if (this.activeQuests().length === 0) {
-        await this.challengeService.fetchUserActiveQuests(userId);
+        await this.challengeStore.fetchUserActiveQuests(userId);
       }
 
       const foundQuest = this.activeQuests().find((q) => q.id === questId);
 
       if (foundQuest) {
         this.currentQuest.set(foundQuest);
-        await this.challengeService.loadQuestDetails(questId, userId);
+        await this.challengeStore.loadQuestDetails(questId, userId);
       } else {
         // إذا لم يعثر على التحدي، نعود للرئيسية
         this.router.navigate(['/app/challenges']);
       }
     } catch (error) {
       console.error('Data Loading Error:', error);
-    } finally {
-      this.challengeService.isLoading.set(false);
     }
   }
 
@@ -139,8 +136,8 @@ export class ActiveQuests implements OnInit {
     if (!log) {
       const user = this.auth.currentUser();
       if (user) {
-        await this.challengeService.ensureDayExists(quest.id, dayNum);
-        await this.challengeService.loadQuestDetails(quest.id, user.id);
+        await this.challengeStore.ensureDayExists(quest.id, dayNum);
+        await this.challengeStore.loadQuestDetails(quest.id, user.id);
         log = this.getLogByNumber(dayNum);
       }
     }
@@ -152,7 +149,7 @@ export class ActiveQuests implements OnInit {
    */
   async updateDailyObjective() {
     const day = this.selectedDay();
-    if (day) await this.challengeService.updateDailyObjective(day.id, day.daily_objective);
+    if (day) await this.challengeStore.updateDailyObjective(day.id, day.daily_objective);
   }
 
   /**
@@ -170,7 +167,7 @@ export class ActiveQuests implements OnInit {
     this.selectedDay.update((d) => ({ ...d, tasks: updatedTasks }));
 
     try {
-      await this.challengeService.updateTasks(day.id, updatedTasks);
+      await this.challengeStore.updateTasks(day.id, updatedTasks);
     } catch (error) {
       console.error('Failed to sync new task');
     }
@@ -190,7 +187,7 @@ export class ActiveQuests implements OnInit {
     this.selectedDay.update((d) => ({ ...d, tasks: updatedTasks }));
 
     try {
-      await this.challengeService.updateTasks(day.id, updatedTasks);
+      await this.challengeStore.updateTasks(day.id, updatedTasks);
     } catch (error) {
       console.error('Failed to sync task toggle');
     }
@@ -207,7 +204,7 @@ export class ActiveQuests implements OnInit {
       const totalDays = quest.challenges_catalog?.total_days || 14;
       const nextDay = day.day_number + 1;
 
-      const success = await this.challengeService.sealDay(day.id, quest.id, nextDay);
+      const success = await this.challengeStore.sealDay(day.id, quest.id, nextDay);
 
       if (success) {
         // تحديث محلي لإبقاء التحدي في الـ Hub والواجهة
@@ -230,7 +227,7 @@ export class ActiveQuests implements OnInit {
       );
 
       if (confirmed) {
-        await this.challengeService.deleteQuestPermanently(quest.id);
+        await this.challengeStore.deleteQuestPermanently(quest.id);
       }
     }
   }

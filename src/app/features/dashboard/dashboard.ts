@@ -12,12 +12,12 @@ import { Router, RouterLink } from '@angular/router';
 
 // Core Services Injection
 import { AuthService } from '../../core/auth/auth';
-import { Focus } from '../../core/services/focus';
-import { RoomService } from '../../core/services/room';
+import { FocusStore } from '../../core/store/focus.store';
+import { RoomStore } from '../../core/store/room.store';
 import { SidebarService } from '../../core/services/sidebar';
-import { TaskService } from '../../core/services/task';
-import { JourneyService } from '../../core/services/journey';
-import { ChallengeService } from '../../core/services/challenge';
+import { TaskStore } from '../../core/store/task.store';
+import { JourneyStore } from '../../core/store/journey.store';
+import { ChallengeStore } from '../../core/store/challenge.store';
 import { SkeletonComponent } from '../../shared/components/skeleton/skeleton';
 import { NotificationService } from '../../core/services/notification';
 
@@ -32,12 +32,12 @@ import { NotificationService } from '../../core/services/notification';
 export class DashboardComponent implements OnInit {
   // --- Injections ---
   protected authService = inject(AuthService);
-  protected focus = inject(Focus);
-  protected roomService = inject(RoomService);
-  protected taskService = inject(TaskService);
-  protected challengeService = inject(ChallengeService);
+  protected focus = inject(FocusStore);
+  protected roomStore = inject(RoomStore);
+  protected taskStore = inject(TaskStore);
+  protected challengeStore = inject(ChallengeStore);
   protected sidebarService = inject(SidebarService);
-  protected journeyService = inject(JourneyService);
+  protected journeyStore = inject(JourneyStore);
   private router = inject(Router);
   private notify = inject(NotificationService);
 
@@ -78,12 +78,12 @@ export class DashboardComponent implements OnInit {
 
   // بيانات الواجهة المبسطة (Data Projection)
   firstName = computed(() => this.authService.currentUser()?.name?.split(' ')[0] || 'Scholar');
-  activeRooms = computed(() => this.roomService.rooms().slice(0, 3));
+  activeRooms = computed(() => this.roomStore.rooms().slice(0, 3));
 
   completedTasksCount = computed(
-    () => this.taskService.tasks().filter((t) => t.is_completed).length,
+    () => this.taskStore.tasks().filter((t) => t.is_completed).length,
   );
-  totalTasksCount = computed(() => this.taskService.tasks().length);
+  totalTasksCount = computed(() => this.taskStore.tasks().length);
 
   /**
    * 🚀 المزامنة المتوازية عند الإقلاع
@@ -95,14 +95,15 @@ export class DashboardComponent implements OnInit {
 
       if (!userId) return;
 
-      // تنفيذ كافة الطلبات في نفس الوقت (Parallel Execution) لتقليل الـ Latency
+      await this.authService.refreshUserProfile(session);
+
+      // تنفيذ باقي الطلبات في نفس الوقت (Parallel Execution) بعد الاطمئنان على هوية المستخدم
       await Promise.all([
-        this.authService.refreshUserProfile(session),
-        this.roomService.fetchRooms(),
-        this.taskService.fetchTasks(),
-        this.challengeService.fetchUserActiveQuests(userId),
-        this.journeyService.fetchStreak(userId),
-        this.journeyService.fetchHistory(userId),
+        this.roomStore.fetchRooms(),
+        this.taskStore.fetchTasks(),
+        this.challengeStore.fetchUserActiveQuests(userId),
+        this.journeyStore.fetchStreak(userId),
+        this.journeyStore.fetchHistory(userId),
       ]);
     } catch (err) {
       console.error('Dashboard Load Failure:', err);
@@ -129,15 +130,19 @@ async handleQuitRoom() {
   try {
     const elapsed = this.focus.elapsedSeconds();
 
-    // 1. مسح اليوزر من الغرفة (تحديث الداتابيز فوراً)
-    await this.roomService.leaveRoom();
-
-    // 2. حفظ الوقت وتصفير العداد
-    if (elapsed > 0) {
+    // 1. حفظ الوقت وتصفير العداد أولاً (قاعدة البيانات تتطلب وجود المستخدم في الغرفة)
+    if (elapsed >= 10) {
       await this.focus.saveProgress(elapsed);
     } else {
+      if (elapsed > 0) {
+        this.notify.show('Session too short to archive.', 'info');
+      }
       this.focus.reset();
     }
+
+    // 2. مسح اليوزر من الغرفة بعد حفظ الجلسة بنجاح
+    await this.roomStore.leaveRoom();
+    this.focus.clearRoom();
 
     this.notify.show('Sanctuary cleared. Systems standby.', 'success');
   } catch (e) {

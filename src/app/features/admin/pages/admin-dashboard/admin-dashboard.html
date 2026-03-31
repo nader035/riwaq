@@ -36,7 +36,7 @@
     <div class="glass-card p-5 rounded-2xl border-border/40 bg-card/20">
       <p class="text-[9px] font-black text-primary mb-1 tracking-widest">Active Sanctuaries</p>
       <h4 class="text-2xl font-black tabular-nums text-foreground">
-        {{ roomService.rooms().length }}
+        {{ roomStore.rooms().length }}
       </h4>
     </div>
   </div>
@@ -174,7 +174,7 @@
       *ngIf="activeTab() === 'rooms'"
       class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
     >
-      @for (room of roomService.rooms(); track room.id) {
+      @for (room of roomStore.rooms(); track room.id) {
         <div
           class="glass-card p-5 rounded-[1.8rem] border-border/40 border hover:border-primary/40 transition-all group relative overflow-hidden bg-card/40"
         >

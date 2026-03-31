@@ -1,37 +1,5 @@
 <div class="sanctuary-container py-8 space-y-10 animate-fade-in pb-20">
-  @if (roomService.isLoading()) {
-    <header class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 px-2">
-      <div class="flex flex-col gap-3">
-        <app-skeleton width="280px" height="45px" customClass="rounded-xl"></app-skeleton>
-        <app-skeleton
-          width="180px"
-          height="12px"
-          customClass="rounded-full opacity-40"
-        ></app-skeleton>
-      </div>
-      <app-skeleton width="160px" height="44px" customClass="rounded-xl"></app-skeleton>
-    </header>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      @for (i of [1, 2, 3, 4, 5, 6]; track i) {
-        <div
-          class="glass-card p-6 rounded-[2rem] border-2 border-white/10 h-[260px] flex flex-col justify-between animate-pulse bg-white/[0.02]"
-        >
-          <div class="space-y-5">
-            <div class="w-12 h-12 bg-white/5 rounded-xl"></div>
-            <div class="space-y-3">
-              <div class="h-5 bg-white/5 rounded-lg w-2/3"></div>
-              <div class="h-10 bg-white/5 rounded-lg w-full opacity-40"></div>
-            </div>
-          </div>
-          <div class="flex justify-between items-center">
-            <div class="h-7 bg-white/5 rounded-full w-24"></div>
-            <div class="w-10 h-10 bg-white/5 rounded-xl"></div>
-          </div>
-        </div>
-      }
-    </div>
-  } @else {
+  @defer (when !roomStore.isLoading()) {
     <header class="flex flex-col md:flex-row md:items-end justify-between gap-6 px-2">
       <div class="space-y-1">
         <h1
@@ -57,8 +25,8 @@
       }
     </header>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      @for (room of roomService.rooms(); track room.id) {
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+      @for (room of roomStore.rooms(); track room.id) {
         <div
           class="glass-card p-6 rounded-[2.2rem] group relative overflow-hidden flex flex-col justify-between min-h-[270px] border-2 border-white/20 transition-all duration-500 bg-white/[0.03] backdrop-blur-xl hover:border-primary/40"
           [class.border-primary/60]="focus.currentRoomId() === room.id"
@@ -131,6 +99,38 @@
             [class.bg-primary/20]="focus.currentRoomId() === room.id"
             [class.bg-primary/5]="focus.currentRoomId() !== room.id"
           ></div>
+        </div>
+      }
+    </div>
+  } @placeholder {
+    <header class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 px-2">
+      <div class="flex flex-col gap-3">
+        <app-skeleton width="280px" height="45px" customClass="rounded-xl"></app-skeleton>
+        <app-skeleton
+          width="180px"
+          height="12px"
+          customClass="rounded-full opacity-40"
+        ></app-skeleton>
+      </div>
+      <app-skeleton width="160px" height="44px" customClass="rounded-xl"></app-skeleton>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+      @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+        <div
+          class="glass-card p-6 rounded-[2rem] border-2 border-white/10 h-[260px] flex flex-col justify-between animate-pulse bg-white/[0.02]"
+        >
+          <div class="space-y-5">
+            <div class="w-12 h-12 bg-white/5 rounded-xl"></div>
+            <div class="space-y-3">
+              <div class="h-5 bg-white/5 rounded-lg w-2/3"></div>
+              <div class="h-10 bg-white/5 rounded-lg w-full opacity-40"></div>
+            </div>
+          </div>
+          <div class="flex justify-between items-center">
+            <div class="h-7 bg-white/5 rounded-full w-24"></div>
+            <div class="w-10 h-10 bg-white/5 rounded-xl"></div>
+          </div>
         </div>
       }
     </div>

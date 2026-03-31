@@ -12,7 +12,7 @@ import { FormsModule } from '@angular/forms';
 
 // Core Services Injection
 import { AuthService } from '../../core/auth/auth';
-import { JourneyService } from '../../core/services/journey';
+import { JourneyStore } from '../../core/store/journey.store';
 import { NotificationService } from '../../core/services/notification';
 import { SupabaseService } from '../../core/services/supabase';
 
@@ -27,7 +27,7 @@ import { SupabaseService } from '../../core/services/supabase';
 export class ProfileComponent implements OnInit {
   // --- Injections ---
   protected authService = inject(AuthService);
-  protected journeyService = inject(JourneyService);
+  protected journeyStore = inject(JourneyStore);
   private supabase = inject(SupabaseService).supabase;
   private notify = inject(NotificationService);
 
@@ -69,7 +69,7 @@ export class ProfileComponent implements OnInit {
         // نطلب تحديث بيانات البروفايل والـ Streak في وقت واحد لسرعة البرق
         await Promise.all([
           this.authService.refreshUserProfile(session),
-          this.journeyService.fetchStreak(userId),
+          this.journeyStore.fetchStreak(userId),
         ]);
 
         this.newName = this.authService.currentUser()?.name || '';
@@ -116,9 +116,7 @@ export class ProfileComponent implements OnInit {
       await this.supabase.auth.updateUser({ data: { full_name: nameToSave } });
 
       // 3. التحديث اللحظي للـ Signals (Optimistic UI)
-      this.authService.currentUser.update((prev) => 
-        prev ? { ...prev, name: nameToSave } : null
-      );
+      this.authService.updateCurrentUser({ name: nameToSave });
 
       this.notify.show('Profile updated successfully.', 'success');
       this.editMode.set(false);

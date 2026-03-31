@@ -3,18 +3,20 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 // الخدمات
-import { TaskService } from '../../core/services/task';
+import { TaskStore } from '../../core/store/task.store';
 import { NotificationService } from '../../core/services/notification';
 import { ConfirmService } from '../../core/services/confirm';
+
+import { SkeletonComponent } from '../../shared/components/skeleton/skeleton';
 
 @Component({
   selector: 'app-tasks',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SkeletonComponent],
   templateUrl: './tasks.html',
 })
 export class TasksComponent implements OnInit {
-  protected taskService = inject(TaskService);
+  protected taskStore = inject(TaskStore);
   private confirmService = inject(ConfirmService);
   private notify = inject(NotificationService);
 
@@ -32,7 +34,7 @@ export class TasksComponent implements OnInit {
 
   ngOnInit() {
     // جلب المهام فور تحميل المكون
-    this.taskService.fetchTasks();
+    this.taskStore.fetchTasks();
   }
 
   /**
@@ -40,7 +42,7 @@ export class TasksComponent implements OnInit {
    * تعمل تلقائياً بمجرد تغير الـ selectedCategory أو الـ filterStatus
    */
   filteredTasks = computed(() => {
-    const allTasks = this.taskService.tasks();
+    const allTasks = this.taskStore.tasks();
     return allTasks.filter((task) => {
       const matchCat =
         this.selectedCategory() === 'All' || task.category === this.selectedCategory();
@@ -56,7 +58,7 @@ export class TasksComponent implements OnInit {
    * 📊 إحصائيات الإنجاز السريع
    */
   stats = computed(() => {
-    const all = this.taskService.tasks();
+    const all = this.taskStore.tasks();
     return {
       total: all.length,
       done: all.filter((t) => t.is_completed).length,
@@ -90,7 +92,7 @@ export class TasksComponent implements OnInit {
     }
 
     try {
-      await this.taskService.addTask(data.title, data.category, data.priority);
+      await this.taskStore.addTask(data.title, data.category, data.priority);
       this.toggleModal();
       // التنبيه يظهر من داخل الخدمة الآن لتوحيد الـ UX
     } catch (error) {
@@ -100,20 +102,20 @@ export class TasksComponent implements OnInit {
 
   /**
    * 🗑️ حذف المهمة
-   * ملاحظة: تم تبسيط الكود هنا لأن الـ TaskService يحتوي بالفعل على الـ Confirm Logic
+   * ملاحظة: تم تبسيط الكود هنا لأن الـ TaskStore يحتوي بالفعل على الـ Confirm Logic
    */
   async deleteTask(id: string | undefined) {
     if (!id) return;
 
     // ننادي دالة الحذف في الخدمة مباشرة؛ الخدمة هي من ستسأل المستخدم للتأكيد
-    await this.taskService.deleteTask(id);
+    await this.taskStore.deleteTask(id);
   }
 
   /**
    * ✅ تحديث الحالة (Toggle)
    */
   async onToggle(task: any) {
-    await this.taskService.toggleTask(task);
+    await this.taskStore.toggleTask(task);
   }
 
   async onClearCompleted() {
@@ -125,7 +127,7 @@ export class TasksComponent implements OnInit {
     );
 
     if (confirmed) {
-      await this.taskService.clearCompletedTasks();
+      await this.taskStore.clearCompletedTasks();
     }
   }
 }

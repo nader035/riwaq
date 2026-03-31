@@ -63,7 +63,7 @@
         <i class="fas fa-fire mr-1.5 animate-pulse shadow-glow-sm"></i> Current Streak
       </p>
       <h3 class="text-4xl md:text-5xl font-black text-orange-400 tabular-nums leading-none">
-        {{ journeyService.currentStreak() }} <span class="text-xs uppercase opacity-60">Days</span>
+        {{ journeyStore.currentStreak() }} <span class="text-xs uppercase opacity-60">Days</span>
       </h3>
     </div>
 
@@ -74,7 +74,7 @@
         Archive Peak
       </p>
       <h3 class="text-4xl md:text-5xl font-black text-primary tabular-nums leading-none">
-        {{ journeyService.longestStreak() }}
+        {{ journeyStore.longestStreak() }}
         <span class="text-xs uppercase text-muted-foreground">Days</span>
       </h3>
     </div>

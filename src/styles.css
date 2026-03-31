@@ -231,3 +231,74 @@
   animation: current-day-pulse 3s infinite ease-in-out;
   background: rgba(34, 211, 238, 0.15) !important;
 }
+
+
+
+    /* Splash */
+
+ .splash-screen {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        background: radial-gradient(circle at center, #0a0a0a 0%, #030303 100%);
+        font-family: system-ui, -apple-system, sans-serif;
+      }
+      .splash-logo {
+        width: 80px;
+        height: 80px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, var(--color-primary) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 2rem;
+        animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        box-shadow: 0 0 40px rgba(255, 215, 0, 0.2);
+      }
+
+      .splash-text {
+        color: #fff;
+        font-size: 1.5rem;
+        font-weight: 900;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        animation: tracking-in-expand 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) both;
+      }
+      .splash-loader {
+        margin-top: 1.5rem;
+        width: 120px;
+        height: 3px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        overflow: hidden;
+        position: relative;
+      }
+      .splash-loader::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 40%;
+        background: #FFD700;
+        border-radius: 4px;
+        animation: loading-bar 1.5s ease-in-out infinite;
+      }
+      @keyframes pulse-glow {
+        0%, 100% { transform: scale(1); box-shadow: 0 0 40px rgba(255, 215, 0, 0.2); }
+        50% { transform: scale(1.05); box-shadow: 0 0 60px rgba(255, 215, 0, 0.4); }
+      }
+      @keyframes loading-bar {
+        0% { transform: translateX(-100%); width: 40%; }
+        50% { transform: translateX(100%); width: 80%; }
+        100% { transform: translateX(250%); width: 40%; }
+      }
+      @keyframes tracking-in-expand {
+        0% { letter-spacing: -0.5em; opacity: 0; }
+        40% { opacity: 0.6; }
+        100% { opacity: 1; }
+      }

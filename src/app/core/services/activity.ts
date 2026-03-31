@@ -1,26 +1,11 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { SupabaseService } from './supabase';
 
 @Injectable({ providedIn: 'root' })
 export class ActivityService {
   private supabase = inject(SupabaseService).supabase;
-  
-  // سجل الأنشطة (Signals) لتحديث الواجهة تلقائياً
-  activities = signal<any[]>([]);
 
-  constructor() {
-    // جلب الأنشطة عند بدء تشغيل السيرفس
-    this.fetchActivities();
-  }
-
-  /**
-   * إضافة نشاط جديد لجدول الأنشطة
-   * @param type نوع النشاط (جلسة تركيز أو مهمة مكتملة)
-   * @param message الرسالة الوصفية للنشاط
-   * @param duration مدة النشاط بالدقائق (اختياري)
-   */
-  async addActivity(type: 'focus_session' | 'task_completed', message: string, duration?: number) {
-    // 1. جلب بيانات المستخدم الحالي لربط النشاط بحسابه
+  async addActivityToDb(type: 'focus_session' | 'task_completed', message: string, duration?: number) {
     const {
       data: { user },
     } = await this.supabase.auth.getUser();
@@ -30,7 +15,6 @@ export class ActivityService {
       return;
     }
 
-    // 2. إدخال البيانات للجدول (تم مسح exp_gained لضمان استقرار الطلب)
     const { error } = await this.supabase.from('activities').insert([
       {
         user_id: user.id,
@@ -42,17 +26,10 @@ export class ActivityService {
 
     if (error) {
       console.error('Archive Logging failed:', error.message);
-    } else {
-      // 3. تحديث القائمة فوراً لتعكس النشاط الجديد في الواجهة
-      await this.fetchActivities();
     }
   }
 
-  /**
-   * جلب آخر 10 أنشطة خاصة بالمستخدم الحالي
-   */
-  async fetchActivities() {
-    // التحقق من وجود جلسة نشطة قبل الطلب لضمان الخصوصية (RLS)
+  async fetchActivitiesFromDb() {
     const {
       data: { session },
     } = await this.supabase.auth.getSession();
@@ -70,8 +47,6 @@ export class ActivityService {
       return;
     }
 
-    if (data) {
-      this.activities.set(data);
-    }
+    return data;
   }
 }

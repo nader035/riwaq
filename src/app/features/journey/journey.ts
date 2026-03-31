@@ -11,7 +11,7 @@ import {
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { JourneyService } from '../../core/services/journey';
+import { JourneyStore } from '../../core/store/journey.store';
 import { AuthService } from '../../core/auth/auth';
 
 @Component({
@@ -23,7 +23,7 @@ import { AuthService } from '../../core/auth/auth';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class JourneyComponent implements OnInit, OnDestroy {
-  protected journeyService = inject(JourneyService);
+  protected journeyStore = inject(JourneyStore);
   protected authService = inject(AuthService);
 
   private dayFlipInterval: any;
@@ -48,7 +48,7 @@ export class JourneyComponent implements OnInit, OnDestroy {
     egyptNow.setHours(0, 0, 0, 0);
 
     const result = [];
-    const stats = this.journeyService.dailyStats();
+    const stats = this.journeyStore.dailyStats();
 
     for (let i = 364; i >= 0; i--) {
       const d = new Date(egyptNow);
@@ -104,8 +104,8 @@ export class JourneyComponent implements OnInit, OnDestroy {
     console.log('🏛️ Journey Sync: Fetching records for Scholar:', userId);
     try {
       await Promise.all([
-        this.journeyService.fetchHistory(userId),
-        this.journeyService.fetchStreak(userId),
+        this.journeyStore.fetchHistory(userId),
+        this.journeyStore.fetchStreak(userId),
       ]);
     } catch (err) {
       console.error('❌ Journey Sync Failed:', err);
